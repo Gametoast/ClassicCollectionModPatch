@@ -1,0 +1,5 @@
+*.log
+*.lvl
+_BUILD/
+_LVL_PC/
+Worlds/

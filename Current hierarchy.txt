@@ -1,0 +1,8 @@
+addon2
+└── "0"
+    ├── addme.script
+    └── patch_ingame.lvl
+
+data2
+    └── _lvl_common
+        └── common.lvl (replace the "globals.lua" with LVLTool)
