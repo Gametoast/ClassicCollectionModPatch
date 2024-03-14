@@ -4,11 +4,6 @@
 
 __scriptName__ = "[CCPatch: addme.script]: "
 
-funcs = {
-	ReadDataFile,
-	ScriptCB_IsFileExist,
-	ScriptCB_DoFile
-}
 
 -- We need this stuff twice. Once for the shell, once for mission states.
 patchDir = "..\\..\\addon2\\0\\patch_ingame"

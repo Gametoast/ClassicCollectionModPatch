@@ -2,6 +2,8 @@
 Enabling mods to run on the new Classic collection PC game
 This is a developing effort to get the  PC Mod Maps from the older version of the games to work with the Classic Collection.
 
+Releases will be in the 'Releases' portion of this repo.
+
 As of the creation of this repo the game is new and we would expect updates.
 
 With 2005 Star Wars Battlefront II PC, many mods relied on an unofficial patch for much functionality and some base game files were overwritten to accomplish this.
