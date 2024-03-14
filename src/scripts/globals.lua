@@ -324,7 +324,7 @@ RumbleLarge = {
 }
 
 -- Enter patch stuff!
-patchDir = "..\\..\\addon2\\0\\patch_ingame"
+local patchDir = "..\\..\\addon2\\0\\patch_ingame"
 if ScriptCB_IsFileExist(patchDir .. ".lvl") == 1 then
 	ReadDataFile(patchDir .. ".lvl")
 	ScriptCB_DoFile("patch_ingame")

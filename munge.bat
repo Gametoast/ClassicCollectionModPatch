@@ -1,4 +1,9 @@
 
+
+:: Building the patch/mod/thing
+:: This folder should be under your BF2_ModTools Folder.
+:: Run this munge.bat file to build the addme and 'patch_ingame.lvl''.
+
 md MUNGED 
 del /Y MUNGED\*
 :: currently no textures are used.
