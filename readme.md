@@ -1,13 +1,22 @@
 # Classic Collection Mod Patch
-After further time spent with the Classic Collection, it (the game engine) appears too broken to worry about.
-Hoping that Aspyr or Lucas Film/Games can get the FB CC into a functional state.
 
-~~Enabling mods to run on the new Classic collection PC game
-This is a developing effort to get the  PC Mod Maps from the older version of the games to work with the Classic Collection.~~
+# Under Development
 
-~~Releases will be in the 'Releases' portion of this repo.
+## Developers
+Put this git repo under your BF2_ModTools Folder for the 'munge' to work.
+Patch your commom.lvl file under the obviously named folder in the '0' folder and use the 'Apply_patch.bat' file
+to create a common.lvl file for you to place under your _lvl_common.
+In the future we can make this automatic, but for now we keep it simple.
+
+## Users
+Don't use this yet, it's under development.
+
+Enabling mods to run on the new Classic collection PC game
+This is a developing effort to get the  PC Mod Maps from the older version of the games to work with the Classic Collection.
+
+Releases will be in the 'Releases' portion of this repo.
 As of the creation of this repo the game is new and we would expect updates.
-With 2005 Star Wars Battlefront II PC, many mods relied on an unofficial patch for much functionality and some base game files were overwritten to accomplish this.~~
+With 2005 Star Wars Battlefront II PC, many mods relied on an unofficial patch for much functionality and some base game files were overwritten to accomplish this.
 
 
 ### Battlefront 1 modding notes

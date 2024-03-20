@@ -1,0 +1,2 @@
+This folder is for the '0' patch scripts.
+Don't put other stuff in here.

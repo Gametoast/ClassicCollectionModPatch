@@ -14,11 +14,16 @@ del /Y MUNGED\*
 :: currently no config files are used.
 ::..\ToolsFL\bin\ConfigMunge.exe -inputfile $*.mcfg -continue -platform PC -sourcedir src\config -outputdir MUNGED -hashstrings 
 
-..\ToolsFL\bin\levelpack.exe -inputfile patch_ingame.req -writefiles MUNGED\patch_ingame.files -continue -platform PC -sourcedir  src -inputdir MUNGED\ -outputdir . 
+..\ToolsFL\bin\levelpack.exe -inputfile addme.req -writefiles MUNGED\addme.files -continue -platform PC -sourcedir  src -inputdir MUNGED\ -outputdir . 
 
 move *.log MUNGED
 
 md "0"
 del  "0/*"
-copy patch_ingame.lvl "0\"
-copy MUNGED\addme.script "0\"
+copy /Y MUNGED\globals.script "0\patch_scripts\"
+copy /Y MUNGED\patch_paths.script "0\patch_scripts\"
+copy /Y MUNGED\patch_ingame.script "0\patch_scripts\"
+copy /Y MUNGED\patch_shell.script "0\patch_scripts\"
+copy /Y .\addme.lvl "0\addme.script"
+
+copy /y readme.md "0\readme.txt"

@@ -1,0 +1,10 @@
+ucft
+{
+    REQN
+    {
+        "script"
+        "addme"
+        "ifs_missionselect_console"
+        "ifs_mod_menu_launcher"
+    }
+}

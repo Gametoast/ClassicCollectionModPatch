@@ -1,4 +1,6 @@
 *.log
 *.lvl
+*.script
 MUNGED/
-0
+play/
+0/readme.txt

@@ -322,11 +322,29 @@ RumbleLarge = {
 	FXName = "Doesn'tWorkYet", --the particle effect that gets triggered, is read in, but not used yet.
 	
 }
-
+print("Apply_Classic_Collection_Patch_To_Common.lvl")
 -- Enter patch stuff!
-local patchDir = "..\\..\\addon2\\0\\patch_ingame"
-if ScriptCB_IsFileExist(patchDir .. ".lvl") == 1 then
-	ReadDataFile(patchDir .. ".lvl")
-	ScriptCB_DoFile("patch_ingame")
-	patch_ingame()
+local target = "..\\..\\addon2\\0\\patch_scripts\\patch_paths.script"
+if ScriptCB_IsFileExist(target) == 1 then
+	ReadDataFile(target)
+	ScriptCB_DoFile("patch_paths")
+	-- are we ingame? if so do some more stuff
 end
+
+-- since globals runs in Shell and ingame, we call out selectively to setup 'patching'
+-- for the respective lua env
+if ( SetupTeams ~= nil ) then  -- this will exist at mission script execution/ingame time
+    -- this should run during game_interface execution
+	local target = "..\\..\\addon2\\0\\patch_scripts\\patch_ingame.script"
+	if(ScriptCB_IsFileExist(target) == 1 )  then 
+		ReadDataFile(target)
+		ScriptCB_DoFile(target)
+	end
+else
+	-- running at shell time 
+    local target = "..\\..\\addon2\\0\\patch_scripts\\patch_shell.script"
+	if(ScriptCB_IsFileExist(target) == 1 )  then 
+		ReadDataFile(target)
+		ScriptCB_DoFile(target)
+	end
+end 
