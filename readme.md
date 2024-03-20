@@ -4,9 +4,12 @@
 
 ## Developers
 Put this git repo under your BF2_ModTools Folder for the 'munge' to work.
-Patch your commom.lvl file under the obviously named folder in the '0' folder and use the 'Apply_patch.bat' file
-to create a common.lvl file for you to place under your _lvl_common.
+
+Place the '0' folder in your addon2 folder.
+Copy your commom.lvl file under the obviously named folder in the '0' folder and use the 'Apply_patch.bat' file
+to create a common.lvl file for you to copy back over to your _lvl_common.
 In the future we can make this automatic, but for now we keep it simple.
+
 
 ## Users
 Don't use this yet, it's under development.
