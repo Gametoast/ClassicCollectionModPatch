@@ -197,7 +197,7 @@ function uop_AddEra(entry)
         end
         ---------------------------------------------------
         table.insert( gMapEras, entry )
-        print("uop_AddEra(): added Era: ")
+        print("uop_AddEra(): added Era: "  .. tostring(entry.key))
     else 
         print("uop_AddEra: Error adding Era. Must specify properties [key, showstr, subst, Team1Name, Team2Name ]\n" .. 
             "See 'gMapEras' (missionlist.lua) to see format of existing eras.")
@@ -217,7 +217,7 @@ function uop_AddGameMode(entry)
         end
         ---------------------------------------------------
         table.insert( gMapModes, entry )
-        print("uop_AddGameMode(): added Era: ")
+        print("uop_AddGameMode(): added Era: " .. tostring(entry.key))
     else 
         print("uop_AddGameMode: Error adding Game mode. Must specify [key, showstr, descstr, subst]\n" ..
             "See 'gMapModes' to see format of existing Game mode entries.")

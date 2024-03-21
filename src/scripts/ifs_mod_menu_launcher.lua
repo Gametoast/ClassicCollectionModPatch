@@ -276,7 +276,7 @@ if(gPlatformStr == "PC" and ScriptCB_CheckProfanity == nil ) then -- only Aspyr 
 end 
 --- use 'ifs_sp_campaign' instead of 'ifs_sp' if targeting the non-BFCC PC versions 
 ----- Redefine the accept handler for 'ifs_sp'----
-print("Plumb in the Console instant action screen (hijack 'spacetraining' button )")
+print("Plumb in the mod menu launcher (hijack 'spacetraining' button )")
 -- take over the 'spacetraining' button
 IFText_fnSetString(target_screen.buttons.spacetraining.label, "Mod Menu Launcher")  -- set new text on spacetraining button
 

@@ -46,52 +46,54 @@ end
 
 ----------------------------------------------------------------------------------------
 
--- patch paths
-if ReadDataFile then
-    ReadDataFile = replaceAddonPath(ReadDataFile)
-    ReadDataFile = replaceAllLVL(ReadDataFile)
+if(ScriptCB_IsFileExist("side\\all2.lvl") == 1) then 
+    print("This is BF Classic Collection; patching file paths")
+    -- patch paths
+    if ReadDataFile then
+        ReadDataFile = replaceAddonPath(ReadDataFile)
+        ReadDataFile = replaceAllLVL(ReadDataFile)
+    end
+
+    if ReadDataFileInGame then
+        ReadDataFileInGame = replaceAddonPath(ReadDataFileInGame)
+        ReadDataFileInGame = replaceAllLVL(ReadDataFileInGame)
+    end
+
+    if ScriptCB_IsFileExist then
+        ScriptCB_IsFileExist = replaceAddonPath(ScriptCB_IsFileExist)
+    end
+
+    -- not needed, ScriptCB_DoFile 'does' a file that has already been read into memory.
+    --if ScriptCB_DoFile then
+    --    ScriptCB_DoFile = replaceAddonPath(ScriptCB_DoFile)
+    --end
+
+    if PlayAudioStream then
+        PlayAudioStream = replaceAddonPath(PlayAudioStream)
+    end
+
+    -- I do not know who came up with the idea to make this a whole other function, but screw you
+    if PlayAudioStreamUsingProperties then
+        PlayAudioStreamUsingProperties = replaceAddonPath(PlayAudioStreamUsingProperties)
+    end
+
+    if OpenAudioStream then
+        OpenAudioStream = replaceAddonPath(OpenAudioStream)
+    end
+
+    if AudioStreamAppendSegments then
+        AudioStreamAppendSegments = replaceAddonPath(AudioStreamAppendSegments)
+    end
+
+    if SetMissionEndMovie then
+        SetMissionEndMovie = replaceAddonPath(SetMissionEndMovie)
+    end
+
+    if CreateEffect then
+        CreateEffect = replaceAddonPath(CreateEffect)
+    end
+
 end
-
-if ReadDataFileInGame then
-    ReadDataFileInGame = replaceAddonPath(ReadDataFileInGame)
-    ReadDataFileInGame = replaceAllLVL(ReadDataFileInGame)
-end
-
-if ScriptCB_IsFileExist then
-    ScriptCB_IsFileExist = replaceAddonPath(ScriptCB_IsFileExist)
-end
-
--- not needed, ScriptCB_DoFile 'does' a file that has already been read into memory.
---if ScriptCB_DoFile then
---    ScriptCB_DoFile = replaceAddonPath(ScriptCB_DoFile)
---end
-
-if PlayAudioStream then
-    PlayAudioStream = replaceAddonPath(PlayAudioStream)
-end
-
--- I do not know who came up with the idea to make this a whole other function, but screw you
-if PlayAudioStreamUsingProperties then
-    PlayAudioStreamUsingProperties = replaceAddonPath(PlayAudioStreamUsingProperties)
-end
-
-if OpenAudioStream then
-    OpenAudioStream = replaceAddonPath(OpenAudioStream)
-end
-
-if AudioStreamAppendSegments then
-    AudioStreamAppendSegments = replaceAddonPath(AudioStreamAppendSegments)
-end
-
-if SetMissionEndMovie then
-    SetMissionEndMovie = replaceAddonPath(SetMissionEndMovie)
-end
-
-if CreateEffect then
-    CreateEffect = replaceAddonPath(CreateEffect)
-end
-
-
 
 -- This does not work. Find a better solution asap.
 --[[ load core again for custom localization

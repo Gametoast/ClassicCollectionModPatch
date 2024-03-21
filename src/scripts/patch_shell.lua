@@ -1,4 +1,4 @@
-print("nothing yet")
+print("patch_shell start")
 
 
 --[[
@@ -12,3 +12,4 @@ print("nothing yet")
   'ScriptCB_SetIFScreen' is used infrequently though.
   (Prefer to do this in the '0' addme though)
 ]]
+print("patch_shell end")
