@@ -63,6 +63,9 @@ if(ScriptCB_IsFileExist("side\\all2.lvl") == 1) then
         ScriptCB_IsFileExist = replaceAddonPath(ScriptCB_IsFileExist)
     end
 
+    if ScriptCB_OpenMovie then 
+        ScriptCB_OpenMovie = replaceAddonPath(ScriptCB_OpenMovie)
+    end
     -- not needed, ScriptCB_DoFile 'does' a file that has already been read into memory.
     --if ScriptCB_DoFile then
     --    ScriptCB_DoFile = replaceAddonPath(ScriptCB_DoFile)

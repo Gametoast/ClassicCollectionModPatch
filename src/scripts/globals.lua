@@ -344,14 +344,14 @@ end
 -- for the respective lua env
 if ( SetupTeams ~= nil ) then  -- this will exist at mission script execution/ingame time
     -- this should run during game_interface execution
-	local target = addon_path .. "0\\patch_scripts\\patch_ingame.script"
+	local target = addon_path .. "0\\patch_scripts\\patch_ingame.lvl"
 	if(ScriptCB_IsFileExist(target) == 1 )  then 
 		ReadDataFile(target)
 		ScriptCB_DoFile("patch_ingame")
 	end
 else
 	-- running at shell time 
-    local target = addon_path .. "0\\patch_scripts\\patch_shell.script"
+    local target = addon_path .. "0\\patch_scripts\\patch_shell.lvl"
 	if(ScriptCB_IsFileExist(target) == 1 )  then 
 		ReadDataFile(target)
 		ScriptCB_DoFile("patch_shell")

@@ -1,0 +1,11 @@
+ucft
+{
+    REQN
+    {
+        "script"
+        "patch_ingame"
+        "popup_prompt"
+        "utility_functions2"
+        "fakeconsole_functions"
+    }
+}

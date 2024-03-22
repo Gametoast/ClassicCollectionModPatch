@@ -16,14 +16,18 @@ del /Y MUNGED\*
 
 ..\ToolsFL\bin\levelpack.exe -inputfile addme.req -writefiles MUNGED\addme.files -continue -platform PC -sourcedir  src -inputdir MUNGED\ -outputdir . 
 
+..\ToolsFL\bin\levelpack.exe -inputfile patch_ingame.req -writefiles MUNGED\patch_ingame.files -continue -platform PC -sourcedir  src -inputdir MUNGED\ -outputdir . 
+
+..\ToolsFL\bin\levelpack.exe -inputfile patch_shell.req -writefiles MUNGED\patch_shell.files -continue -platform PC -sourcedir  src -inputdir MUNGED\ -outputdir . 
+
 move *.log MUNGED
 
 md "0"
 del  "0/*"
 copy /Y MUNGED\globals.script "0\patch_scripts\"
 copy /Y MUNGED\patch_paths.script "0\patch_scripts\"
-copy /Y MUNGED\patch_ingame.script "0\patch_scripts\"
-copy /Y MUNGED\patch_shell.script "0\patch_scripts\"
+copy /Y patch_shell.lvl "0\patch_scripts\"
+copy /Y patch_ingame.lvl "0\patch_scripts\patch_ingame.lvl"
 copy /Y .\addme.lvl "0\addme.script"
 
 copy /y readme.md "0\readme.txt"
