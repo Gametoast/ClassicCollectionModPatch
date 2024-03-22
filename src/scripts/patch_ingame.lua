@@ -189,7 +189,7 @@ ScriptCB_DoFile = function(...)
     print("ScriptCB_DoFile: " .. arg[1])
     if(arg[1] == "ifs_pausemenu") then 
         uop_do_files() -- do these before pause menu
-    else if(arg[1] == "ifs_opt_top")then
+    elseif(arg[1] == "ifs_opt_top")then
         SetupAddIfScreenCatching()
     end
     return old_ScriptCB_DoFile(unpack(arg))
