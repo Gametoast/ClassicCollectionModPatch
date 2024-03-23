@@ -13,7 +13,7 @@ print("patch_shell start")
   (Prefer to do this in the '0' addme though)
 ]]
 
--- if there are any user scripts saved
+-- if there are any user scripts specified by an addme file
 -- save them to mission setup table
 -- then during game time, it will load them (in patch_ingame.lua)
 if gUserScripts and table.getn(gUserScripts) > 0 then

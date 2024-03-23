@@ -48,6 +48,7 @@ function RunUserScripts()
 
     print("RunUserScripts() Start")
 
+    -- retrieve user scripts we saved in mission setup table
     if ScriptCB_IsMissionSetupSaved() then
         local missionSetup = ScriptCB_LoadMissionSetup()
         if missionSetup ~= nil then
@@ -55,6 +56,8 @@ function RunUserScripts()
                 for _, scriptPath in missionSetup.userScripts do
                     if ScriptCB_IsFileExist(scriptPath) then
                         ReadDataFile(scriptPath)
+                        -- .lvl or .script file must contain a .lua file with matching name
+                        -- that file will be the entrypoint of the user script
                         ScriptCB_DoFile(trimToFileName(scriptPath))
                     end
                 end
