@@ -18,8 +18,8 @@ ScriptCB_DoFile("utility_functions2")
 --print("game_interface: Reading in custom strings")
 --ReadDataFile("v1.3patch_strings.lvl") -- where to put, root of'0'?
 
--- trim "path\\to\\file.lvl" to "file.lvl"
-local function trimToFileName(filePath)
+-- trim "path\\to\\file.lvl" to "file"
+function trimToFileName(filePath)
     local separatorIndex = 0
     local lastSeparatorIndex = 0
 
@@ -34,6 +34,11 @@ local function trimToFileName(filePath)
         else
             break
         end
+    end
+
+    local extensionIndex = string.find(filePath, "%.[^.]+$") -- Find the last occurrence of '.' followed by characters not including '.'
+    if extensionIndex then
+        filePath = string.sub(filePath, 1, extensionIndex - 1) -- Trim file extension
     end
 
     -- Extract substring after the last separator
