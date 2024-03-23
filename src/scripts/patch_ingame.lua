@@ -39,17 +39,6 @@ function RunUserScripts()
 end
 RunUserScripts()
 
-ingame_messages = {}
-function AddIngameMessage(str)
-    table.insert( ingame_messages, str)
-end
-
-local old_print = print 
-print = function(...)
-    AddIngameMessage(arg[1])
-    return old_print(unpack(arg))
-end
-
 function uop_PatchFakeConsole()
     print("uop_PatchFakeConsole start")
     ifs_fakeconsole.Enter = function(this, bFwd)
@@ -106,7 +95,7 @@ function uop_PatchFakeConsole()
     
     ifs_fakeconsole.Input_KeyDown = function( this, iKey ) 
         if (iKey  == 27 ) then  -- handle Escape 
-            this:Input_Back()
+            --this:Input_Back() -- soft locks BF CC
         end 
         --[[
             Keys that are handled in the ifs scripts:
