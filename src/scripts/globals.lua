@@ -342,7 +342,7 @@ end
 
 -- since globals runs in Shell and ingame, we call out selectively to setup 'patching'
 -- for the respective lua env
-if ( SetupTeams ~= nil ) then  -- this will exist at mission script execution/ingame time
+if ( ScriptInit ~= nil ) then  -- this will exist at mission script execution/ingame time
     -- this should run during game_interface execution
 	local target = addon_path .. "0\\patch_scripts\\patch_ingame.lvl"
 	if(ScriptCB_IsFileExist(target) == 1 )  then 

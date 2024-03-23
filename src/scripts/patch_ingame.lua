@@ -21,20 +21,42 @@ ScriptCB_DoFile("utility_functions2")
 
 
 function RunUserScripts()
-    local maxScripts = 100
-    local i = nil
-    local patchDir = "..\\..\\addon\\0\\"
+
     print("RunUserScripts() Start")
-    for i = 0, maxScripts, 1 do
-        
-        if ScriptCB_IsFileExist(patchDir .. "user_script_" .. i .. ".lvl") ~= 0 then
-            print("game_interface: Found user_script_" .. i .. ".lvl")
-            
-            ReadDataFile(patchDir .. "user_script_" .. i .. ".lvl")
-            ScriptCB_DoFile("user_script_" .. i)
+
+    if ScriptCB_IsMissionSetupSaved() then
+        local missionSetup = ScriptCB_LoadMissionSetup()
+        if missionSetup ~= nil then
+            if missionSetup.userScripts ~= nil then
+                for _, scriptPath in missionSetup.userScripts do
+                    if ScriptCB_IsFileExist(scriptPath) then
+                        ReadDataFile(scriptPath)
+                    end
+                end
+
+                local hasOnlyUserScripts = true
+                for key, value in missionSetup do
+                    if key ~= "userScripts" then
+                        hasOnlyUserScripts = false
+                        break
+                    end
+                end
+
+                if hasOnlyUserScripts then
+                    -- if the missionSetup was only user scripts then clear items
+                    ScriptCB_ClearMissionSetup()
+                else
+                    --remove the user scripts and save it again
+                    --we don't really have to do this but i figure its a good idea
+                    missionSetup.userScripts = nil
+                    ScriptCB_SaveMissionSetup(missionSetup)
+                end
+
+            end
+
         end
-        
     end
+
     print("RunUserScripts() End")
 end
 RunUserScripts()

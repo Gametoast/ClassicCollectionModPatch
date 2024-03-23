@@ -12,4 +12,24 @@ print("patch_shell start")
   'ScriptCB_SetIFScreen' is used infrequently though.
   (Prefer to do this in the '0' addme though)
 ]]
+
+-- if there are any user scripts saved
+-- save them to mission setup table
+-- then during game time, it will load them (in patch_ingame.lua)
+if gUserScripts and table.getn(gUserScripts) > 0 then
+
+    if ScriptCB_IsMissionSetupSaved() then
+        local missionSetup = ScriptCB_LoadMissionSetup()
+        missionSetup.userScripts = gUserScripts
+        ScriptCB_SaveMissionSetup(missionSetup)
+    else
+        local missionSetup = {
+            userScripts = gUserScripts
+        }
+        ScriptCB_SaveMissionSetup(missionSetup)
+    end
+end
+
+
+
 print("patch_shell end")

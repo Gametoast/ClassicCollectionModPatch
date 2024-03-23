@@ -264,4 +264,18 @@ end
 -- we may do this, not yet though
 --OverrideInstantAction()
 
+
+gUserScripts = {}
+-- addme scripts from other maps will
+-- run this function and add their own user scripts to this table
+function AddUserScript(filePath)
+
+    if gUserScripts == nil then
+        gUserScripts = {}
+    end
+
+    table.insert(gUserScripts, filePath)
+end
+
+
 print("End 0/addme.script")
