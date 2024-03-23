@@ -18,7 +18,31 @@ ScriptCB_DoFile("utility_functions2")
 --print("game_interface: Reading in custom strings")
 --ReadDataFile("v1.3patch_strings.lvl") -- where to put, root of'0'?
 
+-- trim "path\\to\\file.lvl" to "file.lvl"
+local function trimToFileName(filePath)
+    local separatorIndex = 0
+    local lastSeparatorIndex = 0
 
+    -- Find the last occurrence of '\\'
+    local i = 1
+    while true do
+        local nextIndex = string.find(filePath, "\\", i, true)
+        if nextIndex then
+            lastSeparatorIndex = separatorIndex
+            separatorIndex = nextIndex
+            i = nextIndex + 1
+        else
+            break
+        end
+    end
+
+    -- Extract substring after the last separator
+    if lastSeparatorIndex > 0 then
+        return string.sub(filePath, lastSeparatorIndex + 1)
+    else
+        return filePath
+    end
+end
 
 function RunUserScripts()
 
@@ -31,6 +55,7 @@ function RunUserScripts()
                 for _, scriptPath in missionSetup.userScripts do
                     if ScriptCB_IsFileExist(scriptPath) then
                         ReadDataFile(scriptPath)
+                        ScriptCB_DoFile(trimToFileName(scriptPath))
                     end
                 end
 
