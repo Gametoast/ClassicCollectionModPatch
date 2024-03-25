@@ -25,3 +25,15 @@ With 2005 Star Wars Battlefront II PC, many mods relied on an unofficial patch f
 ### Battlefront 1 modding notes
 As of initial release (14 March 2024) the BF1 CC game seems to have switched from Lua 4.0 to using Lua 5.0.2. Unless the go back to Lua 4.0, it means that every BF1 mod will need to be re-done. :(
 
+### Battlefront 2 (classic collection) modding notes
+As of initial release and PC Patch #1, the only function call that is confirmed to correctly resolve the 'dc:' file prefix is 'ReadDataFile'
+
+The following calls do not currently resolve 'dc:'
+1. OpenAudioStream
+
+The following calls have not been checked, but are assumed not to resolve 'dc:':
+1. ScriptCB_OpenMovie
+1. PlayAudioStream
+1. PlayAudioStreamUsingProperties
+
+The bottom line is that currently SWBF2 mods will not work 100% and unless these issues are addressed by Aspyr all mods utilizing the 'dc:' resolver (other than for 'ReadDataFile') will need to be re-worked to properly function on the Classic Collection.
