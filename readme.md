@@ -37,3 +37,17 @@ The following calls have not been checked, but are assumed not to resolve 'dc:':
 1. PlayAudioStreamUsingProperties
 
 The bottom line is that currently SWBF2 mods will not work 100% and unless these issues are addressed by Aspyr all mods utilizing the 'dc:' resolver (other than for 'ReadDataFile') will need to be re-worked to properly function on the Classic Collection.
+
+One strategy that could be used to maintain compatibility for those modders that wish to get started is to write your mission file according to the following pattern (which should always be valid): 
+
+```LUA
+local assetLocation = "dc:"
+if(ScriptCB_IsFileExist("side\\all2.lvl") == 1) then 
+    print("This is BF Classic Collection; do special path trick")
+    -- this path will work for the old BF2 and classic collection (with the '0' patch)
+    assetLocation = "..\\..\\addon\\abc\\data\\_lvl_pc\\"
+end
+
+OpenAudioStream(assetLocation .. "sound\\abc.lvl", "abc_music_config")
+
+```
