@@ -268,6 +268,7 @@ end
 gUserScripts = {}
 -- addme scripts from other maps will
 -- run this function and add their own user scripts to this table
+-- example filePath ..\..\addon\ABC\my_snazzy_mod.lvl
 function AddUserScript(filePath)
 
     if gUserScripts == nil then
@@ -275,6 +276,30 @@ function AddUserScript(filePath)
     end
 
     table.insert(gUserScripts, filePath)
+end
+
+-- run the following code right before we enter a game from anywhere in the shell
+local zeroPatch_original_ScriptCB_EnterMission = ScriptCB_EnterMission
+ScriptCB_EnterMission = function()
+
+    -- if there are any user scripts specified by an addme file
+    -- save them to mission setup table
+    -- then during game time, it will load them (in patch_ingame.lua)
+    if gUserScripts and table.getn(gUserScripts) > 0 then
+
+        if ScriptCB_IsMissionSetupSaved() then
+            local missionSetup = ScriptCB_LoadMissionSetup()
+            missionSetup.userScripts = gUserScripts
+            ScriptCB_SaveMissionSetup(missionSetup)
+        else
+            local missionSetup = {
+                userScripts = gUserScripts
+            }
+            ScriptCB_SaveMissionSetup(missionSetup)
+        end
+    end
+
+    zeroPatch_original_ScriptCB_EnterMission()
 end
 
 
