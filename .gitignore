@@ -1,6 +1,9 @@
 *.log
 *.lvl
+*.bik
+*.mp4
 *.script
+*.mvs
 MUNGED/
 play/
 0/readme.txt

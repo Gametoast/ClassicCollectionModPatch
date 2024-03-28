@@ -1,0 +1,61 @@
+//SoundStream.SubObjectID : SegmentList
+//
+//Property        | Description
+//-------------------------------------------------------------------------------
+//Segment         | Segment("segmentName", weight).  The segmentName is the name 
+//                | of a segment within the stream specified by the stream ID
+//                | above.  The weight is used to randomly choose a segment to 
+//                | play each time the SoundStream is triggered. 1..N 
+//                | Segments must be specified.
+//                | Segment("segementName", weight, playInterval, playIntervalDev);
+//                | playInterval is the time in seconds which must elapse before
+//                | the segment is played again.   The playIntervalDev varies the
+//                | playInterval.  For example to play a segment every 60..120 
+//                | seconds write the following ...
+//                | Segment("segmentName", 1.0, 90.0, 30.0);
+MovieProperties()
+{
+    Name("transition_template");
+    FadeInTime(0.0);
+    FadeOutTime(0.2);
+}
+
+MovieProperties()
+{
+    Name("screen_template");
+    FadeInTime(0.1);
+    FadeOutTime(0.5);
+}
+
+MovieProperties()
+{
+    Name("flythrough_template");
+    FadeInTime(1.0);
+    FadeOutTime(1.0);
+}
+
+
+
+MovieProperties()
+{
+	Name("preview");
+	Inherit("flythrough_template");
+	Movie("pre-movie");
+	SegmentList()
+	{
+		Segment("preview", 1, -1);
+	}
+
+}
+
+MovieProperties()
+{
+	Name("preview-loop");
+	Movie("pre-movie");
+	FadeInTime(0);
+	FadeOutTime(0);
+	SegmentList()
+	{
+		Segment("preview-loop", 1, -1);
+	}
+}

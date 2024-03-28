@@ -27,7 +27,7 @@
 
 function GetUOPChangeTableFor(key)
 	local chg = nil
-	local currentMapListEntry = missionselect_listbox_contents[ifs_ms_MapList_layout.SelectedIdx]
+	local currentMapListEntry = missionselect_listbox_contents[ifs_ms_MapList_layout_console.SelectedIdx]
 	if( currentMapListEntry ~= nil and currentMapListEntry.change ~= nil and 
 		currentMapListEntry.change[key] ~= nil) then
 		chg = currentMapListEntry.change[key]
@@ -340,8 +340,8 @@ end
 
 -- snip
 
-local ifs_ms_MapList_layout = {
-	name = "ifs_ms_MapList_layout",
+ifs_ms_MapList_layout_console = {
+	name = "ifs_ms_MapList_layout_console",
 	showcount = 10,
 --	yTop = -130 + 13, -- auto-calc'd now
 	yHeight = 20,
@@ -353,8 +353,8 @@ local ifs_ms_MapList_layout = {
 	PopulateFn = ifs_ms_MapList_PopulateItem_console,
 }
 
-local ifs_ms_ModeList_layout = {
-	name="ifs_ms_ModeList_layout",
+ifs_ms_ModeList_layout_console = {
+	name="ifs_ms_ModeList_layout_console",
 	showcount = 10,
 --	yTop = -130 + 13, -- auto-calc'd now
 	yHeight = 20,
@@ -366,8 +366,8 @@ local ifs_ms_ModeList_layout = {
 	PopulateFn = ifs_ms_ModeList_PopulateItem_console,
 }
 
-local ifs_ms_EraList_layout = {
-	name = "ifs_ms_EraList_layout",
+ifs_ms_EraList_layout_console = {
+	name = "ifs_ms_EraList_layout_console",
 	showcount = 10,
 -- 	showcount = 3,
 --	yTop = -130 + 13, -- auto-calc'd now
@@ -380,8 +380,8 @@ local ifs_ms_EraList_layout = {
 	PopulateFn = ifs_ms_EraList_PopulateItem_console,
 }
 
-local ifs_ms_PlayList_layout = {
-	name ="ifs_ms_PlayList_layout",
+ifs_ms_PlayList_layout_console = {
+	name ="ifs_ms_PlayList_layout_console",
 	showcount = 7,
 --	yTop = -130 + 13, -- auto-calc'd now
 	yHeight = 22,
@@ -393,7 +393,7 @@ local ifs_ms_PlayList_layout = {
 	PopulateFn = ifs_ms_PlayList_PopulateItem_console,
 }
 
-local ifs_ms_CommandButton_layout = {
+ifs_ms_CommandButton_layout_console = {
    yTop = -130,
 --    ySpacing = 10,
 --    yHeight = 80,
@@ -428,31 +428,68 @@ function ifs_missionselect_console_fnShowHideListboxes(this,bShowThem)
 	AnimationMgr_AddAnimation(this.PlayListbox, { fStartAlpha = A1, fEndAlpha = A2,})
 end
 
+-- Selection can have movieName and movieFile; if so then return those
+local function GetMovieName(Selection)
+    local movieName = this.movieBackground
+    local movieFile = "movies\\shell"
+
+    if(not Selection) then
+		print("GetMovieName(): emergency bailout")
+        return movieName, movieFile -- emergency bailout
+    end
+
+	if (Selection.movieName ~= nil and Selection.movieFile~= nil) then
+		-- this is behavior from the UOP
+		movieName = Selection.movieName
+		movieFile = Selection.movieFile
+		-------------- EARLY RETURN --------------------------
+		return movieName, movieFile
+	end
+	-- Extract the prefix from the map.
+	local prefix = string.sub(Selection.mapluafile, 1, -6)
+
+	-- Append 'fly.mvs' to the prefix.
+	local filename = prefix .. "fly.mvs"
+	local flyMoviesBasePath = "..\\..\\addon\\0\\movies\\fly\\"
+	
+	if (PREVIEW_MOVIE_CONFIG == nil  ) then  -- make sure we read in the config file for the preview movies
+		if(ScriptCB_IsFileExist( flyMoviesBasePath .. "fly.lvl")  == 1) then 
+			ReadDataFile( flyMoviesBasePath .. "fly.lvl")
+			PREVIEW_MOVIE_CONFIG = 1
+		end
+	end
+	if(ScriptCB_IsFileExist(flyMoviesBasePath .. filename) == 1) then
+		-- to keep consistent with the Zerted stuff, we'll append the ''.mvs' later when setting the video
+		movieFile = flyMoviesBasePath .. prefix .. "fly"
+		movieName = "preview"
+	else
+		-- skip this for now
+		--movieFile = FindAddonMovies(filename)
+		--if(movieFile ~= nil) then
+		--	print("Found addon movie: " .. tostring(movieFile))
+		--end
+	end
+	-- the preview movie name is always 'preview'
+	-- default movie is "shell_main", "movies\\shell"
+	print("GetMovieName: " .. prefix .. " > " .. tostring(movieName))
+	return movieName, movieFile
+end
+
+local function ResetMovie(this)
+	print("ifs_missionselect_console.ResetMovie")
+	this.movieFile = "MOVIES/shell"
+	this.movieName = this.movieBackground
+	SetMovie_console(this)
+end
+
 function ifs_missionselect_console_fnUpdateMovie(this)
-	if shell_movies_included == nil then -- this table should have been defined in ifs_missionselect_pcMulti
+	if (this.iState ~= ifs_ms_state.map) then
 		return 
 	end
-	local MapSelection = missionselect_listbox_contents[ifs_ms_MapList_layout.SelectedIdx]
-	movieName, movieFile = missionlist_fnGetMovieName(MapSelection)
-	-- Stored movie name:    MOVIES\pre-movie    preview-loop
-	local key = ""
-	if (MapSelection ~= nil and MapSelection.mapluafile ~= nil) then
-		key =  string.sub(MapSelection.mapluafile, 1, 4)
-		print("key:", key)
-		if (shell_movies_included[key] ~= nil)then
-			movieFile = "MOVIES/shell"
-			movieName = shell_movies_included[key]
-			print("Found built-in movie preview :)", movieName)
-		end
-	end
-	if (movieFile == nil or (string.lower(movieFile) == "movies\\pre-movie") )then
-		movieFile = "MOVIES/shell"
-		movieName = this.movieBackground
-		local randomNumber = math.random(1, 2)
-		if randomNumber == 2 then
-			this.movieName = "shell_sub_left"
-		end
-	end
+	local movieName = nil
+    local movieFile = nil
+	local MapSelection = missionselect_listbox_contents[ifs_ms_MapList_layout_console.SelectedIdx]
+	movieName, movieFile = GetMovieName(MapSelection)
 	if (movieName) then
 		this.movieName = movieName
 		this.movieTime = 0.5
@@ -478,17 +515,27 @@ function SetMovie_console(this)
 		ScriptCB_StopMovie()
 		ifelem_shellscreen_fnStartMovie(this.movieName,1, nil, true)
 	end
+
+	if not ScriptCB_IsMoviePlaying()  then
+		print(" try to play movie", tostring(this.movieName))
+		ScriptCB_CloseMovie()
+		gMovieStream = fullpath
+		ScriptCB_OpenMovie(gMovieStream, "")
+
+		ScriptCB_StopMovie()
+		ifelem_shellscreen_fnStartMovie(this.movieName,1, nil, true)
+	end
 end
 
 -- Helper function: adjusts the helptext in the info boxes up top
 function ifs_missionselect_console_fnUpdateInfoBoxes(this)
-	local MapSelection = missionselect_listbox_contents[ifs_ms_MapList_layout.SelectedIdx]
+	local MapSelection = missionselect_listbox_contents[ifs_ms_MapList_layout_console.SelectedIdx]
 
 	if (this.iState == ifs_ms_state.map) then
 	   local DisplayUStr,iSource = missionlist_GetLocalizedMapDescr(MapSelection.mapluafile)
 	   IFText_fnSetUString(this.InfoboxBot.Text1, DisplayUStr)
 	elseif (this.iState == ifs_ms_state.mode) then
-	   local ModeSelection = gMissionselectModes[ifs_ms_ModeList_layout.SelectedIdx]
+	   local ModeSelection = gMissionselectModes[ifs_ms_ModeList_layout_console.SelectedIdx]
 	   --- added for UOP mode handling
 	   if(MapSelection.change  and MapSelection.change[ModeSelection.key] and 
 	   		MapSelection.change[ModeSelection.key].about ) then
@@ -499,13 +546,13 @@ function ifs_missionselect_console_fnUpdateInfoBoxes(this)
 	   end
 	elseif (this.iState == ifs_ms_state.era) then
 	   local DisplayUStr,iSource = missionlist_GetLocalizedMapName(MapSelection.mapluafile)
-	   local ModeSelection = gMissionselectModes[ifs_ms_ModeList_layout.SelectedIdx]
+	   local ModeSelection = gMissionselectModes[ifs_ms_ModeList_layout_console.SelectedIdx]
 	   local SuffixUStr = ScriptCB_getlocalizestr(ModeSelection.showstr)
 	   local SpacesUStr = ScriptCB_tounicode(" ")
 	   DisplayUStr = ScriptCB_usprintf("common.pctspcts", DisplayUStr, SpacesUStr)
 	   DisplayUStr = ScriptCB_usprintf("common.pctspcts", DisplayUStr, SuffixUStr)
 
-	   local EraSelection = gMissionselectEras[ifs_ms_EraList_layout.SelectedIdx]
+	   local EraSelection = gMissionselectEras[ifs_ms_EraList_layout_console.SelectedIdx]
 
 	   -- UOP handling
 	   local ustr = nil
@@ -524,7 +571,7 @@ function ifs_missionselect_console_fnUpdateInfoBoxes(this)
 	elseif (this.iState == ifs_ms_state.command) then
 	   IFText_fnSetString(this.InfoboxBot.Text1, "ifs.missionselect.buttons.help." .. this.CurButton)
 	elseif (this.iState == ifs_ms_state.playlist) then
-	   local Selection = gPickedMapList[ifs_ms_PlayList_layout.SelectedIdx]
+	   local Selection = gPickedMapList[ifs_ms_PlayList_layout_console.SelectedIdx]
 	   if(Selection.bIsRemoveAll) then
 	      IFText_fnSetString(this.InfoboxBot.Text1, "")
 	   else
@@ -552,7 +599,7 @@ end
 
 -- Helper function: adjusts the helptext by the icons at the bottom
 function ifs_missionselect_console_fnUpdateHelptext(this)
-	local PlaylistSelection = gPickedMapList[ifs_ms_PlayList_layout.SelectedIdx]
+	local PlaylistSelection = gPickedMapList[ifs_ms_PlayList_layout_console.SelectedIdx]
 
 	if(this.Helptext_Accept) then
 -- 		if (this.iColumn == 5) then
@@ -582,18 +629,18 @@ end
 function ifs_missionselect_console_fnUpdateButtons(this)
    local dimmed = this.iState ~= ifs_ms_state.command
 
-   local button = this.buttons[ifs_ms_CommandButton_layout.buttonlist[1].tag]
+   local button = this.buttons[ifs_ms_CommandButton_layout_console.buttonlist[1].tag]
    button.bDimmed = dimmed or (table.getn(gPickedMapList) < 2)
 
-   for i = 2,table.getn(ifs_ms_CommandButton_layout.buttonlist) do
-      local button = this.buttons[ifs_ms_CommandButton_layout.buttonlist[i].tag]
+   for i = 2,table.getn(ifs_ms_CommandButton_layout_console.buttonlist) do
+      local button = this.buttons[ifs_ms_CommandButton_layout_console.buttonlist[i].tag]
       button.bDimmed = dimmed
    end
 
    if ( this.CurButton ) then
-      ShowHideVerticalButtons(this.buttons, ifs_ms_CommandButton_layout)
+      ShowHideVerticalButtons(this.buttons, ifs_ms_CommandButton_layout_console)
    else
-      this.CurButton = ShowHideVerticalButtons(this.buttons, ifs_ms_CommandButton_layout)
+      this.CurButton = ShowHideVerticalButtons(this.buttons, ifs_ms_CommandButton_layout_console)
    end
 
    SetCurButton(this.CurButton)
@@ -604,93 +651,93 @@ function ifs_missionselect_console_fnUpdateScreen(this)
 
 	-- Refresh which modes * eras are available on this map
 	if((this.iColumn == 0) or (this.iColumn == 1)) then
-		local MapSelection = missionselect_listbox_contents[ifs_ms_MapList_layout.SelectedIdx]
+		local MapSelection = missionselect_listbox_contents[ifs_ms_MapList_layout_console.SelectedIdx]
 
 		gMissionselectModes = missionlist_ExpandModelist(MapSelection.mapluafile)
 		local NumModes = table.getn(gMissionselectModes)
-		if(ifs_ms_ModeList_layout.SelectedIdx > NumModes) then
-			ifs_ms_ModeList_layout.SelectedIdx = 1 -- back to top of list
+		if(ifs_ms_ModeList_layout_console.SelectedIdx > NumModes) then
+			ifs_ms_ModeList_layout_console.SelectedIdx = 1 -- back to top of list
 		end
 
-		local ModeSelection = gMissionselectModes[ifs_ms_ModeList_layout.SelectedIdx]
+		local ModeSelection = gMissionselectModes[ifs_ms_ModeList_layout_console.SelectedIdx]
 		gMissionselectEras = missionlist_ExpandEralist(MapSelection.mapluafile, ModeSelection)
 		local NumEras = table.getn(gMissionselectEras)
-		if(ifs_ms_EraList_layout.SelectedIdx > NumEras) then
-			ifs_ms_EraList_layout.SelectedIdx = 1 -- back to top of list
+		if(ifs_ms_EraList_layout_console.SelectedIdx > NumEras) then
+			ifs_ms_EraList_layout_console.SelectedIdx = 1 -- back to top of list
 		end
 	end
 
 	if (this.iState == ifs_ms_state.map) then
 	   IFObj_fnSetVis(this.MapListbox, 1)
-	   ifs_ms_MapList_layout.CursorIdx = ifs_ms_MapList_layout.SelectedIdx
-	   ListManager_fnFillContents(this.MapListbox,missionselect_listbox_contents,ifs_ms_MapList_layout)
+	   ifs_ms_MapList_layout_console.CursorIdx = ifs_ms_MapList_layout_console.SelectedIdx
+	   ListManager_fnFillContents(this.MapListbox,missionselect_listbox_contents,ifs_ms_MapList_layout_console)
 	   ListManager_fnSetFocus(this.MapListbox)
 
 	   IFObj_fnSetVis(this.ModeListbox, nil)
-	   ifs_ms_ModeList_layout.CursorIdx = nil
+	   ifs_ms_ModeList_layout_console.CursorIdx = nil
 
 	   IFObj_fnSetVis(this.EraListbox, nil)
-	   ifs_ms_EraList_layout.CursorIdx = nil
+	   ifs_ms_EraList_layout_console.CursorIdx = nil
 
-	   ifs_ms_PlayList_layout.CursorIdx = nil
-	   ListManager_fnFillContents(this.PlayListbox,gPickedMapList,ifs_ms_PlayList_layout)
+	   ifs_ms_PlayList_layout_console.CursorIdx = nil
+	   ListManager_fnFillContents(this.PlayListbox,gPickedMapList,ifs_ms_PlayList_layout_console)
 	elseif (this.iState == ifs_ms_state.mode) then
 	   IFObj_fnSetVis(this.MapListbox, nil)
-	   ifs_ms_MapList_layout.CursorIdx = nil
+	   ifs_ms_MapList_layout_console.CursorIdx = nil
 
 	   IFObj_fnSetVis(this.ModeListbox, 1)
-	   ifs_ms_ModeList_layout.CursorIdx = ifs_ms_ModeList_layout.SelectedIdx
-	   ListManager_fnFillContents(this.ModeListbox,gMissionselectModes,ifs_ms_ModeList_layout)
+	   ifs_ms_ModeList_layout_console.CursorIdx = ifs_ms_ModeList_layout_console.SelectedIdx
+	   ListManager_fnFillContents(this.ModeListbox,gMissionselectModes,ifs_ms_ModeList_layout_console)
 	   ListManager_fnSetFocus(this.ModeListbox)
 
 	   IFObj_fnSetVis(this.EraListbox, nil)
-	   ifs_ms_EraList_layout.CursorIdx = nil
+	   ifs_ms_EraList_layout_console.CursorIdx = nil
 
-	   ifs_ms_PlayList_layout.CursorIdx = nil
-	   ListManager_fnFillContents(this.PlayListbox,gPickedMapList,ifs_ms_PlayList_layout)
+	   ifs_ms_PlayList_layout_console.CursorIdx = nil
+	   ListManager_fnFillContents(this.PlayListbox,gPickedMapList,ifs_ms_PlayList_layout_console)
 	elseif (this.iState == ifs_ms_state.era) then
 	   IFObj_fnSetVis(this.MapListbox, nil)
-	   ifs_ms_MapList_layout.CursorIdx = nil
+	   ifs_ms_MapList_layout_console.CursorIdx = nil
 
 	   IFObj_fnSetVis(this.ModeListbox, nil)
-	   ifs_ms_ModeList_layout.CursorIdx = nil
+	   ifs_ms_ModeList_layout_console.CursorIdx = nil
 	   
 	   IFObj_fnSetVis(this.EraListbox, 1)
-	   ifs_ms_EraList_layout.CursorIdx = ifs_ms_EraList_layout.SelectedIdx
-	   ListManager_fnFillContents(this.EraListbox,gMissionselectEras,ifs_ms_EraList_layout)
+	   ifs_ms_EraList_layout_console.CursorIdx = ifs_ms_EraList_layout_console.SelectedIdx
+	   ListManager_fnFillContents(this.EraListbox,gMissionselectEras,ifs_ms_EraList_layout_console)
 	   ListManager_fnSetFocus(this.EraListbox)
 
-	   ifs_ms_PlayList_layout.CursorIdx = nil
-	   ListManager_fnFillContents(this.PlayListbox,gPickedMapList,ifs_ms_PlayList_layout)
+	   ifs_ms_PlayList_layout_console.CursorIdx = nil
+	   ListManager_fnFillContents(this.PlayListbox,gPickedMapList,ifs_ms_PlayList_layout_console)
 	elseif (this.iState == ifs_ms_state.command) then
 	   IFObj_fnSetVis(this.MapListbox, 1)
-	   ifs_ms_MapList_layout.CursorIdx = nil
-	   ListManager_fnFillContents(this.MapListbox,missionselect_listbox_contents,ifs_ms_MapList_layout)
+	   ifs_ms_MapList_layout_console.CursorIdx = nil
+	   ListManager_fnFillContents(this.MapListbox,missionselect_listbox_contents,ifs_ms_MapList_layout_console)
 
 	   IFObj_fnSetVis(this.ModeListbox, nil)
-	   ifs_ms_ModeList_layout.CursorIdx = nil
+	   ifs_ms_ModeList_layout_console.CursorIdx = nil
 
 	   IFObj_fnSetVis(this.EraListbox, nil)
-	   ifs_ms_EraList_layout.CursorIdx = nil
+	   ifs_ms_EraList_layout_console.CursorIdx = nil
 
-	   ifs_ms_PlayList_layout.CursorIdx = nil
-	   ListManager_fnFillContents(this.PlayListbox,gPickedMapList,ifs_ms_PlayList_layout)
+	   ifs_ms_PlayList_layout_console.CursorIdx = nil
+	   ListManager_fnFillContents(this.PlayListbox,gPickedMapList,ifs_ms_PlayList_layout_console)
 
 	   ListManager_fnSetFocus(nil)
 	elseif (this.iState == ifs_ms_state.playlist) then
 	   IFObj_fnSetVis(this.MapListbox, 1)
-	   ifs_ms_MapList_layout.CursorIdx = nil
-	   ListManager_fnFillContents(this.MapListbox,missionselect_listbox_contents,ifs_ms_MapList_layout)
+	   ifs_ms_MapList_layout_console.CursorIdx = nil
+	   ListManager_fnFillContents(this.MapListbox,missionselect_listbox_contents,ifs_ms_MapList_layout_console)
 	   ListManager_fnSetFocus(this.MapListbox)
 
 	   IFObj_fnSetVis(this.ModeListbox, nil)
-	   ifs_ms_ModeList_layout.CursorIdx = nil
+	   ifs_ms_ModeList_layout_console.CursorIdx = nil
 
 	   IFObj_fnSetVis(this.EraListbox, nil)
-	   ifs_ms_EraList_layout.CursorIdx = nil
+	   ifs_ms_EraList_layout_console.CursorIdx = nil
 
-	   ifs_ms_PlayList_layout.CursorIdx = ifs_ms_PlayList_layout.SelectedIdx
-	   ListManager_fnFillContents(this.PlayListbox,gPickedMapList,ifs_ms_PlayList_layout)
+	   ifs_ms_PlayList_layout_console.CursorIdx = ifs_ms_PlayList_layout_console.SelectedIdx
+	   ListManager_fnFillContents(this.PlayListbox,gPickedMapList,ifs_ms_PlayList_layout_console)
 	   ListManager_fnSetFocus(this.PlayListbox)
 	end
 
@@ -751,7 +798,7 @@ function ifs_missionselect_console_fnAddMap4(this, MapSelection, ModeSelection, 
 
 	-- Auto-scroll playlist cursor to last item.
 	local Count = table.getn(gPickedMapList)
-	ifs_ms_PlayList_layout.SelectedIdx = Count
+	ifs_ms_PlayList_layout_console.SelectedIdx = Count
 
 end
 
@@ -836,9 +883,9 @@ end
 -- Given the current selections in the listboxes, adds the map(s)
 -- selected to the listbox
 function ifs_missionselect_console_fnAddMap(this)
-	local MapSelection = missionselect_listbox_contents[ifs_ms_MapList_layout.SelectedIdx]
-	local ModeSelection = gMissionselectModes[ifs_ms_ModeList_layout.SelectedIdx]
-	local EraSelection = gMissionselectEras[ifs_ms_EraList_layout.SelectedIdx]
+	local MapSelection = missionselect_listbox_contents[ifs_ms_MapList_layout_console.SelectedIdx]
+	local ModeSelection = gMissionselectModes[ifs_ms_ModeList_layout_console.SelectedIdx]
+	local EraSelection = gMissionselectEras[ifs_ms_EraList_layout_console.SelectedIdx]
 	-- Call helper functions to expand things as necessary
 	ifs_missionselect_console_fnAddMap1(this, MapSelection, ModeSelection, EraSelection)
 end
@@ -995,15 +1042,15 @@ ifs_missionselect_console = NewIFShellScreen {
 			end
 
 			gMouseListBox.Layout.SelectedIdx = gMouseListBox.Layout.CursorIdx
-			if(gMouseListBox.Layout == ifs_ms_MapList_layout) then
+			if(gMouseListBox.Layout == ifs_ms_MapList_layout_console) then
 				SetCurButton("add")
 				this.CurButton = "add"
 				this.iState = ifs_ms_state.map
-			elseif(gMouseListBox.Layout == ifs_ms_ModeList_layout) then
+			elseif(gMouseListBox.Layout == ifs_ms_ModeList_layout_console) then
 
-			elseif(gMouseListBox.Layout == ifs_ms_EraList_layout) then
+			elseif(gMouseListBox.Layout == ifs_ms_EraList_layout_console) then
 
-			elseif(gMouseListBox.Layout == ifs_ms_PlayList_layout) then
+			elseif(gMouseListBox.Layout == ifs_ms_PlayList_layout_console) then
 				SetCurButton("remove")
 				this.CurButton = "remove"
 			end
@@ -1031,16 +1078,16 @@ ifs_missionselect_console = NewIFShellScreen {
 		      ifs_movietrans_PushScreen(ifs_instant_options_overview)
 		   end
 		elseif (this.iState == ifs_ms_state.playlist) then
-		   local Selection = gPickedMapList[ifs_ms_PlayList_layout.SelectedIdx]
+		   local Selection = gPickedMapList[ifs_ms_PlayList_layout_console.SelectedIdx]
 		   if (Selection.bIsRemoveAll) then
 		      sound = this.errorSound
 		      ifs_missionselect_console_fnClearPlaylist(this)
 		   else
-		      ifs_missionselect_console_fnDeleteMap(this, ifs_ms_PlayList_layout.SelectedIdx)
+		      ifs_missionselect_console_fnDeleteMap(this, ifs_ms_PlayList_layout_console.SelectedIdx)
 
 		      -- If we were on the last item, then auto-move up.
 		      local Count = table.getn(gPickedMapList)
-		      ifs_ms_PlayList_layout.SelectedIdx = math.min(ifs_ms_PlayList_layout.SelectedIdx, Count)
+		      ifs_ms_PlayList_layout_console.SelectedIdx = math.min(ifs_ms_PlayList_layout_console.SelectedIdx, Count)
 
 		      ifs_missionselect_console_fnUpdateScreen(this)
 		   end
@@ -1056,7 +1103,7 @@ ifs_missionselect_console = NewIFShellScreen {
 		ifelm_shellscreen_fnPlaySound(sound)
 		ifs_missionselect_console_fnUpdateScreen(this)
 
---		local Selection = missionselect_listbox_contents[ifs_ms_MapList_layout.SelectedIdx]
+--		local Selection = missionselect_listbox_contents[ifs_ms_MapList_layout_console.SelectedIdx]
 		-----------------------------------
 		-- set to non-spectator mode 
 		ScriptCB_SetSpectatorMode( 0, nil )
@@ -1068,6 +1115,7 @@ ifs_missionselect_console = NewIFShellScreen {
 		print("ifs_missionselect_console.Input_Back: iState=".. tostring(this.iState))
 		if (this.iState == ifs_ms_state.map) then
 		   this.iState = ifs_ms_state.command
+			ResetMovie(this)
 		elseif (this.iState == ifs_ms_state.mode) then
 		   this.iState = ifs_ms_state.map
 		elseif (this.iState == ifs_ms_state.era) then
@@ -1093,15 +1141,15 @@ ifs_missionselect_console = NewIFShellScreen {
 	-- everything but the selected one over, swapping lists.
 	Input_Misc = function(this)
 -- 		if (this.iColumn == 3) then
--- 			local Selection = gPickedMapList[ifs_ms_PlayList_layout.SelectedIdx]
+-- 			local Selection = gPickedMapList[ifs_ms_PlayList_layout_console.SelectedIdx]
 -- 			if(Selection.bIsRemoveAll) then
 -- 				ifelm_shellscreen_fnPlaySound(this.errorSound)
 -- 			else
--- 				ifs_missionselect_console_fnDeleteMap(this, ifs_ms_PlayList_layout.SelectedIdx)
+-- 				ifs_missionselect_console_fnDeleteMap(this, ifs_ms_PlayList_layout_console.SelectedIdx)
 
 -- 				-- If we were on the last item, then auto-move up.
 -- 				local Count = table.getn(gPickedMapList)
--- 				ifs_ms_PlayList_layout.SelectedIdx = math.min(ifs_ms_PlayList_layout.SelectedIdx, Count)
+-- 				ifs_ms_PlayList_layout_console.SelectedIdx = math.min(ifs_ms_PlayList_layout_console.SelectedIdx, Count)
 
 -- 				ifs_missionselect_console_fnUpdateScreen(this)
 -- 			end
@@ -1193,10 +1241,10 @@ function ifs_missionselect_console_fnBuildScreen(this)
 	-- -35 is the normal space for scrollbars, but +20 as the scrollbars
 	-- have recently gotten thinner. We need as much space for text onscreen
 	-- as possible
-	ifs_ms_MapList_layout.width = ColumnWidthL - 35 
-	ifs_ms_ModeList_layout.width = ColumnWidthL - 35
-	ifs_ms_EraList_layout.width = ColumnWidthL - 35 
-	ifs_ms_PlayList_layout.width = ColumnWidthR - 35
+	ifs_ms_MapList_layout_console.width = ColumnWidthL - 35 
+	ifs_ms_ModeList_layout_console.width = ColumnWidthL - 35
+	ifs_ms_EraList_layout_console.width = ColumnWidthL - 35 
+	ifs_ms_PlayList_layout_console.width = ColumnWidthR - 35
 
 	-- Now, do the boxes above and below the columns
 	local TopBoxHeight = 78
@@ -1211,22 +1259,22 @@ function ifs_missionselect_console_fnBuildScreen(this)
 	   padding = 44
 	end
 
-	ifs_ms_MapList_layout.yHeight = yHeight
-	ifs_ms_ModeList_layout.yHeight = yHeight
-	ifs_ms_EraList_layout.yHeight = 2 * (ScriptCB_GetFontHeight(ifs_missionselect_console.listboxfont) + 4)
-	ifs_ms_PlayList_layout.yHeight = yHeight
+	ifs_ms_MapList_layout_console.yHeight = yHeight
+	ifs_ms_ModeList_layout_console.yHeight = yHeight
+	ifs_ms_EraList_layout_console.yHeight = 2 * (ScriptCB_GetFontHeight(ifs_missionselect_console.listboxfont) + 4)
+	ifs_ms_PlayList_layout_console.yHeight = yHeight
 
-	local ListEntryHeight = (ifs_ms_MapList_layout.yHeight + ifs_ms_MapList_layout.ySpacing)
+	local ListEntryHeight = (ifs_ms_MapList_layout_console.yHeight + ifs_ms_MapList_layout_console.ySpacing)
 
-	ifs_ms_MapList_layout.showcount = math.min(16,math.max(4, math.floor((h - 240) / ListEntryHeight)))
+	ifs_ms_MapList_layout_console.showcount = math.min(16,math.max(4, math.floor((h - 240) / ListEntryHeight)))
 
-	ifs_ms_ModeList_layout.showcount = ifs_ms_MapList_layout.showcount
-	ifs_ms_PlayList_layout.showcount = ifs_ms_MapList_layout.showcount
-	ifs_ms_EraList_layout.showcount = 0.5 * ifs_ms_MapList_layout.showcount
--- 	ifs_ms_ModeList_layout.showcount = ifs_ms_MapList_layout.showcount - 4
--- 	ifs_ms_PlayList_layout.showcount = ifs_ms_MapList_layout.showcount
+	ifs_ms_ModeList_layout_console.showcount = ifs_ms_MapList_layout_console.showcount
+	ifs_ms_PlayList_layout_console.showcount = ifs_ms_MapList_layout_console.showcount
+	ifs_ms_EraList_layout_console.showcount = 0.5 * ifs_ms_MapList_layout_console.showcount
+-- 	ifs_ms_ModeList_layout_console.showcount = ifs_ms_MapList_layout_console.showcount - 4
+-- 	ifs_ms_PlayList_layout_console.showcount = ifs_ms_MapList_layout_console.showcount
 
-	local ListHeightL = ifs_ms_MapList_layout.showcount * ListEntryHeight + padding
+	local ListHeightL = ifs_ms_MapList_layout_console.showcount * ListEntryHeight + padding
 
 	local inherent_offcenteredness_of_the_world = 2
 
@@ -1241,8 +1289,8 @@ function ifs_missionselect_console_fnBuildScreen(this)
 		titleText = "ifs.missionselect.selectplanet"
 	}
 
-	local ListHeightC = ifs_ms_ModeList_layout.showcount * ListEntryHeight + 30 - 4
-	local ListHeightC2 = ifs_ms_EraList_layout.showcount * ListEntryHeight + 30 - 8
+	local ListHeightC = ifs_ms_ModeList_layout_console.showcount * ListEntryHeight + 30 - 4
+	local ListHeightC2 = ifs_ms_EraList_layout_console.showcount * ListEntryHeight + 30 - 8
 	this.ModeListbox = NewButtonWindow { 
 		ZPos = 200, 
 		ScreenRelativeX = 0.5, -- center of screen
@@ -1273,7 +1321,7 @@ function ifs_missionselect_console_fnBuildScreen(this)
 		titleText = "ifs.missionselect.selectera"
 	}
 
-	local ListHeightR = ifs_ms_PlayList_layout.showcount * ListEntryHeight + 30
+	local ListHeightR = ifs_ms_PlayList_layout_console.showcount * ListEntryHeight + 30
 	this.PlayListbox = NewButtonWindow { 
 		ZPos = 200, 
 		ScreenRelativeX = 0.5,
@@ -1335,7 +1383,7 @@ function ifs_missionselect_console_fnBuildScreen(this)
 -- 		},
 	}
 
-	AddVerticalButtons(this.buttons, ifs_ms_CommandButton_layout)
+	AddVerticalButtons(this.buttons, ifs_ms_CommandButton_layout_console)
 
 	--size the background
 	local wScreen,hScreen,vScreen,widescreen = ScriptCB_GetScreenInfo()
@@ -1353,10 +1401,10 @@ function ifs_missionselect_console_fnBuildScreen(this)
 	end
 
 	-- Create our listboxes
-	ListManager_fnInitList(this.MapListbox,ifs_ms_MapList_layout)
-	ListManager_fnInitList(this.ModeListbox,ifs_ms_ModeList_layout)
-	ListManager_fnInitList(this.EraListbox,ifs_ms_EraList_layout)
-	ListManager_fnInitList(this.PlayListbox,ifs_ms_PlayList_layout)
+	ListManager_fnInitList(this.MapListbox,ifs_ms_MapList_layout_console)
+	ListManager_fnInitList(this.ModeListbox,ifs_ms_ModeList_layout_console)
+	ListManager_fnInitList(this.EraListbox,ifs_ms_EraList_layout_console)
+	ListManager_fnInitList(this.PlayListbox,ifs_ms_PlayList_layout_console)
 end
 
 ifs_missionselect_console_fnBuildScreen(ifs_missionselect_console)
