@@ -34,6 +34,9 @@ To Convert .mp4 movies to XBOX format (.xmv) you can use the package found at:
 
 To convert .mp4 to .bik you can use the 'Rad Video' tools
   https://www.radgametools.com/bnkdown.htm
+
+bink compression notes:
+  compress to 90% gives a nice file size, quality for mostly static shots (1080p).
   
 ============================================================================================================
 Making a preview movie:
