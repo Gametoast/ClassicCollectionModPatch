@@ -4,7 +4,7 @@
 
 if( ifs_mod_menu_launcher == nil ) then 
 	print("running ifs_mod_menu_launcher")
-	
+
 	-- Helper function. Given a layout (x,y,width, height), returns a
 	-- fully-built item.
 	function ifs_mod_menu_launcher_listbox_CreateItem(layout)
@@ -160,8 +160,7 @@ if( ifs_mod_menu_launcher == nil ) then
 			print("ifs_mod_menu_launcher.Back ", tostring(ScriptCB_IsScreenInStack("ifs_mod_menu_launcher") ) )
 			if (ScriptCB_IsScreenInStack("ifs_mod_menu_launcher") ) then 
 				print("ifs_mod_menu_launcher: pop the screen ") 
-				--ScriptCB_PopScreen("ifs_sp_campaign")
-				ScriptCB_PopScreen("ifs_sp")
+				ScriptCB_PopScreen()
 			else 
 				print("ifs_mod_menu_launcher: do nothing ") 
 			end 
@@ -205,6 +204,17 @@ if( ifs_mod_menu_launcher == nil ) then
 
 		Input_Accept = function(this)
 			print("ifs_mod_menu_launcher.Accept CurButton", tostring(this.CurButton) )
+
+			if(gMouseListBox) then
+				-- Mouse Support; works on normal BF2; CC changed mouse stuff
+				print( string.format("ifs_mod_menu_launcher: Got Mouse click, update selected idx from %s to %s", 
+						tostring(gMouseListBox.Layout.SelectedIdx) ,  tostring(gMouseListBox.Layout.CursorIdx) ) )
+			
+				-- set the selection 
+				gMouseListBox.Layout.SelectedIdx = gMouseListBox.Layout.CursorIdx
+			else 
+				print("gMouseListBox == nil")
+			end
 			if( this.CurButton == "_back" ) then
 				-- If base class handled this work, then we're done
 				if(gShellScreen_fnDefaultInputAccept(this)) then
