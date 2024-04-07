@@ -234,14 +234,14 @@ function uop_PatchFakeConsole()
     print("uop_PatchFakeConsole end")
 end
 
--- sets up 'ifs_ingame_keys'
+-- sets up 'ifs_ingame_log'
 function SetupIngamelog()
     print("SetupIngamelog")
-    ScriptCB_DoFile("ifs_ingame_keys")
+    ScriptCB_DoFile("ifs_ingame_log")
     local oldPrint = print 
     print = function(...)
-        if( ifs_ingame_keys ~= nil) then 
-            ifs_ingame_keys:AddToList(arg[1])
+        if( ifs_ingame_log ~= nil) then 
+            ifs_ingame_log:AddToList(arg[1])
         end
         oldPrint(unpack(arg))
     end
@@ -267,6 +267,7 @@ local function SetupAddIfScreenCatching()
         elseif arg[2] == "ifs_pausemenu" then
             SetupIngamelog()
             print("IGK: adding debug log button to pauseMenu")
+            print("Platform: ".. tostring( ScriptCB_GetPlatform() ))
 
             -- add new button without remaking the whole pause menu
             local newButton = { tag = "debugLog", string = "Debug Log", }
@@ -277,7 +278,7 @@ local function SetupAddIfScreenCatching()
             function ifs_pausemenu_fnInput_Accept(this)
                 originalInputAccept(this)
                 if this.CurButton == newButton.tag then
-                    ifs_movietrans_PushScreen(ifs_ingame_keys)
+                    ifs_movietrans_PushScreen(ifs_ingame_log)
                 end
             end
         end

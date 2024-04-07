@@ -7,6 +7,6 @@ ucft
         "popup_prompt"
         "utility_functions2"
         "fakeconsole_functions"
-        "ifs_ingame_keys"
+        "ifs_ingame_log"
     }
 }

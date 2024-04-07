@@ -3,7 +3,7 @@
  SWBF2 2005 Lua script
  created by MileHighGuy from Gametoast.com
 
- to see the entry point of the code, search for "ifs_ingame_keys = NewIFShellScreen"
+ to see the entry point of the code, search for "ifs_ingame_log = NewIFShellScreen"
 
  Singleplayer only for now.
  if you want to make it work in multiplayer,
@@ -22,8 +22,8 @@ local IGK_originalDoFile = ScriptCB_DoFile
 ScriptCB_DoFile = function(filename)
 
     if(filename == "ifs_pausemenu") then
-        print("DEBUG: IGK: loading filename ifs_ingame_keys")
-        IGK_originalDoFile("ifs_ingame_keys")
+        print("DEBUG: IGK: loading filename ifs_ingame_log")
+        IGK_originalDoFile("ifs_ingame_log")
 
         IGK_addButtonToPauseMenu()
 
@@ -44,7 +44,7 @@ after it loads the ReadDataFile("ingame.lvl")
 
 addInGameKeyScreen()
 
- also add ifs_ingame_keys to the mission.req
+ also add ifs_ingame_log to the mission.req
 
 that's all!
 
@@ -143,7 +143,7 @@ end
 
 -- this is the "Entry Point" of the code
 -- The IF screen that will create the list box
-ifs_ingame_keys = NewIFShellScreen {
+ifs_ingame_log = NewIFShellScreen {
     version = 1.0,
     nologo = 1,
     bAcceptIsSelect = 0,
@@ -154,6 +154,12 @@ ifs_ingame_keys = NewIFShellScreen {
 
     -- if we access this from pause menu
     fromPauseMenu = nil,
+
+    -- set this when you want to hide and show the in-game list box
+    bShowBox = true,
+    -- holds previous value
+    bShowBoxOld = true,
+
     --called when the screen starts
     Enter = function(this, bFwd)
         print("entered ingame key screen ============")
@@ -163,10 +169,22 @@ ifs_ingame_keys = NewIFShellScreen {
         -- did we come from the pause menu?
         this.fromPauseMenu = ScriptCB_IsScreenInStack("ifs_pausemenu")
 
+        -- always visible from pauseMenu
+        if this.fromPauseMenu then
+            IFObj_fnSetVis(ifs_ingame_log.listbox, true)
+        end
+
         print("DEBUG SCREEN: fromPauseMenu " .. tostring(this.fromPauseMenu))
 
         -- just an example, add a new entry every time we enter the screen
-        table.insert(gInGameDebugList, { ShowStr = "test" })
+        table.insert(gInGameDebugList, { ShowStr = "entered screen" })
+
+        local testTable = { a = { "ace", "azzameen"},
+                            b = {"milehighguy"}
+        }
+
+        --prints the contents of the table to the ingame debug as JSON. useful!
+        --tableToJsonLines(testTable, gInGameDebugList, "test table")
 
         -- focus always at latest entry
         local numEntries = table.getn(gInGameDebugList)
@@ -176,7 +194,7 @@ ifs_ingame_keys = NewIFShellScreen {
         ingamekeys_listbox_layout.SelectedIdx = numEntries
         ingamekeys_listbox_layout.CursorIdx = numEntries
 
-        ListManager_fnFillContents(ifs_ingame_keys.listbox,gInGameDebugList, ingamekeys_listbox_layout)
+        ListManager_fnFillContents(ifs_ingame_log.listbox,gInGameDebugList, ingamekeys_listbox_layout)
 
     end,
 
@@ -185,8 +203,12 @@ ifs_ingame_keys = NewIFShellScreen {
         print("exited ingame keys screen ===========")
         ScriptCB_EnableCursor(true)
 
+        -- set back to user preference
+        if this.fromPauseMenu then
+            IFObj_fnSetVis(ifs_ingame_log.listbox, this.bShowBox)
+        end
         gBlankListbox = 1
-        ListManager_fnFillContents(ifs_ingame_keys.listbox,gInGameDebugList, ingamekeys_listbox_layout)
+        ListManager_fnFillContents(ifs_ingame_log.listbox,gInGameDebugList, ingamekeys_listbox_layout)
         gBlankListbox = nil
     end,
 
@@ -194,10 +216,16 @@ ifs_ingame_keys = NewIFShellScreen {
     Update = function(this, fDt)
         ScriptCB_EnableCursor(nil)
 
+        -- flip this bit so we only update the vis once its changed (not every tick)
+        if this.bShowBox ~= this.bShowBoxOld then
+            this.bShowBoxOld = this.bShowBox
+            IFObj_fnSetVis(ifs_ingame_log.listbox, ifs_ingame_log.bShowBox)
+        end
+
         --update the contents as they change
         gInGameDebugList[2].ShowStr = "time " .. tostring(ScriptCB_GetMissionTime())
 
-        ListManager_fnFillContents(ifs_ingame_keys.listbox,gInGameDebugList, ingamekeys_listbox_layout)
+        ListManager_fnFillContents(ifs_ingame_log.listbox,gInGameDebugList, ingamekeys_listbox_layout)
     end,
 
     --Back button quits this screen
@@ -236,6 +264,9 @@ ifs_ingame_keys = NewIFShellScreen {
         end
     end,
 
+    ShowHideIngameListbox = function(this)
+        this.bShowBox = not this.bShowBox
+    end,
     -- use this in the event listeners (example below)
     AddToList = function(this, newString)
 
@@ -259,20 +290,22 @@ ifs_ingame_keys = NewIFShellScreen {
 
 -- read PC keyboard inputs
 if gPlatformStr == "PC" then
-    ifs_ingame_keys.Input_KeyDown = function(this, iKey)
+    ifs_ingame_log.Input_KeyDown = function(this, iKey)
 
-        if not ifs_ingame_keys.fromPauseMenu then
+        if not ifs_ingame_log.fromPauseMenu then
             --from in-game
 
             if isKey(iKey, "i") then
                 --scroll up
-                ListManager_fnNavUp(ifs_ingame_keys.listbox, gInGameDebugList, ingamekeys_listbox_layout)
+                ListManager_fnNavUp(ifs_ingame_log.listbox, gInGameDebugList, ingamekeys_listbox_layout)
             elseif isKey(iKey, "k") then
                 --scroll down
-                ListManager_fnNavDown(ifs_ingame_keys.listbox, gInGameDebugList, ingamekeys_listbox_layout)
+                ListManager_fnNavDown(ifs_ingame_log.listbox, gInGameDebugList, ingamekeys_listbox_layout)
+            elseif isKey(iKey, "l") then
+                ifs_ingame_log:ShowHideIngameListbox()
             end
 
-        elseif ifs_ingame_keys.fromPauseMenu then
+        elseif ifs_ingame_log.fromPauseMenu then
             -- from pause menu
 
             if iKey == 27 then
@@ -305,15 +338,62 @@ function ifs_ingamekeys_fnBuildScreen(this)
     ListManager_fnInitList(this.listbox, ingamekeys_listbox_layout)
 end
 
-ifs_ingamekeys_fnBuildScreen(ifs_ingame_keys)
+ifs_ingamekeys_fnBuildScreen(ifs_ingame_log)
 
-AddIFScreen(ifs_ingame_keys, "ifs_ingame_keys")
+AddIFScreen(ifs_ingame_log, "ifs_ingame_log")
+--function for debugging, will insert JSON strings to the given table
+function tableToJsonLines(tbl, outputTable, tblName, indent)
+    indent = indent or 0
+    outputTable = outputTable or {}
+    tblName = tblName or ""
+
+    local function append_line(str)
+        table.insert(outputTable, { ShowStr = string.rep(" ", indent) .. str })
+    end
+
+    if next(tbl) == nil then
+        append_line(tblName .. "{}")
+        return
+    end
+
+    append_line(tblName .. "{")
+    local isFirst = true
+    for key, value in pairs(tbl) do
+        if not isFirst then
+            append_line(",")
+        end
+        isFirst = false
+
+        local keyStr
+        if type(key) == "number" then
+            keyStr = "[" .. key .. "]"
+        elseif type(key) == "string" then
+            keyStr = '["' .. key .. '"]'
+        else
+            keyStr = "[" .. tostring(key) .. "]"
+        end
+
+        if type(value) == "table" then
+            append_line(keyStr .. " = ")
+            tableToJsonLines(value, outputTable, "", indent + 4)
+        else
+            if type(value) == "string" then
+                value = '"' .. value .. '"'
+            end
+            append_line(keyStr .. " = " .. tostring(value))
+        end
+    end
+    append_line("}")
+end
+
+
+
 
 
 -- the function that you call after ingame.lvl is loaded
 -- place any new event listeners in this function
 -- add new items to gInGameDebugList
--- use ifs_ingame_keys:AddToList("New Item")
+-- use ifs_ingame_log:AddToList("New Item")
 function addInGameKeyScreen()
 
     local screenTimer = CreateTimer("screenTimer")
@@ -324,8 +404,8 @@ function addInGameKeyScreen()
     local myTimerResponse = OnTimerElapse(
             function(timer)
                 --print("pushing screen after timer ===============")
-                --ifs_ingame_keys.fromPauseMenu = nil
-                ScriptCB_PushScreen("ifs_ingame_keys")
+                --ifs_ingame_log.fromPauseMenu = nil
+                ScriptCB_PushScreen("ifs_ingame_log")
             end,
             screenTimer
     )
@@ -346,7 +426,7 @@ function addInGameKeyScreen()
 
         if GetCharacterUnit(damager) and IsCharacterHuman(damager) then
 
-            ifs_ingame_keys:AddToList("player attacked something")
+            ifs_ingame_log:AddToList("player attacked something")
 
         end
     end)
@@ -366,7 +446,15 @@ function IGK_addButtonToPauseMenu()
 
             -- add new button without remaking the whole pause menu
             local newButton = { tag = "debugLog", string = "Debug Log", }
-            table.insert(ifspausemenu_vbutton_layout.buttonlist, newButton)
+            -- but the button before the options button, or at the end of the list
+            local newButtonIndex = table.getn(ifspausemenu_vbutton_layout.buttonlist)
+            for index, button in ifspausemenu_vbutton_layout.buttonlist do
+                if button.tag == "opts" then
+                    newButtonIndex = index
+                    break
+                end
+            end
+            table.insert(ifspausemenu_vbutton_layout.buttonlist, newButtonIndex, newButton)
             screenTable.CurButton = AddVerticalButtons(screenTable.buttons, ifspausemenu_vbutton_layout)
             local originalInputAccept = ifs_pausemenu_fnInput_Accept
             function ifs_pausemenu_fnInput_Accept(this)
@@ -374,8 +462,35 @@ function IGK_addButtonToPauseMenu()
 
                 if this.CurButton == newButton.tag then
 
-                    ifs_movietrans_PushScreen(ifs_ingame_keys)
+                    ifs_movietrans_PushScreen(ifs_ingame_log)
                 end
+            end
+
+            IGK_originalAddIFScreen(screenTable, screenName)
+        elseif screenName == "ifs_pc_SpawnSelect" then
+
+            local originalExit = ifs_pc_SpawnSelect.Exit
+            ifs_pc_SpawnSelect.Exit = function(this, bFwd)
+                print("10X: ifs_pc_SpawnSelect.Exit")
+                print("10X: bFwd is " .. tostring(bFwd))
+
+                if originalExit then
+                    print("10X: calling original exit")
+                    originalExit(this, bFwd)
+                else
+                    print("10X: spawn select exit not originally defined")
+                end
+
+                if not ScriptCB_IsScreenInStack("ifs_pausemenu") then
+                    if not ScriptCB_IsScreenInStack("ifs_ingame_log") then
+                        print("10X: pushing to ingame screen")
+                        ifs_movietrans_PushScreen(ifs_ingame_log)
+                    elseif ScriptCB_IsScreenInStack("ifs_ingame_log") then
+                        print("10X: ingame screen already in stack")
+                        --ScriptCB_PopScreen("ifs_ingame_log")
+                    end
+                end
+                print("10X: exit function done")
             end
 
             IGK_originalAddIFScreen(screenTable, screenName)
