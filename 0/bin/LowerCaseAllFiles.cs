@@ -39,7 +39,7 @@ namespace LowerCaseAllFiles
 @"This program is a companion to the Battlefront Classic Collection mod patch.
 Source =     https://github.com/Gametoast/ClassicCollectionModPatch
 
-This program is intended for use rename all addon files and folders to lower case files.
+This program will rename all addon files and folders to lower case.
 This should only be necessary for the Nintendo Switch game version.
 
 It is only to be run from the 'addon2' folder of Battlefront Classic Collection with 0 arguments.
