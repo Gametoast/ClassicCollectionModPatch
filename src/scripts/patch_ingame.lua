@@ -84,49 +84,6 @@ function RunUserScripts()
 end
 RunUserScripts()
 
-
--- only do the sound fix for the classic collection
--- remove this if Aspyr fixes addon functionality
-if ScriptCB_IsFileExist("SIDE\\all1.lvl") == 1 then
-    local function SetupAddonSoundFix()
-        local checkFile = "addon2\\0\\patch_scripts\\soundFiles.lua"
-        if(IsFileExist(checkFile) == 1 ) then
-            addonSoundFiles = ""
-            dofile(checkFile)
-            -- the  addonSoundFiles string  should exist now
-            local function splitStringByNewline(str)
-                local t = {}
-                local start = 1
-                local splitStart, splitEnd = string.find(str, "\r?\n", start)
-                while splitStart do
-                    table.insert(t, string.sub(str, start, splitStart - 1))
-                    start = splitEnd + 1
-                    splitStart, splitEnd = string.find(str, "\r?\n", start)
-                end
-                table.insert(t, string.sub(str, start))
-                return t
-            end
-            addonSoundFiles = string.gsub(addonSoundFiles, "/", "\\")
-            local myList = splitStringByNewline(string.lower(addonSoundFiles))
-    
-            gAddonSoundFiles = { }
-    
-            for i, line in ipairs(myList) do
-                local startPos, endPos = string.find(line, "addon2\\")
-                if startPos then
-                    -- Extract and print part of the line from "addon2\" to the end
-                    local part = "..\\..\\" .. string.sub(line, startPos)
-                    table.insert( gAddonSoundFiles, part)
-                    print(part)
-                end
-            end
-            addonSoundFiles = nil
-        end
-    end 
-    SetupAddonSoundFix()
-end
-
-
 function uop_PatchFakeConsole()
     print("uop_PatchFakeConsole start")
     ifs_fakeconsole.Enter = function(this, bFwd)
@@ -301,29 +258,3 @@ ScriptCB_DoFile = function(...)
     end
     return old_ScriptCB_DoFile(unpack(arg))
 end 
-
-
--- look through all possible 3-letter mod folders for a core.lvl file
--- remove this if Aspyr fixes addon functionality
-function LoadModStrings()
-    local chars = "0123456789abcdefghijklmnopqrstuvwxyz"
-    local checkFile = ""
-    local abb = ""
-    local length = string.len(chars)
-    print("looking for more strings...")
-    for i = 1, length do
-        for j = 1, length do
-            for k = 1, length do
-                abb = string.sub(chars, i, i) .. string.sub(chars, j, j) .. string.sub(chars, k, k)
-                checkFile = string.format( "..\\..\\addon\\%s\\data\\_lvl_pc\\core.lvl",abb)
-                if(ScriptCB_IsFileExist(checkFile) == 1) then 
-                    print("ReadDataFile('" .. checkFile .. "')")
-                    ReadDataFile(checkFile)
-                end
-            end
-        end
-    end
-    
-
-end
-LoadModStrings()

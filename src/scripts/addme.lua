@@ -2,7 +2,7 @@
 -- STAR WARS BATTLEFRONT CLASSIC COLLECTION - Old Mod Patcher
 -- Greetings from Kenny
 
-__scriptName__ = "[CCPatch: addme.script]: "
+local __scriptName__ = "[CCPatch: addme.script]: "
 
 
 -- We need this stuff twice. Once for the shell, once for mission states.

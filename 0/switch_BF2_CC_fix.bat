@@ -37,5 +37,11 @@ for /f "delims=" %%D in ('dir /b /s /ad "%root_directory%\*LVL_PC*"') do (
     )
 )
 
-endlocal
+REM ====================ONLY FOR SWITCH========================
+REM ====================ONLY FOR SWITCH========================
+REM ====================ONLY FOR SWITCH========================
 
+REM This will take all files under this folder to lower-case 
+"0\bin\LowerCaseAllFiles.exe"
+
+endlocal
