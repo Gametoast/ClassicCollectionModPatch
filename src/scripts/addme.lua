@@ -287,6 +287,17 @@ function AddUserScript(filePath)
     table.insert(gUserScripts, filePath)
 end
 
+-- Removes a script that has been added, potentially useful in menus
+function RemoveUserScript(filePath)
+    for i,v in ipairs(gUserScripts) do
+        if( string.lower(v) == string.lower(filePath) ) then 
+            print("RemoveUserScript: removing: " .. v)
+            table.remove(gUserScripts, i)
+            return
+        end
+    end
+end
+
 -- run the following code right before we enter a game from anywhere in the shell
 local zeroPatch_original_ScriptCB_EnterMission = ScriptCB_EnterMission
 ScriptCB_EnterMission = function()

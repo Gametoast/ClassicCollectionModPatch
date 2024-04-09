@@ -57,81 +57,88 @@ end
 -- this will get the Fake console & Free Cam buttons to show
 gFinalBuild = false
 
-
-
 print("gFinalBuild: " .. tostring(gFinalBuild))
 
 ScriptCB_DoFile("utility_functions2")
 --print("game_interface: Reading in custom strings")
 --ReadDataFile("v1.3patch_strings.lvl") -- where to put, root of'0'?
 
+function Run_uop_UserScripts()
+    local maxScripts = 100
+    local i = nil
+    local patchDir = "..\\..\\addon\\0\\"
+    print("Run_uop_UserScripts() Start")
+    for i = 0, maxScripts, 1 do
+        
+        if ScriptCB_IsFileExist(patchDir .. "user_script_" .. i .. ".lvl") ~= 0 then
+            print("game_interface: Found user_script_" .. i .. ".lvl")
+            
+            ReadDataFile(patchDir .. "user_script_" .. i .. ".lvl")
+            ScriptCB_DoFile("user_script_" .. i)
+        end
+        
+    end
+    print("Run_uop_UserScripts() End")
+end
+Run_uop_UserScripts()
+
+
 -- trim "path\\to\\file.lvl" to "file"
 function trimToFileName(filePath)
-    local separatorIndex = 0
-    local lastSeparatorIndex = 0
-
-    -- Find the last occurrence of '\\'
-    local i = 1
-    while true do
-        local nextIndex = string.find(filePath, "\\", i, true)
-        if nextIndex then
-            lastSeparatorIndex = separatorIndex
-            separatorIndex = nextIndex
-            i = nextIndex + 1
-        else
-            break
-        end
+    -- Find the last directory separator
+    local nameStart = 1
+    local sepStart, sepEnd = string.find(filePath, "[/\\]", nameStart)
+    while sepStart do
+        nameStart = sepEnd + 1
+        sepStart, sepEnd = string.find(filePath, "[/\\]", nameStart)
     end
 
-    local extensionIndex = string.find(filePath, "%.[^.]+$") -- Find the last occurrence of '.' followed by characters not including '.'
-    if extensionIndex then
-        filePath = string.sub(filePath, 1, extensionIndex - 1) -- Trim file extension
+    -- Extract the file name part
+    local fileName = string.sub(filePath, nameStart)
+
+    -- Attempt to remove the extension
+    local dotPosition = string.find(fileName, ".[^.]*$")
+    if dotPosition then
+        fileName = string.sub(fileName, 1, dotPosition - 1)
     end
-    -- Extract substring after the last separator
-    if lastSeparatorIndex > 0 then
-        return string.sub(filePath, lastSeparatorIndex + 1)
-    else
-        return filePath
-    end
+
+    return fileName
 end
-function RunUserScripts()
 
+function RunUserScripts()
     print("RunUserScripts() Start")
 
     -- retrieve user scripts we saved in mission setup table
     if ScriptCB_IsMissionSetupSaved() then
         local missionSetup = ScriptCB_LoadMissionSetup()
-        if missionSetup ~= nil then
-            if missionSetup.userScripts ~= nil then
-                for _, scriptPath in missionSetup.userScripts do
-                    if ScriptCB_IsFileExist(scriptPath) then
-                        ReadDataFile(scriptPath)
-                        -- .lvl or .script file must contain a .lua file with matching name
-                        -- that file will be the entrypoint of the user script
-                        ScriptCB_DoFile(trimToFileName(scriptPath))
-                    end
+        if (missionSetup ~= nil and missionSetup.userScripts ~= nil) then
+            for i, scriptPath in ipairs(missionSetup.userScripts) do
+                if( ScriptCB_IsFileExist(scriptPath) == 1) then
+                    print("RunUserScripts: " .. scriptPath)
+                    ReadDataFile(scriptPath)
+                    -- .lvl or .script file must contain a .lua file with matching name
+                    -- that file will be the entrypoint of the user script
+                    ScriptCB_DoFile(trimToFileName(scriptPath))
                 end
-
-                local hasOnlyUserScripts = true
-                for key, value in missionSetup do
-                    if key ~= "userScripts" then
-                        hasOnlyUserScripts = false
-                        break
-                    end
-                end
-
-                if hasOnlyUserScripts then
-                    -- if the missionSetup was only user scripts then clear items
-                    ScriptCB_ClearMissionSetup()
-                else
-                    --remove the user scripts and save it again
-                    --we don't really have to do this but i figure its a good idea
-                    missionSetup.userScripts = nil
-                    ScriptCB_SaveMissionSetup(missionSetup)
-                end
-
             end
 
+            local hasOnlyUserScripts = true
+            for key, value in pairs(missionSetup) do
+                if key ~= "userScripts" then
+                    hasOnlyUserScripts = false
+                    break
+                end
+            end
+
+            if hasOnlyUserScripts then
+                -- if the missionSetup was only user scripts then clear items
+                ScriptCB_ClearMissionSetup()
+            else
+                --remove the user scripts and save it again
+                --we don't really have to do this but i figure its a good idea
+                missionSetup.userScripts = nil
+                ScriptCB_SaveMissionSetup(missionSetup)
+            end
         end
     end
 
