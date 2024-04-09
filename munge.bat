@@ -7,7 +7,7 @@
 md MUNGED 
 del /Y MUNGED\*
 :: currently no textures are used.
-::..\ToolsFL\bin\pc_TextureMunge.exe -inputfile $*.tga  -checkdate -continue -platform PC -sourcedir src\textures -outputdir MUNGED 
+..\ToolsFL\bin\pc_TextureMunge.exe -inputfile $*.tga  -checkdate -continue -platform PC -sourcedir src\textures -outputdir MUNGED 
 
 ..\ToolsFL\bin\ScriptMunge.exe -inputfile *.lua   -continue -platform PC -sourcedir  src\scripts -outputdir MUNGED  
 
