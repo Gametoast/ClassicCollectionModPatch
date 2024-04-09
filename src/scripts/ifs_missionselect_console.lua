@@ -438,7 +438,8 @@ local function GetMovieName(Selection)
         return movieName, movieFile -- emergency bailout
     end
 
-	if (Selection.movieName ~= nil and Selection.movieFile~= nil) then
+	if (Selection.movieName ~= nil and Selection.movieFile~= nil and 
+	    ScriptCB_IsFileExist(Selection.movieFile ..".mvs") == 1 )  then
 		-- this is behavior from the UOP
 		movieName = Selection.movieName
 		movieFile = Selection.movieFile
@@ -462,12 +463,10 @@ local function GetMovieName(Selection)
 		-- to keep consistent with the Zerted stuff, we'll append the ''.mvs' later when setting the video
 		movieFile = flyMoviesBasePath .. prefix .. "fly"
 		movieName = "preview"
-	else
-		-- skip this for now
-		--movieFile = FindAddonMovies(filename)
-		--if(movieFile ~= nil) then
-		--	print("Found addon movie: " .. tostring(movieFile))
-		--end
+	elseif( string.starts(prefix,"spa")) then
+		-- default generic space preview to fallback on if there isn't a more specific one
+		movieFile = flyMoviesBasePath .. "spa2fly"
+		movieName = "preview"
 	end
 	-- the preview movie name is always 'preview'
 	-- default movie is "shell_main", "movies\\shell"
@@ -521,7 +520,6 @@ function SetMovie_console(this)
 		ScriptCB_CloseMovie()
 		gMovieStream = fullpath
 		ScriptCB_OpenMovie(gMovieStream, "")
-
 		ScriptCB_StopMovie()
 		ifelem_shellscreen_fnStartMovie(this.movieName,1, nil, true)
 	end

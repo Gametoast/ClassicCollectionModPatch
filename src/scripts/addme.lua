@@ -2,7 +2,7 @@
 -- STAR WARS BATTLEFRONT CLASSIC COLLECTION - Old Mod Patcher
 -- Greetings from Kenny
 
-__scriptName__ = "[CCPatch: addme.script]: "
+local __scriptName__ = "[CCPatch: addme.script]: "
 
 
 -- We need this stuff twice. Once for the shell, once for mission states.
@@ -32,9 +32,11 @@ if( tprint == nil ) then
         end
     end
 
-    function string.starts(str, Start)
-        return string.sub(str, 1, getn(Start)) == Start;
-    end
+    if string.starts == nil then 
+        function string.starts(str, Start)
+            return string.sub(str, 1, string.len(Start)) == Start;
+        end
+    end 
 
     function tprint(t, indent)
         if not indent then indent = 1, print(tostring(t) .. " {") end
@@ -244,9 +246,6 @@ end
 	
 ScriptCB_DoFile("ifs_missionselect_console")
 ScriptCB_DoFile("ifs_mod_menu_launcher")
-AddModMenuItem( "IA",  "Instant Action (alt)", "ifs_missionselect_console")
-AddModMenuItem( "IA",  "Instant Action", "ifs_missionselect")
-AddModMenuItem( "campaignList",  "ifs.sp.campaign", "ifs_sp_briefing")
 
 -- from ifs_instant_top.lua
 --ScriptCB_SetIFScreen("ifs_missionselect")
@@ -257,11 +256,21 @@ function OverrideInstantAction()
 		local screen_name = arg[1]
 		if(screen_name == "ifs_missionselect" ) then
 			arg[1] = "ifs_missionselect_console"
-		end
+        end
 		return old_ScriptCB_SetIFScreen(unpack(arg))
 	end
 end
--- we may do this, not yet though
---OverrideInstantAction()
+
+AddModMenuItem( "IA",  "Instant Action (alt)", "ifs_missionselect_console")
+AddModMenuItem( "IA",  "Instant Action", "ifs_missionselect")
+
+if( ScriptCB_IsFileExist("side\\all1.lvl") == 1 ) then 
+    -- only do this for classic collection
+    OverrideInstantAction()
+end
+
+AddModMenuItem( "campaignList",  "ifs.sp.campaign", "ifs_sp_briefing")
+AddModMenuItem( "font_test",  "font test", "ifs_fonttest")
+
 
 print("End 0/addme.script")

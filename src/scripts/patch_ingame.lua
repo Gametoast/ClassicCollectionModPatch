@@ -9,16 +9,61 @@
 
 print("Patch ingame start")
 
+if(printf == nil) then 
+    function printf (...) print(string.format(unpack(arg))) end
+end 
+
+if( tprint == nil ) then 
+    function getn(v)
+        local v_type = type(v);
+        if v_type == "table" then
+            return table.getn(v);
+        elseif v_type == "string" then
+            return string.len(v);
+        else
+            return;
+        end
+    end
+
+    function string.starts(str, Start)
+        return string.sub(str, 1, getn(Start)) == Start;
+    end
+
+    function tprint(t, indent)
+        if not indent then indent = 1, print(tostring(t) .. " {") end
+        if t then
+            for key,value in pairs(t) do
+                if not string.starts(tostring(key), "__") then
+                    local formatting = string.rep("    ", indent) .. tostring(key) .. "= ";
+                    if value and type(value) == "table" then
+                        print(formatting .. --[[tostring(value) ..]] " {")
+                        tprint(value, indent+1);
+                    else
+                        if(type(value) == "string") then 
+                            --print(formatting .."'" .. tostring(value) .."'" ..",")
+                            printf("%s'%s',",formatting, tostring(value))
+                        else 
+                            print(formatting .. tostring(value) ..",")
+                        end 
+                    end
+                end
+            end
+            print(string.rep("    ", indent - 1) .. "},")
+        end
+    end
+end
+
+
 -- this will get the Fake console & Free Cam buttons to show
 gFinalBuild = false
+
+
 
 print("gFinalBuild: " .. tostring(gFinalBuild))
 
 ScriptCB_DoFile("utility_functions2")
 --print("game_interface: Reading in custom strings")
 --ReadDataFile("v1.3patch_strings.lvl") -- where to put, root of'0'?
-
-
 
 function RunUserScripts()
     local maxScripts = 100
@@ -146,6 +191,19 @@ function uop_PatchFakeConsole()
     print("uop_PatchFakeConsole end")
 end
 
+-- sets up 'ifs_ingame_log'
+function SetupIngamelog()
+    print("SetupIngamelog")
+    ScriptCB_DoFile("ifs_ingame_log")
+    local oldPrint = print 
+    print = function(...)
+        if( ifs_ingame_log ~= nil) then 
+            ifs_ingame_log:AddToList(arg[1])
+        end
+        oldPrint(unpack(arg))
+    end
+end
+
 local function SetupAddIfScreenCatching()
     --[[
     for patching ifs_ menu screens, we'll want to 'Catch' when they are passed to 'AddIfScreen'.
@@ -163,6 +221,23 @@ local function SetupAddIfScreenCatching()
         print("AddIFScreen: " .. arg[2])
         if( arg[2] == "ifs_fakeconsole") then 
             uop_PatchFakeConsole()
+        elseif arg[2] == "ifs_pausemenu" then
+            SetupIngamelog()
+            print("IGK: adding debug log button to pauseMenu")
+            print("Platform: ".. tostring( ScriptCB_GetPlatform() ))
+
+            -- add new button without remaking the whole pause menu
+            local newButton = { tag = "debugLog", string = "Debug Log", }
+            local index = table.getn(ifspausemenu_vbutton_layout.buttonlist) -1
+            table.insert(ifspausemenu_vbutton_layout.buttonlist, index, newButton)
+            arg[1].CurButton = AddVerticalButtons(arg[1].buttons, ifspausemenu_vbutton_layout)
+            local originalInputAccept = ifs_pausemenu_fnInput_Accept
+            function ifs_pausemenu_fnInput_Accept(this)
+                originalInputAccept(this)
+                if this.CurButton == newButton.tag then
+                    ifs_movietrans_PushScreen(ifs_ingame_log)
+                end
+            end
         end
         return old_AddIFScreen(unpack(arg))
     end
