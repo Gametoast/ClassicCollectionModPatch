@@ -12,4 +12,14 @@ print("patch_shell start")
   'ScriptCB_SetIFScreen' is used infrequently though.
   (Prefer to do this in the '0' addme though)
 ]]
+
+if IsFileExist == nil then 
+	print("patch_shell: defining IsFileExist")
+	IsFileExist = function(path)
+		local testPath = "..\\..\\".. path
+		return ScriptCB_IsFileExist(testPath)
+	end
+end
+
+ScriptCB_DoFile("zero_patch_fs")
 print("patch_shell end")

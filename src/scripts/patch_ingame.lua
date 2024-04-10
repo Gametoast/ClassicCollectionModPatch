@@ -54,10 +54,20 @@ if( tprint == nil ) then
 end
 
 
+if IsFileExist == nil then 
+	print("patch_ingame: defining IsFileExist")
+	IsFileExist = function(path)
+		local testPath = "..\\..\\".. path
+		return ScriptCB_IsFileExist(testPath)
+	end
+end
+
 -- this will get the Fake console & Free Cam buttons to show
 gFinalBuild = false
 
 print("gFinalBuild: " .. tostring(gFinalBuild))
+
+ScriptCB_DoFile("zero_patch_fs")
 
 ScriptCB_DoFile("utility_functions2")
 --print("game_interface: Reading in custom strings")
@@ -112,6 +122,7 @@ function RunUserScripts()
     if ScriptCB_IsMissionSetupSaved() then
         local missionSetup = ScriptCB_LoadMissionSetup()
         if (missionSetup ~= nil and missionSetup.userScripts ~= nil) then
+            print("RunUserScripts: userScripts.len: " .. tostring(table.getn(missionSetup.userScripts)))
             for i, scriptPath in ipairs(missionSetup.userScripts) do
                 if( ScriptCB_IsFileExist(scriptPath) == 1) then
                     print("RunUserScripts: " .. scriptPath)
@@ -119,6 +130,9 @@ function RunUserScripts()
                     -- .lvl or .script file must contain a .lua file with matching name
                     -- that file will be the entrypoint of the user script
                     ScriptCB_DoFile(trimToFileName(scriptPath))
+                elseif( string.find(scriptPath, "mission_name=") ) then 
+                    gMissionName = string.sub(scriptPath,14)
+                    print("zero_patch patch_ingame gMissionName= ".. gMissionName)
                 end
             end
 

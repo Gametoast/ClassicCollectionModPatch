@@ -37,11 +37,22 @@ for /f "delims=" %%D in ('dir /b /s /ad "%root_directory%\*LVL_PC*"') do (
     )
 )
 
-REM ====================ONLY FOR SWITCH========================
-REM ====================ONLY FOR SWITCH========================
-REM ====================ONLY FOR SWITCH========================
+REM ====================ONLY FOR SWITCH START =================
+REM ====================ONLY FOR SWITCH START =================
+REM ====================ONLY FOR SWITCH START =================
 
 REM This will take all files under this folder to lower-case 
 "0\bin\LowerCaseAllFiles.exe"
+
+REM ====================ONLY FOR SWITCH END ===================
+REM ====================ONLY FOR SWITCH END ===================
+REM ====================ONLY FOR SWITCH END ===================
+
+
+echo zero_patch_files_string = [[ > "0\\patch_scripts\\fs.lua"
+
+dir /b /s * >> "0\\patch_scripts\\fs.lua"
+
+echo ]] >> "0\\patch_scripts\\fs.lua"
 
 endlocal

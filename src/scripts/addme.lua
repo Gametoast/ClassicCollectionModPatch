@@ -2,19 +2,10 @@
 -- STAR WARS BATTLEFRONT CLASSIC COLLECTION - Old Mod Patcher
 -- Greetings from Kenny
 
-local __scriptName__ = "[CCPatch: addme.script]: "
-
-
--- We need this stuff twice. Once for the shell, once for mission states.
--- but if we put in globals, it will get called twice so we don't need it here too.
---patchDir = "..\\..\\addon2\\0\\patch_paths"
---if ScriptCB_IsFileExist(patchDir .. ".lvl") == 1 then
---	ReadDataFile(patchDir .. ".lvl")
---	ScriptCB_DoFile("patch_paths")
---end
+local __scriptName__ = "[zero_patch: addme.script]: "
 
 --we want mod launcher, instant action console
-print("Start 0/addme.script")
+print("zero_patch: Start 0/addme.script")
 
 if(printf == nil) then 
     function printf (...) print(string.format(unpack(arg))) end
@@ -108,7 +99,7 @@ end
 addModString("ifs.console.action","Instant Action (alt)")
 -- 
 ----- ADD uop eras & modes--------------------------------------------------------------------------------------
-print("Add UOP Eras and Game Modes: Start")
+print("zero_patch: Add UOP Eras and Game Modes: Start")
 uopMapEras = {
     { Team2Name= 'common.sides.cis.name', key= 'era_c', icon2= 'rep_icon', subst= 'c', showstr= 'common.era.cw', icon1= 'cis_icon', Team1Name= 'common.sides.rep.name', },
     { Team2Name= 'common.sides.imp.name', key= 'era_g', icon2= 'all_icon', subst= 'g', showstr= 'common.era.gcw', icon1= 'imp_icon', Team1Name= 'common.sides.all.name', },
@@ -227,7 +218,7 @@ function uop_AddGameMode(entry)
 end 
 
 if( custom_GetSPMissionList  == nil ) then -- will be nil if the game doesn't have the 1.3 un-official patch
-    print("UOP 1.3 not detected, define a bunch of stuff")
+    print("zero_patch: Add UOP Eras and Game Modes: Start")
     local i = 1 
     local limit = table.getn(uopMapEras)
     while i < limit do 
@@ -241,7 +232,9 @@ if( custom_GetSPMissionList  == nil ) then -- will be nil if the game doesn't ha
         uop_AddGameMode(uopMapModes[i])
         i = i + 1
     end
-    print("Add UOP Eras and Game Modes: End")
+    print("zero_patch: Add UOP Eras and Game Modes: End")
+else
+    print("zero_patch: WARNING! zero_patch is not compatible with UOP!!!")
 end
 	
 ScriptCB_DoFile("ifs_missionselect_console")
@@ -283,7 +276,7 @@ function AddUserScript(filePath)
     if gUserScripts == nil then
         gUserScripts = {}
     end
-
+    print("AddUserScript: " .. filePath)
     table.insert(gUserScripts, filePath)
 end
 
@@ -301,7 +294,17 @@ end
 -- run the following code right before we enter a game from anywhere in the shell
 local zeroPatch_original_ScriptCB_EnterMission = ScriptCB_EnterMission
 ScriptCB_EnterMission = function()
+    print("ScriptCB_EnterMission ")
+    local mission_name = ( (gPickedMapList and gPickedMapList[1] and gPickedMapList[1].Map) or "")
+    print(string.format("ScriptCB_EnterMission; gPickedMapList[1].Map: %s", mission_name))
+    if(string.len(mission_name) > 0) then 
+        print("ScriptCB_EnterMission: adding " .. mission_name)
+        --AddUserScript("mission_name=" .. mission_name)
+        table.insert(gUserScripts,1, "mission_name=" .. mission_name)
+        print("ScriptCB_EnterMission: added " .. mission_name)
+    end
 
+    --print("ScriptCB_EnterMission; gPickedMapList[1].Map: " .. gPickedMapList[1].Map)
     -- if there are any user scripts specified by an addme file
     -- save them to mission setup table
     -- then during game time, it will load them (in patch_ingame.lua)
@@ -310,6 +313,7 @@ ScriptCB_EnterMission = function()
         if ScriptCB_IsMissionSetupSaved() then
             local missionSetup = ScriptCB_LoadMissionSetup()
             missionSetup.userScripts = gUserScripts
+            print("ScriptCB_EnterMission: Calling 'ScriptCB_SaveMissionSetup()'")
             ScriptCB_SaveMissionSetup(missionSetup)
         else
             local missionSetup = {
@@ -318,9 +322,9 @@ ScriptCB_EnterMission = function()
             ScriptCB_SaveMissionSetup(missionSetup)
         end
     end
-
+    print("ScriptCB_EnterMission calling orig ScriptCB_EnterMission ...")
     zeroPatch_original_ScriptCB_EnterMission()
 end
+-- setup filesystem stuff
 
-
-print("End 0/addme.script")
+print("zero_patch: End 0/addme.script")

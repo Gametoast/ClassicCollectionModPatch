@@ -27,3 +27,10 @@ find . -type d -iname _LVL_PC | while read -r dir; do
         fi
     fi
 done
+
+echo zero_patch_files_string = [[ > "0/patch_scripts/fs.lua"
+
+# find $PWD -type f -name "*.lvl" | grep -i sound >> "0/patch_scripts/fs.lua"
+find $PWD -type f >> "0/patch_scripts/fs.lua"
+
+echo ]] >> "0/patch_scripts/fs.lua"

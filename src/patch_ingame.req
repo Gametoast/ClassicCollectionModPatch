@@ -8,5 +8,6 @@ ucft
         "utility_functions2"
         "fakeconsole_functions"
         "ifs_ingame_log"
+        "zero_patch_fs"
     }
 }

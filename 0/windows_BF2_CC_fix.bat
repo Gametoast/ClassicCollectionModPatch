@@ -1,6 +1,7 @@
 @echo off
 setlocal EnableDelayedExpansion
 
+REM possibly change name to 'windows_zero_patch_run_after_adding_mod.bat'
 
 set "ExpectedFolderName=addon2"
 
@@ -36,6 +37,13 @@ for /f "delims=" %%D in ('dir /b /s /ad "%root_directory%\*LVL_PC*"') do (
         )
     )
 )
+
+
+echo zero_patch_files_string = [[ > "0\\patch_scripts\\fs.lua"
+
+dir /b /s * >> "0\\patch_scripts\\fs.lua"
+
+echo ]] >> "0\\patch_scripts\\fs.lua"
 
 endlocal
 

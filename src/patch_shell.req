@@ -4,5 +4,6 @@ ucft
     {
         "script"
         "patch_shell"
+        "zero_patch_fs"
     }
 }

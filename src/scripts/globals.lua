@@ -346,6 +346,7 @@ if ( ScriptInit ~= nil ) then  -- this will exist at mission script execution/in
     -- this should run during game_interface execution
 	local target = addon_path .. "0\\patch_scripts\\patch_ingame.lvl"
 	if(ScriptCB_IsFileExist(target) == 1 )  then 
+		print("globals: call 'patch_ingame'")
 		ReadDataFile(target)
 		ScriptCB_DoFile("patch_ingame")
 	end
@@ -353,6 +354,7 @@ else
 	-- running at shell time 
     local target = addon_path .. "0\\patch_scripts\\patch_shell.lvl"
 	if(ScriptCB_IsFileExist(target) == 1 )  then 
+		print("globals: call 'patch_shell'")
 		ReadDataFile(target)
 		ScriptCB_DoFile("patch_shell")
 	end
