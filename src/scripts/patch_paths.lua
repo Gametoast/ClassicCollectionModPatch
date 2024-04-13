@@ -7,7 +7,7 @@ print("Start: " .. __scriptName__)
 
 THE_ORIGINAL_ScriptCB_IsFileExist = ScriptCB_IsFileExist
 
-if IsFileExist == nil then 
+if IsFileExist == nil then
 	print("defining IsFileExist")
 	IsFileExist = function(path)
 		local testPath = "..\\..\\".. path
@@ -16,13 +16,13 @@ if IsFileExist == nil then
 end
 
 
-if string.starts == nil then 
+if string.starts == nil then
     function string.starts(str, Start)
         return string.sub(str, 1, string.len(Start)) == Start;
     end
 end
 
-if( string.endsWith == nil ) then 
+if( string.endsWith == nil ) then
     function string.endsWith(str, ending)
         return ending == "" or string.sub(str, -string.len(ending)) == ending
     end
@@ -39,7 +39,7 @@ function replaceAllLVL(func)
         test = string.gsub(test, "/", "\\") -- normalize the path separator
         if test == "side\\all.lvl" then
             arg[1] = "side\\all1.lvl"
-            print(__scriptName__ .. "FOUND side\\all.lvl call. redirecting -> " .. arg[1])
+            print("info:" .. __scriptName__ .. "FOUND side\\all.lvl call. redirecting -> " .. arg[1])
             -- run ReadDataFile on all1, then on all2 to cover the whole side.
             oldFunc(unpack(arg))
             arg[1] = "side\\all2.lvl"
@@ -62,21 +62,23 @@ function redirectBF2Path(func)
 
         if string.find(arg_1, "addon\\") then
 			arg[1] = string.gsub(arg_1, "addon\\", "addon2\\")
-            msg = __scriptName__ .. " FOUND addon call. redirecting -> " .. arg[1] 
+            --msg = "info:" .. __scriptName__ .. " FOUND addon call. redirecting -> " .. arg[1]
+            msg = "info: redirect -> " .. arg[1]
         end
 
-        -- We'll re-direct calls to the _lvl_common folder when the asset exists in _lvl_common 
-        -- and not in _lvl_pc 
+        -- We'll re-direct calls to the _lvl_common folder when the asset exists in _lvl_common
+        -- and not in _lvl_pc
         arg_1 = string.lower(arg[1])
         if string.find(arg_1, "\\_lvl_pc\\") then
             local commonTest = string.gsub(arg_1, "\\_lvl_pc\\", "\\_lvl_common\\")
-            if( THE_ORIGINAL_ScriptCB_IsFileExist(arg_1) == 0 and THE_ORIGINAL_ScriptCB_IsFileExist(commonTest) == 1) then 
+            if( THE_ORIGINAL_ScriptCB_IsFileExist(arg_1) == 0 and THE_ORIGINAL_ScriptCB_IsFileExist(commonTest) == 1) then
                 arg[1] = commonTest
-                msg = __scriptName__ .. " Redirecting to  " .. arg[1]
+                --msg = "info: " .. __scriptName__ .. " Redirecting to  " .. arg[1]
+                msg = "info: redirect -> " .. arg[1]
             end
         end
-        if(msg) then 
-            print(msg) 
+        if(msg) then
+            print(msg)
         end
 
         -- let the original function happen
@@ -90,7 +92,7 @@ end
 
 ----------------------------------------------------------------------------------------
 
-if(ScriptCB_IsFileExist("side\\all2.lvl") == 1) then 
+if(ScriptCB_IsFileExist("..\\..\\addon2\\0\\patch_scripts\\patch_paths.script") == 1) then
     print("This is BF Classic Collection; patching file paths")
     -- patch paths
     if ReadDataFile then
@@ -107,7 +109,7 @@ if(ScriptCB_IsFileExist("side\\all2.lvl") == 1) then
         ScriptCB_IsFileExist = redirectBF2Path(ScriptCB_IsFileExist)
     end
 
-    if ScriptCB_OpenMovie then 
+    if ScriptCB_OpenMovie then
         ScriptCB_OpenMovie = redirectBF2Path(ScriptCB_OpenMovie)
     end
     -- not needed, ScriptCB_DoFile 'does' a file that has already been read into memory.
@@ -139,7 +141,13 @@ if(ScriptCB_IsFileExist("side\\all2.lvl") == 1) then
     if CreateEffect then
         CreateEffect = redirectBF2Path(CreateEffect)
     end
+end
 
+-- logging
+local old_ReadDataFile = ReadDataFile
+ReadDataFile = function(...)
+    print("info: enter ReadDataFile " .. arg[1])
+    return old_ReadDataFile(unpack(arg))
 end
 
 -- This does not work. Find a better solution asap.

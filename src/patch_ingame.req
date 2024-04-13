@@ -1,5 +1,12 @@
 ucft
 {
+    
+    REQN
+    {
+		"config"
+        "sfo_kmsx"
+    }
+    
     REQN
     {
         "script"
@@ -10,4 +17,5 @@ ucft
         "ifs_ingame_log"
         "zero_patch_fs"
     }
+
 }

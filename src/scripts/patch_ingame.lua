@@ -1,5 +1,5 @@
 
--- first things game_interface does: 	
+-- first things game_interface does:
 --  gPlatformStr = ScriptCB_GetPlatform()
 --  gOnlineServiceStr = ScriptCB_GetConnectType()
 --  gLangStr,gLangEnum = ScriptCB_GetLanguage()
@@ -9,11 +9,17 @@
 
 print("Patch ingame start")
 
-if(printf == nil) then 
-    function printf (...) print(string.format(unpack(arg))) end
-end 
+-- added 'ingame_errors' table to keep track of errors befroe we re-direct 'print'
+local ingame_errors ={}
+local function addIngameError(str)
+    table.insert(ingame_errors, str)
+end
 
-if( tprint == nil ) then 
+if(printf == nil) then
+    function printf (...) print(string.format(unpack(arg))) end
+end
+
+if( tprint == nil ) then
     function getn(v)
         local v_type = type(v);
         if v_type == "table" then
@@ -39,12 +45,12 @@ if( tprint == nil ) then
                         print(formatting .. --[[tostring(value) ..]] " {")
                         tprint(value, indent+1);
                     else
-                        if(type(value) == "string") then 
+                        if(type(value) == "string") then
                             --print(formatting .."'" .. tostring(value) .."'" ..",")
                             printf("%s'%s',",formatting, tostring(value))
-                        else 
+                        else
                             print(formatting .. tostring(value) ..",")
-                        end 
+                        end
                     end
                 end
             end
@@ -54,7 +60,7 @@ if( tprint == nil ) then
 end
 
 
-if IsFileExist == nil then 
+if IsFileExist == nil then
 	print("patch_ingame: defining IsFileExist")
 	IsFileExist = function(path)
 		local testPath = "..\\..\\".. path
@@ -67,31 +73,22 @@ gFinalBuild = false
 
 print("gFinalBuild: " .. tostring(gFinalBuild))
 
-ScriptCB_DoFile("zero_patch_fs")
+local function load_fs()
+    ScriptCB_DoFile("zero_patch_fs")
+end
+
+local status, err = pcall(load_fs)
+if not status then
+    local msg = "Caught an error in load_fs: " .. err
+    addIngameError(msg)
+    print(msg)
+else
+    -- Successful execution
+end
 
 ScriptCB_DoFile("utility_functions2")
 --print("game_interface: Reading in custom strings")
 --ReadDataFile("v1.3patch_strings.lvl") -- where to put, root of'0'?
-
-function Run_uop_UserScripts()
-    local maxScripts = 100
-    local i = nil
-    local patchDir = "..\\..\\addon\\0\\"
-    print("Run_uop_UserScripts() Start")
-    for i = 0, maxScripts, 1 do
-        
-        if ScriptCB_IsFileExist(patchDir .. "user_script_" .. i .. ".lvl") ~= 0 then
-            print("game_interface: Found user_script_" .. i .. ".lvl")
-            
-            ReadDataFile(patchDir .. "user_script_" .. i .. ".lvl")
-            ScriptCB_DoFile("user_script_" .. i)
-        end
-        
-    end
-    print("Run_uop_UserScripts() End")
-end
-Run_uop_UserScripts()
-
 
 -- trim "path\\to\\file.lvl" to "file"
 function trimToFileName(filePath)
@@ -115,6 +112,23 @@ function trimToFileName(filePath)
     return fileName
 end
 
+function Run_uop_UserScripts()
+    local scriptName = ""
+    local files = zero_patch_fs.getFiles("user_script")
+
+    for i, value in ipairs(files) do
+        if( ScriptCB_IsFileExist(value) == 1) then
+            ReadDataFile(value)
+            scriptName = trimToFileName(value)
+            ScriptCB_DoFile(scriptName)
+        end
+    end
+    print("Run_uop_UserScripts() End")
+end
+Run_uop_UserScripts()
+
+-- Run Scripts passed through an 'addme'; can't support many of them though; 24-ish max
+-- revisit; we may want instead to just rely on the zero_patch_fs to find/run user_scripts.
 function RunUserScripts()
     print("RunUserScripts() Start")
 
@@ -130,7 +144,7 @@ function RunUserScripts()
                     -- .lvl or .script file must contain a .lua file with matching name
                     -- that file will be the entrypoint of the user script
                     ScriptCB_DoFile(trimToFileName(scriptPath))
-                elseif( string.find(scriptPath, "mission_name=") ) then 
+                elseif( string.find(scriptPath, "mission_name=") ) then
                     gMissionName = string.sub(scriptPath,14)
                     print("zero_patch patch_ingame gMissionName= ".. gMissionName)
                 end
@@ -158,13 +172,22 @@ function RunUserScripts()
 
     print("RunUserScripts() End")
 end
-RunUserScripts()
+
+status, err = pcall(RunUserScripts)
+if not status then
+    local msg = "Caught an error in RunUserScripts: " .. err
+    addIngameError(msg)
+    print(msg)
+else
+    -- Successful execution
+end
+--RunUserScripts()
 
 function uop_PatchFakeConsole()
     print("uop_PatchFakeConsole start")
     ifs_fakeconsole.Enter = function(this, bFwd)
         gConsoleCmdList = {}
-        
+
         -- MUST do this after AddIFScreen! This is done here, and not in
         -- Enter to make the memory footprint more consistent.
         fakeconsole_listbox_layout.FirstShownIdx = 1
@@ -173,10 +196,10 @@ function uop_PatchFakeConsole()
         ScriptCB_SndPlaySound("shell_menu_enter")
         --ScriptCB_GetConsoleCmds() -- puts contents in gConsoleCmdList
         ff_rebuildFakeConsoleList()
-    
+
         ListManager_fnFillContents(ifs_fakeconsole.listbox,gConsoleCmdList,fakeconsole_listbox_layout)
     end
-    
+
     ifs_fakeconsole.Input_Accept = function(this)
         if(gMouseListBoxSlider) then
             ListManager_fnScrollbarClick(gMouseListBoxSlider)
@@ -188,81 +211,81 @@ function uop_PatchFakeConsole()
             ListManager_fnFillContents(gMouseListBox,gMouseListBox.Contents,gMouseListBox.Layout)
     --			return
         end
-    
+
         if(this.CurButton == "_back") then -- Make PC work better - NM 8/5/04
             this:Input_Back()
             return
         end
-    
+
         local Selection = gConsoleCmdList[fakeconsole_listbox_layout.SelectedIdx]
         ScriptCB_SndPlaySound("shell_menu_enter");
-        
+
         local r2 = fakeconsole_listbox_layout.CursorIdx
         local r3 = fakeconsole_listbox_layout.FirstShownIdx
-        local r4 = r2 - r3 
-        r4 = r4 +1 
-        
+        local r4 = r2 - r3
+        r4 = r4 +1
+
         IFObj_fnSetColor(this.listbox[r4].showstr, 255,0,255)
-        if ( Selection.run ) then 
+        if ( Selection.run ) then
             print("ifs_fakeconsole: Is runnable:", Selection.ShowStr, Selection.run)
             ff_serverDidFCCmd()
             Selection.run()
             IFObj_fnSetColor(this.listbox[r4].showstr,0,255,255)
-        else 
+        else
             ScriptCB_DoConsoleCmd(Selection.ShowStr)
-        end 
+        end
         --ScriptCB_PopScreen()
     end
-    
-    ifs_fakeconsole.Input_KeyDown = function( this, iKey ) 
-        if (iKey  == 27 ) then  -- handle Escape 
+
+    ifs_fakeconsole.Input_KeyDown = function( this, iKey )
+        if (iKey  == 27 ) then  -- handle Escape
             --this:Input_Back() -- soft locks BF CC
-        end 
+        end
         --[[
             Keys that are handled in the ifs scripts:
-            8: Backspace 
-            9:  Tab 
-            10: Newline 
-            13: Carriage Return 
-            27: Esc 
-            32: Space 
-            43: * 
-            44: , 
-            45: - 
-            61: = 
-            95: _ (underscore) 
-            -59: F1 
-            -211: Delete 
+            8: Backspace
+            9:  Tab
+            10: Newline
+            13: Carriage Return
+            27: Esc
+            32: Space
+            43: *
+            44: ,
+            45: -
+            61: =
+            95: _ (underscore)
+            -59: F1
+            -211: Delete
         ]]--
     end
-    
-    ifs_fakeconsole.Update = function(this, fDt ) 
+
+    ifs_fakeconsole.Update = function(this, fDt )
         -- Yes; I'm aware this code looks really ugly.
-        -- But it is functionally the same as the luac -l listing 
-        --  -cbadal 
+        -- But it is functionally the same as the luac -l listing
+        --  -cbadal
         local r2 = gConsoleCmdList
         local r3 = fakeconsole_listbox_layout.SelectedIdx
         r2 = r2[r3]
-        if ( not  r2 ) then 
-            return 
-        end 
+        if ( not  r2 ) then
+            return
+        end
         r3 = this.lastDescribedCommand
-        if ( r3 == fakeconsole_listbox_layout.SelectedIdx ) then 
-            return 
-        end 
+        if ( r3 == fakeconsole_listbox_layout.SelectedIdx ) then
+            return
+        end
         r3 = fakeconsole_listbox_layout
         r3 = r3.SelectedIdx
-        this.lastDescribedCommand = r3 
-        r3 = r2.ShowStr 
-        if ( r3 == "" ) then 
-            r2.info = "" 
-        end 
-        r3 = r2.info 
-        if ( not r3  ) then 
+        this.lastDescribedCommand = r3
+        r3 = r2.ShowStr
+        if ( r3 == "" ) then
+            r2.info = ""
+        end
+        r3 = r2.info
+        if ( not r3  ) then
             r3 = "Note: No known description"
-        end 
-        
-        IFText_fnSetString(this.description,r3, this.description.case) 
+        end
+
+        IFText_fnSetString(this.description,r3, this.description.case)
     end
     print("uop_PatchFakeConsole end")
 end
@@ -271,12 +294,19 @@ end
 function SetupIngamelog()
     print("SetupIngamelog")
     ScriptCB_DoFile("ifs_ingame_log")
-    local oldPrint = print 
+    local oldPrint = print
     print = function(...)
-        if( ifs_ingame_log ~= nil) then 
+        if( ifs_ingame_log ~= nil) then
             ifs_ingame_log:AddToList(arg[1])
         end
         oldPrint(unpack(arg))
+    end
+
+    if(ingame_errors~= nil and table.getn(ingame_errors) > 0) then
+        for i, err in ipairs(ingame_errors) do
+            print(err)
+        end
+        ingame_errors = nil
     end
 end
 
@@ -295,12 +325,13 @@ local function SetupAddIfScreenCatching()
     local old_AddIFScreen = AddIFScreen
     AddIFScreen = function(...)
         print("AddIFScreen: " .. arg[2])
-        if( arg[2] == "ifs_fakeconsole") then 
+        if( arg[2] == "ifs_fakeconsole") then
             uop_PatchFakeConsole()
         elseif arg[2] == "ifs_pausemenu" then
             SetupIngamelog()
             print("IGK: adding debug log button to pauseMenu")
             print("Platform: ".. tostring( ScriptCB_GetPlatform() ))
+            print("zero_patch patch_ingame gMissionName= ".. tostring(gMissionName))
 
             -- add new button without remaking the whole pause menu
             local newButton = { tag = "debugLog", string = "Debug Log", }
@@ -322,15 +353,15 @@ end
 local function uop_do_files()
     ScriptCB_DoFile("fakeconsole_functions")
     ScriptCB_DoFile("popup_prompt")
-end 
+end
 
 local old_ScriptCB_DoFile = ScriptCB_DoFile
 ScriptCB_DoFile = function(...)
     print("ScriptCB_DoFile: " .. arg[1])
-    if(arg[1] == "ifs_pausemenu") then 
+    if(arg[1] == "ifs_pausemenu") then
         uop_do_files() -- do these before pause menu
     elseif(arg[1] == "ifs_opt_top")then
         SetupAddIfScreenCatching()
     end
     return old_ScriptCB_DoFile(unpack(arg))
-end 
+end

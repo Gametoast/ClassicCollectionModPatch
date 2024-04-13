@@ -323,13 +323,17 @@ RumbleLarge = {
 	
 }
 
+GAME_VERSION = "SWBF2_OG"
+GLOBALS_DEBUG = ""
+
 local addon_path = "..\\..\\addon\\"
-if(ScriptCB_IsFileExist("side\\all2.lvl") == 1) then 
+if(ScriptCB_IsFileExist("..\\..\\addon2\\0\\patch_scripts\\patch_paths.script") == 1) then
 	print("globals: This Collection is truly the classic one")
 	addon_path = "..\\..\\addon2\\"
-else 
+	GAME_VERSION = "SWBF2_CC"
+else
 	print("globals: This is not classic ")
-end 
+end
 
 
 -- Enter patch stuff!
@@ -337,7 +341,7 @@ local target = addon_path .. "0\\patch_scripts\\patch_paths.script"
 if (ScriptCB_IsFileExist(target) == 1 and  addon_path == "..\\..\\addon2\\" ) then
 	ReadDataFile(target)
 	ScriptCB_DoFile("patch_paths")
-	-- are we ingame? if so do some more stuff
+	GLOBALS_DEBUG = GLOBALS_DEBUG .. " patch_paths called"
 end
 
 -- since globals runs in Shell and ingame, we call out selectively to setup 'patching'
@@ -345,17 +349,19 @@ end
 if ( ScriptInit ~= nil ) then  -- this will exist at mission script execution/ingame time
     -- this should run during game_interface execution
 	local target = addon_path .. "0\\patch_scripts\\patch_ingame.lvl"
-	if(ScriptCB_IsFileExist(target) == 1 )  then 
+	if(ScriptCB_IsFileExist(target) == 1 )  then
 		print("globals: call 'patch_ingame'")
 		ReadDataFile(target)
 		ScriptCB_DoFile("patch_ingame")
+		GLOBALS_DEBUG = GLOBALS_DEBUG .. " patch_ingame called"
 	end
 else
-	-- running at shell time 
+	-- running at shell time
     local target = addon_path .. "0\\patch_scripts\\patch_shell.lvl"
-	if(ScriptCB_IsFileExist(target) == 1 )  then 
+	if(ScriptCB_IsFileExist(target) == 1 )  then
 		print("globals: call 'patch_shell'")
 		ReadDataFile(target)
 		ScriptCB_DoFile("patch_shell")
+		GLOBALS_DEBUG = GLOBALS_DEBUG .. " patch_shell called"
 	end
-end 
+end

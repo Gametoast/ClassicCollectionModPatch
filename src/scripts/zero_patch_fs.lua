@@ -1,16 +1,42 @@
 
-local function ReadInFileSystem()
-    print("info: ReadInFileSystem()")
+local function ReadFileSystemLuaFile()
     local checkFile = "addon2\\0\\patch_scripts\\fs.lua"
     local prefix = "addon2\\"
-    if(IsFileExist(checkFile) == 0 ) then
+    if(IsFileExist("addon2\\0\\addme.script") == 0 ) then
         -- make compatible with OG version too
         checkFile = "addon\\0\\patch_scripts\\fs.lua"
+    end
+    if(IsFileExist(checkFile) == 1) then 
+        dofile(checkFile)
+        print("info: ReadFileSystemLuaFile; read in fs.lua")
+        return true
+    end
+    return false
+end
+
+-- The switch (NX) version does not support 'dofile()'
+local function ReadFileSystemScriptFile()
+    local checkFile = "..\\..\\addon\\0\\patch_scripts\\fs.script"
+    if( ScriptCB_IsFileExist(checkFile) == 1 ) then 
+        ReadDataFile(checkFile)
+        ScriptCB_DoFile("fs")
+        print("info: ReadFileSystemScriptFile; read in fs.script")
+        return true
+    end
+    return false
+end
+
+
+local function ReadInFileSystem()
+    print("info: ReadInFileSystem()")
+    local prefix = "addon2\\"
+    if(IsFileExist("addon2\\0\\addme.script") == 0 ) then
+        -- make compatible with OG version too
         prefix = "addon\\"
     end
-    if(IsFileExist(checkFile) == 1 ) then
-        zero_patch_files_string = ""
-        dofile(checkFile)
+    
+    zero_patch_files_string = ""
+    if( ReadFileSystemScriptFile() or ReadFileSystemLuaFile() ) then
         -- the  zero_patch_files_string string  should exist now
         local function splitStringByNewline(str)
             local t = {}
@@ -31,7 +57,8 @@ local function ReadInFileSystem()
 
         for i, line in ipairs(myList) do
             local startPos, endPos = string.find(line, prefix)
-            if startPos then
+            -- TODO: discuss if we want to disable scripts/files this way.
+            if startPos and string.find(line, "disabled") == nil then
                 -- Extract and print part of the line from "addon2\" to the end
                 local part = "..\\..\\" .. string.sub(line, startPos)
                 table.insert( allFiles, part)

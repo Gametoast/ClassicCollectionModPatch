@@ -1,7 +1,21 @@
 addon2
 └── "0"
     ├── addme.script
-    └── patch_ingame.lvl
+    ├── readme.txt
+    ├── Apply_patch.bat
+    ├── run_after_adding_mod_linux.sh
+    ├── run_after_adding_mod_switch.bat
+    ├── run_after_adding_mod_windows.bat
+    ├── base_common.lvl_goes_in_here
+    |   └──put_your_common.lvl_file_in_here.txt
+    ├── movies
+    |   └── fly
+    |        └── fly.lvl
+    └── patch_scripts
+        ├── globals.script
+        ├── patch_paths.script
+        ├── patch_shell.lvl
+        └── patch_ingame.lvl
 
 data2
     └── _lvl_common

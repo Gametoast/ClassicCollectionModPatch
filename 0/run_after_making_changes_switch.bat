@@ -55,4 +55,7 @@ dir /b /s * >> "0\\patch_scripts\\fs.lua"
 
 echo ]] >> "0\\patch_scripts\\fs.lua"
 
+REM gotta munge fs.lua for switch
+0\bin\ScriptMunge.exe  -sourcedir 0\patch_scripts\ -inputfile fs.lua -outputdir 0\patch_scripts\ -checkdate -continue
+move ScriptMunge.log 0\patch_scripts\
 endlocal

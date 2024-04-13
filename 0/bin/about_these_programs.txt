@@ -1,0 +1,11 @@
+
+
+====== only used for the switch 0 patch =======
+LowerCaseAllFiles.exe -- source code included (LowerCaseAllFiles.cs)
+luac.exe              -- Lua compiler from the BF2 modtools package; used by ScriptMunge.exe
+ScriptMunge.exe       -- Creates .script files (from .lua files) that can be read by BF2.
+===============================================
+
+
+LVLTool.exe           -- Used by the 'ApplyPatch.bat' batch file; replaces the 'globals' script inside common.lvl
+                         to give a hook into the game. GitHub repo https://github.com/BAD-AL/LVLTool
