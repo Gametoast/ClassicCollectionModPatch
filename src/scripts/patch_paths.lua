@@ -2,7 +2,8 @@
 -- STAR WARS BATTLEFRONT CLASSIC COLLECTION - Old Mod Patcher - Redirects an all.lvl load to all1 and all2, redirects an addon load to addon2
 -- Greetings from Kenny
 
-local __scriptName__ = "[CCPatch: patch_ingame]: "
+local __scriptName__ = "[zero_patch: patch_ingame]: "
+print("Start: " .. __scriptName__)
 
 THE_ORIGINAL_ScriptCB_IsFileExist = ScriptCB_IsFileExist
 
@@ -147,3 +148,4 @@ if ScriptCB_IsFileExist("dc:core.lvl") == 1 then
     ReadDataFile("dc:core.lvl")
 end]]--
 
+print("End: " .. __scriptName__)
