@@ -459,6 +459,11 @@ local function GetMovieName(Selection)
 			PREVIEW_MOVIE_CONFIG = 1
 		end
 	end
+	-- look for a default fallback 
+	if(ScriptCB_IsFileExist( flyMoviesBasePath .. "default.mvs")  == 1) then 
+		movieFile = flyMoviesBasePath .. "default"
+		movieName = "preview"
+	end
 	if(ScriptCB_IsFileExist(flyMoviesBasePath .. filename) == 1) then
 		-- to keep consistent with the Zerted stuff, we'll append the ''.mvs' later when setting the video
 		movieFile = flyMoviesBasePath .. prefix .. "fly"
