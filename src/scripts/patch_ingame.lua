@@ -127,62 +127,6 @@ function Run_uop_UserScripts()
 end
 Run_uop_UserScripts()
 
--- Run Scripts passed through an 'addme'; can't support many of them though; 24-ish max
--- revisit; we may want instead to just rely on the zero_patch_fs to find/run user_scripts.
-function RunUserScripts()
-    print("RunUserScripts() Start")
-
-    -- retrieve user scripts we saved in mission setup table
-    if ScriptCB_IsMissionSetupSaved() then
-        local missionSetup = ScriptCB_LoadMissionSetup()
-        if (missionSetup ~= nil and missionSetup.userScripts ~= nil) then
-            print("RunUserScripts: userScripts.len: " .. tostring(table.getn(missionSetup.userScripts)))
-            for i, scriptPath in ipairs(missionSetup.userScripts) do
-                if( ScriptCB_IsFileExist(scriptPath) == 1) then
-                    print("RunUserScripts: " .. scriptPath)
-                    ReadDataFile(scriptPath)
-                    -- .lvl or .script file must contain a .lua file with matching name
-                    -- that file will be the entrypoint of the user script
-                    ScriptCB_DoFile(trimToFileName(scriptPath))
-                elseif( string.find(scriptPath, "mission_name=") ) then
-                    gMissionName = string.sub(scriptPath,14)
-                    print("zero_patch patch_ingame gMissionName= ".. gMissionName)
-                end
-            end
-
-            local hasOnlyUserScripts = true
-            for key, value in pairs(missionSetup) do
-                if key ~= "userScripts" then
-                    hasOnlyUserScripts = false
-                    break
-                end
-            end
-
-            if hasOnlyUserScripts then
-                -- if the missionSetup was only user scripts then clear items
-                ScriptCB_ClearMissionSetup()
-            else
-                --remove the user scripts and save it again
-                --we don't really have to do this but i figure its a good idea
-                missionSetup.userScripts = nil
-                ScriptCB_SaveMissionSetup(missionSetup)
-            end
-        end
-    end
-
-    print("RunUserScripts() End")
-end
-
-status, err = pcall(RunUserScripts)
-if not status then
-    local msg = "Caught an error in RunUserScripts: " .. err
-    addIngameError(msg)
-    print(msg)
-else
-    -- Successful execution
-end
---RunUserScripts()
-
 function uop_PatchFakeConsole()
     print("uop_PatchFakeConsole start")
     ifs_fakeconsole.Enter = function(this, bFwd)
