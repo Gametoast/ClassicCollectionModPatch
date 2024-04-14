@@ -143,12 +143,12 @@ if(ScriptCB_IsFileExist("..\\..\\addon2\\0\\patch_scripts\\patch_paths.script") 
     end
 end
 
--- logging
-local old_ReadDataFile = ReadDataFile
-ReadDataFile = function(...)
-    print("info: enter ReadDataFile " .. arg[1])
-    return old_ReadDataFile(unpack(arg))
-end
+---- debug logging
+--local old_ReadDataFile = ReadDataFile
+--ReadDataFile = function(...)
+--    print("info: enter ReadDataFile " .. arg[1])
+--    return old_ReadDataFile(unpack(arg))
+--end
 
 -- This does not work. Find a better solution asap.
 --[[ load core again for custom localization

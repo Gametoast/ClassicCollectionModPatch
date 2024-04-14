@@ -107,13 +107,7 @@ end
 function custom_GetGCButtonList()
     print("custom_GetGCButtonList()")
     return {
-        -- { tag = "1", string = "ifs.meta.Configs.1", },
-        -- { tag = "2", string = "ifs.meta.Configs.2", },
-        -- { tag = "3", string = "ifs.meta.Configs.3", },
-        -- { tag = "4", string = "ifs.meta.Configs.4", },
-        -- { tag = "custom", string = "ifs.meta.Configs.custom", },
-        -- { tag = "campaign", string = "ifs.sp.campaign1.title", },
-        -- { tag = "load", string = "ifs.meta.load.btnload", },
+        -- Custom GC list starts out Empty in 'zero patch'
     }
 end
 
@@ -137,7 +131,7 @@ end
 --================== CUSTOM Galactic Conquest Framework End ====================
 
 -- good point of entry for the zero patch is just after the basic interface stuff is defined and
--- before the ifs screens are defined because we give a 'modify' oppurtunity to the gc scripts.
+-- just before the 'ifs_' screens are defined so we give a 'modify' oppurtunity to the gc/interface scripts.
 local old_ScriptCB_DoFile = ScriptCB_DoFile
 ScriptCB_DoFile = function(...)
     -- print("ScriptCB_DoFile: " .. arg[1])
