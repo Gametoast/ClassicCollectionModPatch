@@ -72,21 +72,39 @@ local function ReadInFileSystem()
     end
 end 
 
-
+local function hasExtension(path, ext_list)
+    if ext_list == nil then 
+        return true
+    end
+    -- Iterate through each extension in the list
+    for _, ext in ipairs(ext_list) do
+        -- Check if the path ends with the current extension
+        if string.sub(path, -string.len(ext)) == ext then
+            return true
+        end
+    end
+    return false
+end
 zero_patch_fs = {
+    
     -- Get files given a lua pattern. For get all files, pass no argument
+    -- Lua pattern matching is a bit on the 'weak' side, it is not 'POSIX' compliant.
     -- Lua pattern matching  https://riptutorial.com/lua/example/20315/lua-pattern-matching
-    getFiles = function(pattern)
-        
+    -- pattern - A Lua pattern 
+    -- ext_list - extensions you need the file to have; example: { ".lvl", ".script"}
+    getFiles = function(pattern, ext_list)
         local matchedFiles = {}
         local lowerPattern = pattern and string.lower(pattern)
         local file_system = ReadInFileSystem() -- let this get cleaned out after use, how many times would it get called anyway?
         for i, v in ipairs(file_system) do
-            if( pattern == nil or  string.find(v, lowerPattern)) then
+            if( pattern == nil ) then
+                table.insert(matchedFiles, v)
+            elseif string.find(v, lowerPattern) and hasExtension(v, ext_list) then
                 table.insert(matchedFiles, v)
             end
         end
         if(table.getn(matchedFiles) == 0 and not gFinalBuild ) then 
+            -- print out a help message if using the debugger
             print(string.format("zero_patch_fs.getFiles('%s') -> Matched 0 files.\n  If you need help with lua patterns check the help message:", tostring(pattern)))
             zero_patch_fs.printHelp()
         end
@@ -98,15 +116,18 @@ zero_patch_fs = {
         local msg = [[
 ======================================================
 zero_patch_fs.print_help()
+getFiles(pattern, extension_list)
 ======================================================
 Quick Reminders:
     ^  = Beginning of string/line
     $  = End of string/line
     .* = match any number of characters
+    or = doesn't exist in Lua patterns
 
 Example:
     Get all .lvl files under the 'abc' addon folder:
         abc_lvls = zero_patch_fs.getFiles(".*abc.*lvl")
+        user_scripts = zero_patch_fs.getFiles("user_script_", {".lvl", ".script"})
 
 Or use the following guide for lua pattern matching:
     https://riptutorial.com/lua/example/20315/lua-pattern-matching

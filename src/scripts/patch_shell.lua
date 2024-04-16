@@ -70,6 +70,11 @@ if IsFileExist == nil then
     end
 end
 
+if(ScriptCB_IsFileExist("..\\..\\addon\\0\\patch_scripts\\v1.3patch_strings.lvl") == 1) then
+    print("info: read in old 1.3 patch strings")
+    ReadDataFile("..\\..\\addon\\0\\patch_scripts\\v1.3patch_strings.lvl")
+end
+
 ScriptCB_DoFile("zero_patch_fs")
 
 -- trim "path\\to\\file.lvl" to "file"
@@ -114,13 +119,14 @@ end
 function RunCustomGCFiles()
     print("info: RunCustomGCFiles START")
     local scriptName = ""
-    local files = zero_patch_fs.getFiles("custom_gc")
+    local files = zero_patch_fs.getFiles("custom_gc", {".lvl", ".script"})
 
     for i, value in ipairs(files) do
         if (string.find(value, "custom_gc_10.lvl")) then
             --  skip custom_gc_10, because that was a special one
             --  from zerted that loaded more custom_gc lvls
         else
+            print("info: running " .. value)
             scriptName = trimToFileName(value)
             ReadDataFile(value)
             ScriptCB_DoFile(scriptName)

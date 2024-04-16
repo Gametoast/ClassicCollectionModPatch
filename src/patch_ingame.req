@@ -14,8 +14,18 @@ ucft
         "popup_prompt"
         "utility_functions2"
         "fakeconsole_functions"
+        "ifs_fakeconsole_zero_patch"
         "ifs_ingame_log"
         "zero_patch_fs"
     }
+
+    REQN
+    {
+        "texture"
+        "border_3_pieces"
+        "border_3a_pieces"
+        "border_popup"
+        "opaque_rect"
+	}
 
 }

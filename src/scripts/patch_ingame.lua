@@ -9,10 +9,10 @@
 
 print("Patch ingame start")
 
--- added 'ingame_errors' table to keep track of errors befroe we re-direct 'print'
-local ingame_errors ={}
-local function addIngameError(str)
-    table.insert(ingame_errors, str)
+-- added 'ingame_messages' table to keep track of errors befroe we re-direct 'print'
+local ingame_messages ={}
+local function addIngameMessage(str)
+    table.insert(ingame_messages, str)
 end
 
 if(printf == nil) then
@@ -80,15 +80,18 @@ end
 local status, err = pcall(load_fs)
 if not status then
     local msg = "Caught an error in load_fs: " .. err
-    addIngameError(msg)
+    addIngameMessage(msg)
     print(msg)
 else
     -- Successful execution
 end
 
 ScriptCB_DoFile("utility_functions2")
---print("game_interface: Reading in custom strings")
---ReadDataFile("v1.3patch_strings.lvl") -- where to put, root of'0'?
+
+if(ScriptCB_IsFileExist("..\\..\\addon\\0\\patch_scripts\\v1.3patch_strings.lvl") == 1) then
+    print("info: read in old 1.3 patch strings")
+    ReadDataFile("..\\..\\addon\\0\\patch_scripts\\v1.3patch_strings.lvl")
+end
 
 -- trim "path\\to\\file.lvl" to "file"
 function trimToFileName(filePath)
@@ -114,10 +117,11 @@ end
 
 function Run_uop_UserScripts()
     local scriptName = ""
-    local files = zero_patch_fs.getFiles("user_script")
+    local files = zero_patch_fs.getFiles("user_script_", {".lvl", ".script"})
 
     for i, value in ipairs(files) do
         if( ScriptCB_IsFileExist(value) == 1) then
+            addIngameMessage("info: running " .. value)
             ReadDataFile(value)
             scriptName = trimToFileName(value)
             ScriptCB_DoFile(scriptName)
@@ -127,111 +131,15 @@ function Run_uop_UserScripts()
 end
 Run_uop_UserScripts()
 
-function uop_PatchFakeConsole()
-    print("uop_PatchFakeConsole start")
-    ifs_fakeconsole.Enter = function(this, bFwd)
-        gConsoleCmdList = {}
-
-        -- MUST do this after AddIFScreen! This is done here, and not in
-        -- Enter to make the memory footprint more consistent.
-        fakeconsole_listbox_layout.FirstShownIdx = 1
-        fakeconsole_listbox_layout.SelectedIdx = 1
-        fakeconsole_listbox_layout.CursorIdx = 1
-        ScriptCB_SndPlaySound("shell_menu_enter")
-        --ScriptCB_GetConsoleCmds() -- puts contents in gConsoleCmdList
-        ff_rebuildFakeConsoleList()
-
-        ListManager_fnFillContents(ifs_fakeconsole.listbox,gConsoleCmdList,fakeconsole_listbox_layout)
+-- filter debug messages to messages with 'info:', 'error' or 'warn' in them.
+-- TODO: consider providing an override option where everything goes into the debug log? (when 'addon/0/debug.txt' exists?)
+function zero_patch_is_worthy_for_debug(str)
+    local test = string.lower(str)
+    if (string.find(test, 'error') or string.find(test, 'warn') or string.find(test, 'info:') or
+        string.find(test, 'debug')) then
+        return true
     end
-
-    ifs_fakeconsole.Input_Accept = function(this)
-        if(gMouseListBoxSlider) then
-            ListManager_fnScrollbarClick(gMouseListBoxSlider)
-            return
-        end
-        if(gMouseListBox) then
-            ScriptCB_SndPlaySound("shell_select_change")
-            gMouseListBox.Layout.SelectedIdx = gMouseListBox.Layout.CursorIdx
-            ListManager_fnFillContents(gMouseListBox,gMouseListBox.Contents,gMouseListBox.Layout)
-    --			return
-        end
-
-        if(this.CurButton == "_back") then -- Make PC work better - NM 8/5/04
-            this:Input_Back()
-            return
-        end
-
-        local Selection = gConsoleCmdList[fakeconsole_listbox_layout.SelectedIdx]
-        ScriptCB_SndPlaySound("shell_menu_enter");
-
-        local r2 = fakeconsole_listbox_layout.CursorIdx
-        local r3 = fakeconsole_listbox_layout.FirstShownIdx
-        local r4 = r2 - r3
-        r4 = r4 +1
-
-        IFObj_fnSetColor(this.listbox[r4].showstr, 255,0,255)
-        if ( Selection.run ) then
-            print("ifs_fakeconsole: Is runnable:", Selection.ShowStr, Selection.run)
-            ff_serverDidFCCmd()
-            Selection.run()
-            IFObj_fnSetColor(this.listbox[r4].showstr,0,255,255)
-        else
-            ScriptCB_DoConsoleCmd(Selection.ShowStr)
-        end
-        --ScriptCB_PopScreen()
-    end
-
-    ifs_fakeconsole.Input_KeyDown = function( this, iKey )
-        if (iKey  == 27 ) then  -- handle Escape
-            --this:Input_Back() -- soft locks BF CC
-        end
-        --[[
-            Keys that are handled in the ifs scripts:
-            8: Backspace
-            9:  Tab
-            10: Newline
-            13: Carriage Return
-            27: Esc
-            32: Space
-            43: *
-            44: ,
-            45: -
-            61: =
-            95: _ (underscore)
-            -59: F1
-            -211: Delete
-        ]]--
-    end
-
-    ifs_fakeconsole.Update = function(this, fDt )
-        -- Yes; I'm aware this code looks really ugly.
-        -- But it is functionally the same as the luac -l listing
-        --  -cbadal
-        local r2 = gConsoleCmdList
-        local r3 = fakeconsole_listbox_layout.SelectedIdx
-        r2 = r2[r3]
-        if ( not  r2 ) then
-            return
-        end
-        r3 = this.lastDescribedCommand
-        if ( r3 == fakeconsole_listbox_layout.SelectedIdx ) then
-            return
-        end
-        r3 = fakeconsole_listbox_layout
-        r3 = r3.SelectedIdx
-        this.lastDescribedCommand = r3
-        r3 = r2.ShowStr
-        if ( r3 == "" ) then
-            r2.info = ""
-        end
-        r3 = r2.info
-        if ( not r3  ) then
-            r3 = "Note: No known description"
-        end
-
-        IFText_fnSetString(this.description,r3, this.description.case)
-    end
-    print("uop_PatchFakeConsole end")
+    return false
 end
 
 -- sets up 'ifs_ingame_log'
@@ -240,17 +148,17 @@ function SetupIngamelog()
     ScriptCB_DoFile("ifs_ingame_log")
     local oldPrint = print
     print = function(...)
-        if( ifs_ingame_log ~= nil) then
+        if( ifs_ingame_log ~= nil and zero_patch_is_worthy_for_debug(arg[1])) then
             ifs_ingame_log:AddToList(arg[1])
         end
         oldPrint(unpack(arg))
     end
 
-    if(ingame_errors~= nil and table.getn(ingame_errors) > 0) then
-        for i, err in ipairs(ingame_errors) do
+    if(ingame_messages~= nil and table.getn(ingame_messages) > 0) then
+        for i, err in ipairs(ingame_messages) do
             print(err)
         end
-        ingame_errors = nil
+        ingame_messages = nil
     end
 end
 
@@ -269,9 +177,7 @@ local function SetupAddIfScreenCatching()
     local old_AddIFScreen = AddIFScreen
     AddIFScreen = function(...)
         print("AddIFScreen: " .. arg[2])
-        if( arg[2] == "ifs_fakeconsole") then
-            uop_PatchFakeConsole()
-        elseif arg[2] == "ifs_pausemenu" then
+        if arg[2] == "ifs_pausemenu" then
             SetupIngamelog()
             print("IGK: adding debug log button to pauseMenu")
             print("Platform: ".. tostring( ScriptCB_GetPlatform() ))
@@ -289,6 +195,18 @@ local function SetupAddIfScreenCatching()
                     ifs_movietrans_PushScreen(ifs_ingame_log)
                 end
             end
+            print("info: GAME_VERSION: ".. GAME_VERSION)
+            if(GAME_VERSION == "SWBF2_CC") then 
+                -- Freecam is no-worky on BF CC; but don't hide it for 'OG' BF2
+                local old_ifs_pausemenu_fnEnter = ifs_pausemenu_fnEnter
+                ifs_pausemenu_fnEnter = function(this, bFwd, iInstance)
+                    old_ifs_pausemenu_fnEnter(this, bFwd, iInstance)
+                    this.buttons.freecam.hidden = true
+                    this.CurButton = ShowHideVerticalButtons(this.buttons, ifspausemenu_vbutton_layout)
+                    SetCurButton(this.CurButton, this)
+                end
+            end
+    
         end
         return old_AddIFScreen(unpack(arg))
     end
@@ -304,6 +222,8 @@ ScriptCB_DoFile = function(...)
     print("ScriptCB_DoFile: " .. arg[1])
     if(arg[1] == "ifs_pausemenu") then
         uop_do_files() -- do these before pause menu
+    elseif(arg[1] == "ifs_fakeconsole")then
+        arg[1] = "ifs_fakeconsole_zero_patch"
     elseif(arg[1] == "ifs_opt_top")then
         SetupAddIfScreenCatching()
     end
