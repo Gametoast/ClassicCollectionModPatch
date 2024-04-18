@@ -195,17 +195,19 @@ local function SetupAddIfScreenCatching()
                     ifs_movietrans_PushScreen(ifs_ingame_log)
                 end
             end
-            print("info: GAME_VERSION: ".. GAME_VERSION)
-            if(GAME_VERSION == "SWBF2_CC") then 
-                -- Freecam is no-worky on BF CC; but don't hide it for 'OG' BF2
-                local old_ifs_pausemenu_fnEnter = ifs_pausemenu_fnEnter
-                ifs_pausemenu_fnEnter = function(this, bFwd, iInstance)
-                    old_ifs_pausemenu_fnEnter(this, bFwd, iInstance)
-                    this.buttons.freecam.hidden = true
-                    this.CurButton = ShowHideVerticalButtons(this.buttons, ifspausemenu_vbutton_layout)
-                    SetCurButton(this.CurButton, this)
-                end
-            end
+            -- not sure why, but the code below that hides the fakecamera button is crashing the steamdeck.
+            -- disabling that for now.
+            --print("info: GAME_VERSION: ".. GAME_VERSION)
+            --if(GAME_VERSION == "SWBF2_CC") then
+            --    -- Freecam is no-worky on BF CC; but don't hide it for 'OG' BF2
+            --    local old_ifs_pausemenu_fnEnter = ifs_pausemenu_fnEnter
+            --    ifs_pausemenu_fnEnter = function(this, bFwd, iInstance)
+            --        old_ifs_pausemenu_fnEnter(this, bFwd, iInstance)
+            --        this.buttons.freecam.hidden = true
+            --        this.CurButton = ShowHideVerticalButtons(this.buttons, ifspausemenu_vbutton_layout)
+            --        SetCurButton(this.CurButton, this)
+            --    end
+            --end
     
         end
         return old_AddIFScreen(unpack(arg))
