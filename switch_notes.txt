@@ -1,0 +1,5 @@
+
+Notes on Switch (1st release; no patches):
+1. All files seem to need to be lower case.
+2. 'dofile()' doesn't work.
+3. 'ScriptCB_IsFileExist("side\\rep.lvl")' Works properly only when the target file is in the 'data2\\_lvl_common' folder.

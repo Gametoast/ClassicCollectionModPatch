@@ -7,11 +7,11 @@ local __scriptName__ = "[zero_patch: addme.script]: "
 --we want mod launcher, instant action console
 print("zero_patch: Start 0/addme.script")
 
-if(printf == nil) then 
+if(printf == nil) then
     function printf (...) print(string.format(unpack(arg))) end
-end 
+end
 
-if( tprint == nil ) then 
+if( tprint == nil ) then
     function getn(v)
         local v_type = type(v);
         if v_type == "table" then
@@ -23,11 +23,11 @@ if( tprint == nil ) then
         end
     end
 
-    if string.starts == nil then 
+    if string.starts == nil then
         function string.starts(str, Start)
             return string.sub(str, 1, string.len(Start)) == Start;
         end
-    end 
+    end
 
     function tprint(t, indent)
         if not indent then indent = 1, print(tostring(t) .. " {") end
@@ -39,12 +39,12 @@ if( tprint == nil ) then
                         print(formatting .. --[[tostring(value) ..]] " {")
                         tprint(value, indent+1);
                     else
-                        if(type(value) == "string") then 
+                        if(type(value) == "string") then
                             --print(formatting .."'" .. tostring(value) .."'" ..",")
                             printf("%s'%s',",formatting, tostring(value))
-                        else 
+                        else
                             print(formatting .. tostring(value) ..",")
-                        end 
+                        end
                     end
                 end
             end
@@ -55,49 +55,49 @@ end
 
 ---
 
--- functionality to add strings 
+-- functionality to add strings
 if( modStringTable == nil ) then
-	modStringTable = {} -- table to hold custom strings 
-	
-	-- function to add custom strings  
+	modStringTable = {} -- table to hold custom strings
+
+	-- function to add custom strings
 	function addModString(stringId, content)
 		modStringTable[stringId] = ScriptCB_tounicode(content)
-	end 
+	end
 
-	if oldScriptCB_getlocalizestr == nil then 
+	if oldScriptCB_getlocalizestr == nil then
 		-- Overwrite 'ScriptCB_getlocalizestr()' to first check for the strings we added
 		print("redefine: ScriptCB_getlocalizestr() ")
 
 		oldScriptCB_getlocalizestr = ScriptCB_getlocalizestr
 		ScriptCB_getlocalizestr = function (...)
 			local stringId = " "
-			if( table.getn(arg) > 0 ) then 
+			if( table.getn(arg) > 0 ) then
 				stringId = arg[1]
 			end
 			if( modStringTable[stringId] ~= nil) then -- first check 'our' strings
 				retVal = modStringTable[stringId]
-			else 
+			else
 				retVal = oldScriptCB_getlocalizestr( unpack(arg) )
-			end 
-			return retVal 
+			end
+			return retVal
 		end
-	end 
+	end
 end
--- Force 'IFText_fnSetString' to use strings from our 'modStringTable' too 
-if ( oldIFText_fnSetString == nil )then 
+-- Force 'IFText_fnSetString' to use strings from our 'modStringTable' too
+if ( oldIFText_fnSetString == nil )then
     oldIFText_fnSetString = IFText_fnSetString
     IFText_fnSetString = function(...)
-        if( table.getn(arg) > 1 and modStringTable[arg[2]] ~= nil ) then 
+        if( table.getn(arg) > 1 and modStringTable[arg[2]] ~= nil ) then
             arg[2] = modStringTable[arg[2]]
             IFText_fnSetUString(unpack(arg))
-            return 
-        end 
+            return
+        end
         oldIFText_fnSetString(unpack(arg))
-    end 
-end 
+    end
+end
 
 addModString("ifs.console.action","Instant Action (alt)")
--- 
+--
 ----- ADD uop eras & modes--------------------------------------------------------------------------------------
 print("zero_patch: Add UOP Eras and Game Modes: Start")
 uopMapEras = {
@@ -176,13 +176,13 @@ uopMapModes = {
 }
 
 function uop_AddEra(entry)
-    if( entry.key ~= nil and entry.showstr ~= nil and entry.subst ~= nil and 
-         entry.Team1Name ~= nil and entry.Team2Name ~= nil  ) then 
+    if( entry.key ~= nil and entry.showstr ~= nil and entry.subst ~= nil and
+         entry.Team1Name ~= nil and entry.Team2Name ~= nil  ) then
         ---------- check if it's already present ----------
-        for key,value in gMapEras do -- check if entry is already present 
+        for key,value in gMapEras do -- check if entry is already present
             if( value.key == entry.key) then
                 print("uop_AddEra(): Era with key '".. value.key .. "' is already present.")
-                return 
+                return
             end
         end
         if(entry.icon1 == nil) then
@@ -191,18 +191,18 @@ function uop_AddEra(entry)
         ---------------------------------------------------
         table.insert( gMapEras, entry )
         print("uop_AddEra(): added Era: "  .. tostring(entry.key))
-    else 
-        print("uop_AddEra: Error adding Era. Must specify properties [key, showstr, subst, Team1Name, Team2Name ]\n" .. 
+    else
+        print("uop_AddEra: Error adding Era. Must specify properties [key, showstr, subst, Team1Name, Team2Name ]\n" ..
             "See 'gMapEras' (missionlist.lua) to see format of existing eras.")
-    end 
-end 
+    end
+end
 function uop_AddGameMode(entry)
-    if( entry.key ~= nil and entry.showstr ~= nil and entry.descstr ~= nil and entry.subst ~= nil ) then 
+    if( entry.key ~= nil and entry.showstr ~= nil and entry.descstr ~= nil and entry.subst ~= nil ) then
         ---------- check if it's already present ----------
         for key,value in gMapModes do
             if( value.key == entry.key) then
                 print("uop_AddGameMode(): Mode with key '".. value.key .. "' is already present.")
-                return 
+                return
             end
         end
         if(entry.icon == nil) then
@@ -211,24 +211,24 @@ function uop_AddGameMode(entry)
         ---------------------------------------------------
         table.insert( gMapModes, entry )
         print("uop_AddGameMode(): added Era: " .. tostring(entry.key))
-    else 
+    else
         print("uop_AddGameMode: Error adding Game mode. Must specify [key, showstr, descstr, subst]\n" ..
             "See 'gMapModes' to see format of existing Game mode entries.")
-    end 
-end 
+    end
+end
 
 if( custom_GetSPMissionList  == nil ) then -- will be nil if the game doesn't have the 1.3 un-official patch
     print("zero_patch: Add UOP Eras and Game Modes: Start")
-    local i = 1 
+    local i = 1
     local limit = table.getn(uopMapEras)
-    while i < limit do 
+    while i < limit do
         uop_AddEra(uopMapEras[i])
         i = i + 1
     end
 
-    i = 1 
+    i = 1
     limit = table.getn(uopMapModes)
-    while i < limit do 
+    while i < limit do
         uop_AddGameMode(uopMapModes[i])
         i = i + 1
     end
@@ -236,7 +236,7 @@ if( custom_GetSPMissionList  == nil ) then -- will be nil if the game doesn't ha
 else
     print("zero_patch: WARNING! zero_patch is not compatible with UOP!!!")
 end
-	
+
 ScriptCB_DoFile("ifs_missionselect_console")
 ScriptCB_DoFile("ifs_mod_menu_launcher")
 
@@ -247,6 +247,7 @@ function OverrideInstantAction()
 	local old_ScriptCB_SetIFScreen = ScriptCB_SetIFScreen
 	ScriptCB_SetIFScreen = function(...)
 		local screen_name = arg[1]
+        print("ScriptCB_SetIFScreen: ".. screen_name)
 		if(screen_name == "ifs_missionselect" ) then
 			arg[1] = "ifs_missionselect_console"
         end
@@ -257,74 +258,50 @@ end
 AddModMenuItem( "IA",  "Instant Action (alt)", "ifs_missionselect_console")
 AddModMenuItem( "IA",  "Instant Action", "ifs_missionselect")
 
-if( ScriptCB_IsFileExist("side\\all1.lvl") == 1 ) then 
+if( ScriptCB_IsFileExist("..\\..\\addon2\\0\\patch_scripts\\patch_paths.script") == 1 ) then
     -- only do this for classic collection
     OverrideInstantAction()
 end
 
+function HandleCustomGC(tag)
+    if custom_PressedGCButton(tag) ~= nil then
+        ifelm_shellscreen_fnPlaySound(this.acceptSound)
+        ifs_movietrans_PushScreen(ifs_freeform_main)
+    end
+end
+
+-- Temp Solution? for Custom GC
+local addon_gc_list = custom_GetGCButtonList()
+local display_text = ""
+print("info: addon_gc_list.count: " .. table.getn(addon_gc_list))
+-- from gc docs -> local ourButton = { tag = gcTag, string = gcString, }
+for _, value in addon_gc_list do
+    display_text = value.string
+    if(string.find(display_text, "%.")) then -- try to localize
+        print("info: try to localize " .. value.string)
+        display_text = ScriptCB_ununicode( ScriptCB_getlocalizestr(display_text))
+        if(display_text) then 
+            display_text = "Custom GC: " .. display_text
+        end
+    else
+        display_text = "Custom GC: " .. value.string
+    end
+    AddModMenuItem(value.tag, display_text, HandleCustomGC)
+end
+
+
 AddModMenuItem( "campaignList",  "ifs.sp.campaign", "ifs_sp_briefing")
 AddModMenuItem( "font_test",  "font test", "ifs_fonttest")
+AddModMenuItem("ifs_ingame_log", "Debug Log", "ifs_ingame_log")
 
-
-
-gUserScripts = {}
--- addme scripts from other maps will
--- run this function and add their own user scripts to this table
--- example filePath ..\..\addon\ABC\my_snazzy_mod.lvl
-function AddUserScript(filePath)
-
-    if gUserScripts == nil then
-        gUserScripts = {}
-    end
-    print("AddUserScript: " .. filePath)
-    table.insert(gUserScripts, filePath)
+-- keep track of mission count
+__ADDDOWNLOADABLECONTENT_COUNT__ = 0 -- same name from uop
+local oldAddDownloadableContent = AddDownloadableContent
+AddDownloadableContent = function(mapLuaFile, missionName, defaultMemoryModelPlus)
+  __ADDDOWNLOADABLECONTENT_COUNT__ = __ADDDOWNLOADABLECONTENT_COUNT__ + 1
+  return oldAddDownloadableContent(mapLuaFile, missionName, defaultMemoryModelPlus)
 end
 
--- Removes a script that has been added, potentially useful in menus
-function RemoveUserScript(filePath)
-    for i,v in ipairs(gUserScripts) do
-        if( string.lower(v) == string.lower(filePath) ) then 
-            print("RemoveUserScript: removing: " .. v)
-            table.remove(gUserScripts, i)
-            return
-        end
-    end
-end
 
--- run the following code right before we enter a game from anywhere in the shell
-local zeroPatch_original_ScriptCB_EnterMission = ScriptCB_EnterMission
-ScriptCB_EnterMission = function()
-    print("ScriptCB_EnterMission ")
-    local mission_name = ( (gPickedMapList and gPickedMapList[1] and gPickedMapList[1].Map) or "")
-    print(string.format("ScriptCB_EnterMission; gPickedMapList[1].Map: %s", mission_name))
-    if(string.len(mission_name) > 0) then 
-        print("ScriptCB_EnterMission: adding " .. mission_name)
-        --AddUserScript("mission_name=" .. mission_name)
-        table.insert(gUserScripts,1, "mission_name=" .. mission_name)
-        print("ScriptCB_EnterMission: added " .. mission_name)
-    end
-
-    --print("ScriptCB_EnterMission; gPickedMapList[1].Map: " .. gPickedMapList[1].Map)
-    -- if there are any user scripts specified by an addme file
-    -- save them to mission setup table
-    -- then during game time, it will load them (in patch_ingame.lua)
-    if gUserScripts and table.getn(gUserScripts) > 0 then
-
-        if ScriptCB_IsMissionSetupSaved() then
-            local missionSetup = ScriptCB_LoadMissionSetup()
-            missionSetup.userScripts = gUserScripts
-            print("ScriptCB_EnterMission: Calling 'ScriptCB_SaveMissionSetup()'")
-            ScriptCB_SaveMissionSetup(missionSetup)
-        else
-            local missionSetup = {
-                userScripts = gUserScripts
-            }
-            ScriptCB_SaveMissionSetup(missionSetup)
-        end
-    end
-    print("ScriptCB_EnterMission calling orig ScriptCB_EnterMission ...")
-    zeroPatch_original_ScriptCB_EnterMission()
-end
--- setup filesystem stuff
-
+print("info: platform> " .. ScriptCB_GetPlatform() )
 print("zero_patch: End 0/addme.script")

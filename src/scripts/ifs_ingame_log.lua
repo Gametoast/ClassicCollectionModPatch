@@ -101,8 +101,9 @@ ingamekeys_listbox_layout = {
     -- Height is calculated from yHeight, Spacing, showcount.
     yHeight = 22,
     ySpacing  = 0,
-    showcount = 9,
-    font = gListboxItemFont,
+    showcount = 20,
+    --font = gListboxItemFont,
+    font = "gamefont_tiny",
 
     width =  900,--320,
     x = 0,
@@ -115,7 +116,7 @@ ingamekeys_listbox_layout = {
 -- display in the corner of the screen during gameplay
 gInGameDebugList = {
     [1] = { ShowStr = "first entry" },
-    [2] = { ShowStr = "time " .. tostring(ScriptCB_GetMissionTime())}
+    [2] = { ShowStr = "time " .. tostring(ScriptCB_GetMissionTime())},
 }
 
 
@@ -167,17 +168,22 @@ ifs_ingame_log = NewIFShellScreen {
         ScriptCB_EnableCursor(nil)
 
         -- did we come from the pause menu?
-        this.fromPauseMenu = ScriptCB_IsScreenInStack("ifs_pausemenu")
+        this.fromPauseMenu = ScriptCB_IsScreenInStack("ifs_pausemenu") or ScriptCB_IsScreenInStack("ifs_mod_menu_launcher")
 
         -- always visible from pauseMenu
         if this.fromPauseMenu then
             IFObj_fnSetVis(ifs_ingame_log.listbox, true)
         end
 
-        print("DEBUG SCREEN: fromPauseMenu " .. tostring(this.fromPauseMenu))
+        print("ifs_ingame_log : fromPauseMenu " .. tostring(this.fromPauseMenu))
 
         -- just an example, add a new entry every time we enter the screen
         table.insert(gInGameDebugList, { ShowStr = "entered screen" })
+        --gInGameDebugList[3].ShowStr = "addon mission count " .. tostring(__ADDDOWNLOADABLECONTENT_COUNT__)
+        if( __ADDDOWNLOADABLECONTENT_COUNT__ ~= nil and this.addedMissionCount == nil ) then 
+            print("info: addon mission count: ".. tostring(__ADDDOWNLOADABLECONTENT_COUNT__))
+            this.addedMissionCount = true
+        end
 
         local testTable = { a = { "ace", "azzameen"},
                             b = {"milehighguy"}
@@ -200,7 +206,7 @@ ifs_ingame_log = NewIFShellScreen {
 
     --called when the screen closes
     Exit = function(this, bFwd)
-        print("exited ingame keys screen ===========")
+        print("exited ingame log screen ===========")
         ScriptCB_EnableCursor(true)
 
         -- set back to user preference
@@ -224,6 +230,7 @@ ifs_ingame_log = NewIFShellScreen {
 
         --update the contents as they change
         gInGameDebugList[2].ShowStr = "time " .. tostring(ScriptCB_GetMissionTime())
+        
 
         ListManager_fnFillContents(ifs_ingame_log.listbox,gInGameDebugList, ingamekeys_listbox_layout)
     end,

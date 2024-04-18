@@ -7,10 +7,5 @@ ucft
         "ifs_missionselect_console"
         "ifs_mod_menu_launcher"
     }
-	
-	REQN
-    {
-        "texture"
-		"border_3_pieces"
-	}
+
 }

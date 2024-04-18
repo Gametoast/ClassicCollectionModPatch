@@ -5,5 +5,15 @@ ucft
         "script"
         "patch_shell"
         "zero_patch_fs"
+        "ifs_ingame_log"
     }
+
+    REQN
+    {
+        "texture"
+        "border_3_pieces"
+        "border_3a_pieces"
+        "border_popup"
+        "opaque_rect"
+	}
 }
