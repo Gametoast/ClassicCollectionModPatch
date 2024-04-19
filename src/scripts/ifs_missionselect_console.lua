@@ -919,12 +919,17 @@ function ifs_missionselect_console_fnLaunch(this)
 		this.SelectedMap = 1
 		ifs_missionselect_console_fnDeleteMap(this, 1) -- delete the "remove all entry"
 		ScriptCB_SetMissionNames(gPickedMapList,ifs_instant_options_GetRandomizePlaylist())
-		
-		-- TODO: Maybe make the 'this.fnDone()'' call work?
-		ScriptCB_SetTeamNames(0,0)
-		ScriptCB_EnterMission()
-		
-		--this.fnDone()
+
+		-- This screen is a replacement for 'ifs_missionselect'.
+		-- The system will sometimes place a function on a screen that needs to get called.
+		-- Here we gotta check for a 'fnDone' applied to ifs_missionselect and call that one.
+		if(ifs_missionselect.fnDone ~= nil) then
+			ifs_missionselect.SelectedMap = 1
+			ifs_missionselect.fnDone()
+		else
+			ScriptCB_SetTeamNames(0,0)
+			ScriptCB_EnterMission()
+		end
 	else
 		ifelm_shellscreen_fnPlaySound(this.errorSound)
 	end
@@ -1072,7 +1077,7 @@ ifs_missionselect_console = NewIFShellScreen {
 		   SetCurButton("launch")
 		elseif (this.iState == ifs_ms_state.command) then
 		   if ( this.CurButton == "launch" ) then
-		      ifs_missionselect_console_fnLaunch(this)
+			  ifs_missionselect_console_fnLaunch(this)
 		   elseif ( this.CurButton == "add" ) then
 		      this.iState = ifs_ms_state.map
 		   elseif ( this.CurButton == "remove" ) then
