@@ -175,44 +175,44 @@ uopMapModes = {
     { key= 'mode_ins', subst= 'ins', showstr= 'modename.name.ins', descstr= 'modename.description.ins', icon= 'mode_icon_ins', },
 }
 
-function uop_AddEra(entry)
+function zero_patch_AddEra(entry)
     if( entry.key ~= nil and entry.showstr ~= nil and entry.subst ~= nil and
          entry.Team1Name ~= nil and entry.Team2Name ~= nil  ) then
         ---------- check if it's already present ----------
         for key,value in gMapEras do -- check if entry is already present
             if( value.key == entry.key) then
-                print("uop_AddEra(): Era with key '".. value.key .. "' is already present.")
+                print("zero_patch_AddEra(): Era with key '".. value.key .. "' is already present.")
                 return
             end
         end
         if(entry.icon1 == nil) then
-            print("uop_AddEra: Warning, adding era without property 'icon1'")
+            print("zero_patch_AddEra: Warning, adding era without property 'icon1'")
         end
         ---------------------------------------------------
         table.insert( gMapEras, entry )
-        print("uop_AddEra(): added Era: "  .. tostring(entry.key))
+        print("zero_patch_AddEra(): added Era: "  .. tostring(entry.key))
     else
-        print("uop_AddEra: Error adding Era. Must specify properties [key, showstr, subst, Team1Name, Team2Name ]\n" ..
+        print("zero_patch_AddEra: Error adding Era. Must specify properties [key, showstr, subst, Team1Name, Team2Name ]\n" ..
             "See 'gMapEras' (missionlist.lua) to see format of existing eras.")
     end
 end
-function uop_AddGameMode(entry)
+function zero_patch_AddGameMode(entry)
     if( entry.key ~= nil and entry.showstr ~= nil and entry.descstr ~= nil and entry.subst ~= nil ) then
         ---------- check if it's already present ----------
         for key,value in gMapModes do
             if( value.key == entry.key) then
-                print("uop_AddGameMode(): Mode with key '".. value.key .. "' is already present.")
+                print("zero_patch_AddGameMode(): Mode with key '".. value.key .. "' is already present.")
                 return
             end
         end
         if(entry.icon == nil) then
-            print("uop_AddGameMode: Warning, adding game mode without property 'icon'")
+            print("zero_patch_AddGameMode: Warning, adding game mode without property 'icon'")
         end
         ---------------------------------------------------
         table.insert( gMapModes, entry )
-        print("uop_AddGameMode(): added Era: " .. tostring(entry.key))
+        print("zero_patch_AddGameMode(): added Era: " .. tostring(entry.key))
     else
-        print("uop_AddGameMode: Error adding Game mode. Must specify [key, showstr, descstr, subst]\n" ..
+        print("zero_patch_AddGameMode: Error adding Game mode. Must specify [key, showstr, descstr, subst]\n" ..
             "See 'gMapModes' to see format of existing Game mode entries.")
     end
 end
@@ -222,14 +222,14 @@ if( custom_GetSPMissionList  == nil ) then -- will be nil if the game doesn't ha
     local i = 1
     local limit = table.getn(uopMapEras)
     while i < limit do
-        uop_AddEra(uopMapEras[i])
+        zero_patch_AddEra(uopMapEras[i])
         i = i + 1
     end
 
     i = 1
     limit = table.getn(uopMapModes)
     while i < limit do
-        uop_AddGameMode(uopMapModes[i])
+        zero_patch_AddGameMode(uopMapModes[i])
         i = i + 1
     end
     print("zero_patch: Add UOP Eras and Game Modes: End")
@@ -294,11 +294,14 @@ AddModMenuItem( "campaignList",  "ifs.sp.campaign", "ifs_sp_briefing")
 AddModMenuItem( "font_test",  "font test", "ifs_fonttest")
 AddModMenuItem("ifs_ingame_log", "Debug Log", "ifs_ingame_log")
 
+zero_patch_addon_mission_list = {}
+
 -- keep track of mission count
 __ADDDOWNLOADABLECONTENT_COUNT__ = 0 -- same name from uop
 local oldAddDownloadableContent = AddDownloadableContent
 AddDownloadableContent = function(mapLuaFile, missionName, defaultMemoryModelPlus)
   __ADDDOWNLOADABLECONTENT_COUNT__ = __ADDDOWNLOADABLECONTENT_COUNT__ + 1
+  table.insert(zero_patch_addon_mission_list,missionName)
   return oldAddDownloadableContent(mapLuaFile, missionName, defaultMemoryModelPlus)
 end
 

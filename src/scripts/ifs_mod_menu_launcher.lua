@@ -64,12 +64,19 @@ if( ifs_mod_menu_launcher == nil ) then
 		fNumberWidth = 40, -- width, in pixels, for the XBox's file #
 	}
 
-	--function AddModMenuItem({"ID", "display string", "name" })
-	-- string -> launch a screen named 'name'; function -> call the function name(id); table -> push ui and show it
-	function AddModMenuItem(id, display_string, name )
+	--function AddModMenuItem({"ID", "display string", <action>, menu_table[optional sub menu table] })
+	--      <action> == string -> launch a screen named 'name';
+	--      <action> == function -> call the function name(id); 
+	--      <action> == table -> push ui and show it
+	-- menu_table - if nil, push to the initial menu list; otherwise push the item to 'menu_table'.
+	function AddModMenuItem(id, display_string, name, menu_table )
 		print(string.format("AddModMenuItem: Adding item { %s  %s  %s }", id, display_string, tostring(name)))
 		local newItem = {id=  id, showstr=  display_string, action= name }
-		table.insert( ifs_mod_menu_launcher_listbox_contents, newItem )
+		if(menu_table ~= nil) then 
+			table.insert( menu_table, newItem )
+		else
+			table.insert( ifs_mod_menu_launcher_listbox_contents, newItem )
+		end
 	end
 
 
@@ -123,13 +130,24 @@ if( ifs_mod_menu_launcher == nil ) then
 			ScreenRelativeY = 0.5, -- center
 			y = 80,
 		},
+		menuStack ={}, -- should be a list of lists; used for menu nav
+		titleList ={},
+		currentMenu = nil,
 
 		movieIntro      = nil,
 		movieBackground = "shell_main",
 		bg_texture      =  nil, --    "single_player_option",
 		enterSound      = "",
 		exitSound       = "",
-
+		GetTitleString = function(this)
+			local retVal = "mod launcher"
+			local count = table.getn(this.titleList)
+			if(count > 0) then
+				retVal = this.titleList[count]
+			end
+			print("GetTitleString: " .. retVal)
+			return retVal
+		end,
 		Input_KeyDown = function (this, iKey)
 			print("gInput_KeyDown: " .. iKey)
 			if(iKey == 27 or iKey == 8 or iKey == 66) then
@@ -142,28 +160,57 @@ if( ifs_mod_menu_launcher == nil ) then
 				this.Input_RTrigger(this)
 			end
 		end,
+		-- Push a list of items to show
+		Push_List = function(this, the_list, the_title)
+			table.insert(this.menuStack, the_list)
+			table.insert(this.titleList, the_title or "MOD LAUNCHER")
+			this.currentMenu = the_list
+			print("mod_launcher.Push_List with item[1].id = " .. this.currentMenu[1].id )
+			this.Populate_List(this)
+		end,
+		-- Remove the list of items last pushed.
+		-- If there is a list of items to show left on the menu stack, show it;
+		-- if there are no more lists of items to show, pop the screen
+		Pop_List = function(this)
+			print("mod_launcher.Pop_List")
+			local count = table.getn(this.menuStack)
+			if( count > 0) then
+				table.remove(this.menuStack, count)
+				table.remove(this.titleList, count)
+			end
+			count = table.getn(this.menuStack)
+			if(count > 0) then
+				this.currentMenu = this.menuStack[count]
+				print("mod_launcher.Pop_List with item[1].id = " .. this.currentMenu[1].id )
+				this.Populate_List(this)
+			else
+				this.currentMenu = nil
+				print("mod_launcher.Pop_List no more to show, exiting...")
+				ScriptCB_PopScreen()
+			end
+		end,
 		Enter = function(this, bFwd)
 			print("ifs_mod_menu_launcher.Enter" )
 			gIFShellScreenTemplate_fnEnter(this, bFwd) -- call default enter function
-
-			this.Populate_List(this, ifs_mod_menu_launcher_listbox_contents)
-			--local ListboxHeight = this.listbox.height * 0.5
-			--IFObj_fnSetPos(this.buttons,this.listbox.width * -0.5 + 16, -(ListboxHeight + 30))
+			this.Push_List(this,ifs_mod_menu_launcher_listbox_contents, "Mod Launcher")
+			print("ifs_mod_menu_launcher.Enter this.listbox= " .. tostring(this.listbox) )
+			--tprint(this.listbox)
 		end,
-		Populate_List = function(this, the_table)
+		Populate_List = function(this)
+			print("ifs_mod_menu_launcher.Populate_List: size = " .. tostring(table.getn(this.currentMenu)))
+			--for _, item in this.currentMenu do -- debug print stuff
+			--	print(string.format("id:'%s'  '%s' action: %s", item.id, item.showstr, tostring(item.action)))
+			--end
+			-- try to set the title text
+			IFText_fnSetString(this.listbox.titleBarElement, this.GetTitleString(this))
 			ifs_mod_menu_launcher_listbox_layout.FirstShownIdx = 1
 			ifs_mod_menu_launcher_listbox_layout.SelectedIdx = 1
 			ifs_mod_menu_launcher_listbox_layout.CursorIdx = 1
-			ListManager_fnFillContents(this.listbox,the_table,ifs_mod_menu_launcher_listbox_layout)
+			ListManager_fnFillContents(this.listbox,this.currentMenu,ifs_mod_menu_launcher_listbox_layout)
 		end,
 		Input_Back = function(this)
 			print("ifs_mod_menu_launcher.Back ", tostring(ScriptCB_IsScreenInStack("ifs_mod_menu_launcher") ) )
-			if (ScriptCB_IsScreenInStack("ifs_mod_menu_launcher") ) then 
-				print("ifs_mod_menu_launcher: pop the screen ") 
-				ScriptCB_PopScreen()
-			else 
-				print("ifs_mod_menu_launcher: do nothing ") 
-			end 
+			this.Pop_List(this)
 		end,
 
 		Input_GeneralUp = function(this)
@@ -173,13 +220,11 @@ if( ifs_mod_menu_launcher == nil ) then
 				return
 			end
 
-			-- In listbox.
-			ListManager_fnNavUp(this.listbox,ifs_mod_menu_launcher_listbox_contents,ifs_mod_menu_launcher_listbox_layout)
-
+			ListManager_fnNavUp(this.listbox,this.currentMenu,ifs_mod_menu_launcher_listbox_layout)
 		end,
 
 		Input_LTrigger = function(this)
-			ListManager_fnPageUp(this.listbox,ifs_mod_menu_launcher_listbox_contents,ifs_mod_menu_launcher_listbox_layout)
+			ListManager_fnPageUp(this.listbox,this.currentMenu,ifs_mod_menu_launcher_listbox_layout)
 		end,
 
 		Input_GeneralDown = function(this)
@@ -189,11 +234,11 @@ if( ifs_mod_menu_launcher == nil ) then
 				return
 			end
 
-			ListManager_fnNavDown(this.listbox,ifs_mod_menu_launcher_listbox_contents,ifs_mod_menu_launcher_listbox_layout)
+			ListManager_fnNavDown(this.listbox,this.currentMenu,ifs_mod_menu_launcher_listbox_layout)
 		end,
 
 		Input_RTrigger = function(this)
-			ListManager_fnPageDown(this.listbox,ifs_mod_menu_launcher_listbox_contents,ifs_mod_menu_launcher_listbox_layout)
+			ListManager_fnPageDown(this.listbox,this.currentMenu,ifs_mod_menu_launcher_listbox_layout)
 		end,
 
 		-- Not possible on this screen
@@ -226,17 +271,23 @@ if( ifs_mod_menu_launcher == nil ) then
 				if(ifs_mod_menu_launcher.bNoInputs) then
 					return
 				end
-
 				
 				ifelm_shellscreen_fnPlaySound(this.acceptSound)
 				-- jump to the load screen
-				local Selection = ifs_mod_menu_launcher_listbox_contents[ifs_mod_menu_launcher_listbox_layout.SelectedIdx]
+				local Selection = this.currentMenu[ifs_mod_menu_launcher_listbox_layout.SelectedIdx]
+				if(Selection.id ~= nil) then 
+					print("ifs_mod_menu_launcher.Accept selected item.id: ".. tostring(Selection.id))
+				end
 				if (Selection.action ~= nil and type(Selection.action) == "string" ) then 
+					print("ifs_mod_menu_launcher.Input_Accept: item type == string")
 					ScriptCB_PushScreen(Selection.action)
 				elseif(Selection.action ~= nil and type(Selection.action) == "function") then
+					print("ifs_mod_menu_launcher.Input_Accept: item type == function")
 					Selection.action(Selection.id) -- todo , test this
 				elseif(Selection.action ~= nil and type(Selection.action) == "table") then
-					this.Populate_List(Selection.action)
+					print("ifs_mod_menu_launcher.Input_Accept: item type == table")
+					-- new title should be 'Selection.showstr'
+					this.Push_List(this,Selection.action, Selection.showstr)
 				end
 			end
 		end,
