@@ -5,7 +5,7 @@ ucft
         "script"
         "addme"
         "ifs_missionselect_console"
-        "ifs_mod_menu_launcher"
+        "ifs_mod_menu_tree"
     }
 
 }

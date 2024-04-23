@@ -4,7 +4,6 @@
 
 local __scriptName__ = "[zero_patch: addme.script]: "
 
---we want mod launcher, instant action console
 print("zero_patch: Start 0/addme.script")
 
 if(printf == nil) then
@@ -238,7 +237,7 @@ else
 end
 
 ScriptCB_DoFile("ifs_missionselect_console")
-ScriptCB_DoFile("ifs_mod_menu_launcher")
+ScriptCB_DoFile("ifs_mod_menu_tree")
 
 -- from ifs_instant_top.lua
 --ScriptCB_SetIFScreen("ifs_missionselect")
@@ -254,10 +253,6 @@ function OverrideInstantAction()
 		return old_ScriptCB_SetIFScreen(unpack(arg))
 	end
 end
-
-AddModMenuItem( "IA",  "Instant Action (alt)", "ifs_missionselect_console")
-AddModMenuItem( "IA",  "Instant Action", "ifs_missionselect")
-
 if( ScriptCB_IsFileExist("..\\..\\addon2\\0\\patch_scripts\\patch_paths.script") == 1 ) then
     -- only do this for classic collection
     OverrideInstantAction()
@@ -273,25 +268,32 @@ end
 -- Temp Solution? for Custom GC
 local addon_gc_list = custom_GetGCButtonList()
 local display_text = ""
-print("info: addon_gc_list.count: " .. table.getn(addon_gc_list))
--- from gc docs -> local ourButton = { tag = gcTag, string = gcString, }
-for _, value in addon_gc_list do
-    display_text = value.string
-    if(string.find(display_text, "%.")) then -- try to localize
-        print("info: try to localize " .. value.string)
-        display_text = ScriptCB_ununicode( ScriptCB_getlocalizestr(display_text))
-        if(display_text) then 
-            display_text = "Custom GC: " .. display_text
+local custom_gc_count = table.getn(addon_gc_list)
+if( custom_gc_count > 0 ) then
+    print("info: addon_gc_list.count: " .. custom_gc_count)
+    local gc_menu = {}
+    -- from gc docs -> local ourButton = { tag = gcTag, string = gcString, }
+    for _, value in addon_gc_list do
+        display_text = value.string
+        if(string.find(display_text, "%.")) then -- try to localize
+            print("info: try to localize " .. value.string)
+            display_text = ScriptCB_ununicode( ScriptCB_getlocalizestr(display_text))
+            if(display_text) then
+                display_text = "Custom GC: " .. display_text
+            end
+        else
+            display_text = "Custom GC: " .. value.string
         end
-    else
-        display_text = "Custom GC: " .. value.string
+        AddModMenuItem(value.tag, display_text, HandleCustomGC, gc_menu)
     end
-    AddModMenuItem(value.tag, display_text, HandleCustomGC)
+    AddModMenuItem("gc_menu", string.format("Custom GC Mods %d", custom_gc_count), gc_menu)
 end
 
-
+AddModMenuItem( "IA",  "Instant Action (alt)", "ifs_missionselect_console")
+AddModMenuItem( "IA",  "Instant Action", "ifs_missionselect")
 AddModMenuItem( "campaignList",  "ifs.sp.campaign", "ifs_sp_briefing")
 AddModMenuItem( "font_test",  "font test", "ifs_fonttest")
+AddModMenuItem("spacetraining", "Space Training", "ifs_spacetraining") -- add back in a way to get to this
 AddModMenuItem("ifs_ingame_log", "Debug Log", "ifs_ingame_log")
 
 zero_patch_addon_mission_list = {}
@@ -304,7 +306,6 @@ AddDownloadableContent = function(mapLuaFile, missionName, defaultMemoryModelPlu
   table.insert(zero_patch_addon_mission_list,missionName)
   return oldAddDownloadableContent(mapLuaFile, missionName, defaultMemoryModelPlus)
 end
-
 
 print("info: platform> " .. ScriptCB_GetPlatform() )
 print("zero_patch: End 0/addme.script")

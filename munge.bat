@@ -34,3 +34,4 @@ copy /Y user_script_*.script "0\patch_scripts\"
 copy /Y .\addme.lvl "0\addme.script"
 
 copy /y readme.md "0\readme.txt"
+time /t 
