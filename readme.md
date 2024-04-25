@@ -15,6 +15,7 @@ But please note that most mods released in the last 20 years have not been teste
 1. Make it easy to install 'standard' and 1.3 uop based mods/addons to Battldfront Classic Collection (BF2)
 2. Minimize the destruction/overwrite of game files.
 3. Support as many features of the 1.3 uop as possible.
+4. Be compatible with all versions of the (base) game. [XBOX, PS2 & PSP versions are untested with this patch, but should be compatible]
 
 ## Initial Patch Application (initial setup requires 'virgin' setup; i.e. ingame.lvl, shell.lvl, common.lvl should be the originals)
 1. Place the '0' folder in your addon2 folder.
@@ -31,6 +32,7 @@ If you remove the '0' folder, you should basically be running an un-patched game
 ## Adding mods/addons & making file changes
 1. Place the downloaded mod into the 'addon2' (or 'addon') folder
 2. Run the 'run_after_making_changes_xxx' script ( windows, switch & linux/steamdeck supported)
+3. Note: Some mods have 'custom_gc' or 'user_script' files that go along with them. Put these in the mod folder that they belong to. If a mod has some scripts that should not be run, create a 'disabled' folder for that mod and place them inside that 'disabled' folder. Files inside a 'disabled' folder will be ignored.
 
 #### What the 'run_after_making_changes_xxx' script does:
 1. Renames the '_lvl_pc' folders to '_lvl_common' inside the addon folders (the Game seems to be able to better reference the dlc files that way)
