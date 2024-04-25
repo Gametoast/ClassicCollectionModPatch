@@ -168,7 +168,7 @@ ifs_ingame_log = NewIFShellScreen {
         ScriptCB_EnableCursor(nil)
 
         -- did we come from the pause menu?
-        this.fromPauseMenu = ScriptCB_IsScreenInStack("ifs_pausemenu") or ScriptCB_IsScreenInStack("ifs_mod_menu_launcher")
+        this.fromPauseMenu = ScriptCB_IsScreenInStack("ifs_pausemenu") or ScriptCB_IsScreenInStack("ifs_mod_menu_tree")
 
         -- always visible from pauseMenu
         if this.fromPauseMenu then

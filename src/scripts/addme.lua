@@ -4,8 +4,8 @@
 
 local __scriptName__ = "[zero_patch: addme.script]: "
 
---we want mod launcher, instant action console
 print("zero_patch: Start 0/addme.script")
+
 
 if(printf == nil) then
     function printf (...) print(string.format(unpack(arg))) end
@@ -175,44 +175,44 @@ uopMapModes = {
     { key= 'mode_ins', subst= 'ins', showstr= 'modename.name.ins', descstr= 'modename.description.ins', icon= 'mode_icon_ins', },
 }
 
-function uop_AddEra(entry)
+function zero_patch_AddEra(entry)
     if( entry.key ~= nil and entry.showstr ~= nil and entry.subst ~= nil and
          entry.Team1Name ~= nil and entry.Team2Name ~= nil  ) then
         ---------- check if it's already present ----------
         for key,value in gMapEras do -- check if entry is already present
             if( value.key == entry.key) then
-                print("uop_AddEra(): Era with key '".. value.key .. "' is already present.")
+                print("zero_patch_AddEra(): Era with key '".. value.key .. "' is already present.")
                 return
             end
         end
         if(entry.icon1 == nil) then
-            print("uop_AddEra: Warning, adding era without property 'icon1'")
+            print("zero_patch_AddEra: Warning, adding era without property 'icon1'")
         end
         ---------------------------------------------------
         table.insert( gMapEras, entry )
-        print("uop_AddEra(): added Era: "  .. tostring(entry.key))
+        print("zero_patch_AddEra(): added Era: "  .. tostring(entry.key))
     else
-        print("uop_AddEra: Error adding Era. Must specify properties [key, showstr, subst, Team1Name, Team2Name ]\n" ..
+        print("zero_patch_AddEra: Error adding Era. Must specify properties [key, showstr, subst, Team1Name, Team2Name ]\n" ..
             "See 'gMapEras' (missionlist.lua) to see format of existing eras.")
     end
 end
-function uop_AddGameMode(entry)
+function zero_patch_AddGameMode(entry)
     if( entry.key ~= nil and entry.showstr ~= nil and entry.descstr ~= nil and entry.subst ~= nil ) then
         ---------- check if it's already present ----------
         for key,value in gMapModes do
             if( value.key == entry.key) then
-                print("uop_AddGameMode(): Mode with key '".. value.key .. "' is already present.")
+                print("zero_patch_AddGameMode(): Mode with key '".. value.key .. "' is already present.")
                 return
             end
         end
         if(entry.icon == nil) then
-            print("uop_AddGameMode: Warning, adding game mode without property 'icon'")
+            print("zero_patch_AddGameMode: Warning, adding game mode without property 'icon'")
         end
         ---------------------------------------------------
         table.insert( gMapModes, entry )
-        print("uop_AddGameMode(): added Era: " .. tostring(entry.key))
+        print("zero_patch_AddGameMode(): added Era: " .. tostring(entry.key))
     else
-        print("uop_AddGameMode: Error adding Game mode. Must specify [key, showstr, descstr, subst]\n" ..
+        print("zero_patch_AddGameMode: Error adding Game mode. Must specify [key, showstr, descstr, subst]\n" ..
             "See 'gMapModes' to see format of existing Game mode entries.")
     end
 end
@@ -222,14 +222,14 @@ if( custom_GetSPMissionList  == nil ) then -- will be nil if the game doesn't ha
     local i = 1
     local limit = table.getn(uopMapEras)
     while i < limit do
-        uop_AddEra(uopMapEras[i])
+        zero_patch_AddEra(uopMapEras[i])
         i = i + 1
     end
 
     i = 1
     limit = table.getn(uopMapModes)
     while i < limit do
-        uop_AddGameMode(uopMapModes[i])
+        zero_patch_AddGameMode(uopMapModes[i])
         i = i + 1
     end
     print("zero_patch: Add UOP Eras and Game Modes: End")
@@ -237,8 +237,12 @@ else
     print("zero_patch: WARNING! zero_patch is not compatible with UOP!!!")
 end
 
+-- A place to attach settings to.
+-- TODO: Implement Save Settings
+zero_patch_data = { greeting = "Hello"}
+
 ScriptCB_DoFile("ifs_missionselect_console")
-ScriptCB_DoFile("ifs_mod_menu_launcher")
+ScriptCB_DoFile("ifs_mod_menu_tree")
 
 -- from ifs_instant_top.lua
 --ScriptCB_SetIFScreen("ifs_missionselect")
@@ -254,10 +258,6 @@ function OverrideInstantAction()
 		return old_ScriptCB_SetIFScreen(unpack(arg))
 	end
 end
-
-AddModMenuItem( "IA",  "Instant Action (alt)", "ifs_missionselect_console")
-AddModMenuItem( "IA",  "Instant Action", "ifs_missionselect")
-
 if( ScriptCB_IsFileExist("..\\..\\addon2\\0\\patch_scripts\\patch_paths.script") == 1 ) then
     -- only do this for classic collection
     OverrideInstantAction()
@@ -273,35 +273,48 @@ end
 -- Temp Solution? for Custom GC
 local addon_gc_list = custom_GetGCButtonList()
 local display_text = ""
-print("info: addon_gc_list.count: " .. table.getn(addon_gc_list))
--- from gc docs -> local ourButton = { tag = gcTag, string = gcString, }
-for _, value in addon_gc_list do
-    display_text = value.string
-    if(string.find(display_text, "%.")) then -- try to localize
-        print("info: try to localize " .. value.string)
-        display_text = ScriptCB_ununicode( ScriptCB_getlocalizestr(display_text))
-        if(display_text) then 
-            display_text = "Custom GC: " .. display_text
+local custom_gc_count = table.getn(addon_gc_list)
+if( custom_gc_count > 0 ) then
+    print("info: addon_gc_list.count: " .. custom_gc_count)
+    local gc_menu = {}
+    -- from gc docs -> local ourButton = { tag = gcTag, string = gcString, }
+    for _, value in addon_gc_list do
+        display_text = value.string
+        if(string.find(display_text, "%.")) then -- try to localize
+            print("info: try to localize " .. value.string)
+            display_text = ScriptCB_ununicode( ScriptCB_getlocalizestr(display_text))
+            if(display_text) then
+                display_text = "Custom GC: " .. display_text
+            end
+        else
+            display_text = "Custom GC: " .. value.string
         end
-    else
-        display_text = "Custom GC: " .. value.string
+        AddModMenuItem(value.tag, display_text, HandleCustomGC, gc_menu)
     end
-    AddModMenuItem(value.tag, display_text, HandleCustomGC)
+    AddModMenuItem("gc_menu", string.format("Custom GC Mods %d", custom_gc_count), gc_menu)
 end
 
-
+AddModMenuItem( "IA",  "Instant Action (alt)", "ifs_missionselect_console")
+AddModMenuItem( "IA",  "Instant Action", "ifs_missionselect")
 AddModMenuItem( "campaignList",  "ifs.sp.campaign", "ifs_sp_briefing")
 AddModMenuItem( "font_test",  "font test", "ifs_fonttest")
+AddModMenuItem("spacetraining", "Space Training", "ifs_spacetraining") -- add back in a way to get to this
 AddModMenuItem("ifs_ingame_log", "Debug Log", "ifs_ingame_log")
+
+ifs_mod_menu_tree.SaveSettings = function(this)
+    print("TODO: Implement Save Settings")
+end
+
+zero_patch_addon_mission_list = {}
 
 -- keep track of mission count
 __ADDDOWNLOADABLECONTENT_COUNT__ = 0 -- same name from uop
 local oldAddDownloadableContent = AddDownloadableContent
 AddDownloadableContent = function(mapLuaFile, missionName, defaultMemoryModelPlus)
   __ADDDOWNLOADABLECONTENT_COUNT__ = __ADDDOWNLOADABLECONTENT_COUNT__ + 1
+  table.insert(zero_patch_addon_mission_list,missionName)
   return oldAddDownloadableContent(mapLuaFile, missionName, defaultMemoryModelPlus)
 end
-
 
 print("info: platform> " .. ScriptCB_GetPlatform() )
 print("zero_patch: End 0/addme.script")

@@ -131,11 +131,13 @@ function Run_uop_UserScripts()
 end
 Run_uop_UserScripts()
 
+if(ScriptCB_IsFileExist("..\\..\\addon\\0\\debug.txt") == 1) then 
+    gZeroPatchPrintAllDebug = true
+end
 -- filter debug messages to messages with 'info:', 'error' or 'warn' in them.
--- TODO: consider providing an override option where everything goes into the debug log? (when 'addon/0/debug.txt' exists?)
 function zero_patch_is_worthy_for_debug(str)
     local test = string.lower(str)
-    if (string.find(test, 'error') or string.find(test, 'warn') or string.find(test, 'info:') or
+    if (gZeroPatchPrintAllDebug or string.find(test, 'error') or string.find(test, 'warn') or string.find(test, 'info:') or
         string.find(test, 'debug')) then
         return true
     end
@@ -181,7 +183,6 @@ local function SetupAddIfScreenCatching()
             SetupIngamelog()
             print("IGK: adding debug log button to pauseMenu")
             print("Platform: ".. tostring( ScriptCB_GetPlatform() ))
-            print("zero_patch patch_ingame gMissionName= ".. tostring(gMissionName))
 
             -- add new button without remaking the whole pause menu
             local newButton = { tag = "debugLog", string = "Debug Log", }
@@ -214,7 +215,12 @@ local function SetupAddIfScreenCatching()
     end
 end
 
+
 local function uop_do_files()
+    if( ifs_saveop == nil ) then
+        -- 'ifs_saveop' (for some reason) is by default only run on the PC platform
+        ScriptCB_DoFile("ifs_saveop")
+    end
     ScriptCB_DoFile("fakeconsole_functions")
     ScriptCB_DoFile("popup_prompt")
 end
