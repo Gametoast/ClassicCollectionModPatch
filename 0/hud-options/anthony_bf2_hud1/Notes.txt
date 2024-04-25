@@ -1,0 +1,19 @@
+This is the hud delivered in the initial '0' patch by AnthonyBF2
+for the Aspyr Classic Collection BF2
+
+============================ String hashing special-ness  ============================ 
+The BF2 build often runs a special hash operation on filenames (and other strings) to compress strings into 4 bytes.
+
+We don't know the real filename for the Aspyr 1 player Hud.
+The name was translated to the hash '0xdc27b03d'
+Which has a matching un-hash of 'zri6jc'
+
+Surely Not the name aspyr chose, but it'll work.
+So if you want to create a deployable hud for Aspyr BF2, you'll want to name
+your HUD file 'zri6jc.hud'
+Then run:
+  md MUNGED
+  C:\BF2_ModTools\ToolsFL\bin\ConfigMunge.exe -inputfile $*.hud -continue -platform PC -sourcedir . -outputdir MUNGED 
+
+The output file in the MUNGED folder will be named 'zri6jc.config'; re-name it to '0xdc27b03d.hud_' 
+to get it to replace the existing one using LVLTool.
