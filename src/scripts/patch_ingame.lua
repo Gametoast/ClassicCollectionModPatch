@@ -87,10 +87,16 @@ else
 end
 
 ScriptCB_DoFile("utility_functions2")
-
-if(ScriptCB_IsFileExist("..\\..\\addon\\0\\patch_scripts\\v1.3patch_strings.lvl") == 1) then
+local target = "..\\..\\addon\\0\\patch_scripts\\v1.3patch_strings.lvl"
+if(ScriptCB_IsFileExist(target) == 1) then
     print("info: read in old 1.3 patch strings")
-    ReadDataFile("..\\..\\addon\\0\\patch_scripts\\v1.3patch_strings.lvl")
+    ReadDataFile(target)
+end
+
+target = "..\\..\\addon\\0\\hud-options\\hud_texture_pack.lvl"
+if(ScriptCB_IsFileExist(target) == 1) then
+    print("info: read in hud_texture_pack")
+    ReadDataFile(target)
 end
 
 -- trim "path\\to\\file.lvl" to "file"

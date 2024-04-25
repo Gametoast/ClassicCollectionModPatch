@@ -1,0 +1,5 @@
+Notes:
+1. This hud is was only tested with Aspyr CC BF2
+
+2. The 'hud_texture_pack.lvl' contains only a small unused image.
+   It is intended to overwrite any 'hud-options\hud_texture_pack.lvl' from other mods to restore the default hud.
