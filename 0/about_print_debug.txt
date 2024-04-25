@@ -1,0 +1,5 @@
+The 'zero patch' has a debug log accessible via the Mod Menu Tree and available via the pause menu ingame.
+By default not all print statements go into this log ( to cut down the chatter, 
+ only messages with 'info:' 'error' 'warn' 'debug' make it in by default).
+But if you rename this file to 'debug.txt' (or create a sibling file called 'debug.txt') all print statements will
+then go into the debug log.
