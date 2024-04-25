@@ -183,7 +183,6 @@ local function SetupAddIfScreenCatching()
             SetupIngamelog()
             print("IGK: adding debug log button to pauseMenu")
             print("Platform: ".. tostring( ScriptCB_GetPlatform() ))
-            print("zero_patch patch_ingame gMissionName= ".. tostring(gMissionName))
 
             -- add new button without remaking the whole pause menu
             local newButton = { tag = "debugLog", string = "Debug Log", }
@@ -216,7 +215,12 @@ local function SetupAddIfScreenCatching()
     end
 end
 
+
 local function uop_do_files()
+    if( ifs_saveop == nil ) then
+        -- 'ifs_saveop' (for some reason) is by default only run on the PC platform
+        ScriptCB_DoFile("ifs_saveop")
+    end
     ScriptCB_DoFile("fakeconsole_functions")
     ScriptCB_DoFile("popup_prompt")
 end

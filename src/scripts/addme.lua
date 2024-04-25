@@ -6,6 +6,7 @@ local __scriptName__ = "[zero_patch: addme.script]: "
 
 print("zero_patch: Start 0/addme.script")
 
+
 if(printf == nil) then
     function printf (...) print(string.format(unpack(arg))) end
 end
@@ -236,6 +237,10 @@ else
     print("zero_patch: WARNING! zero_patch is not compatible with UOP!!!")
 end
 
+-- A place to attach settings to.
+-- TODO: Implement Save Settings
+zero_patch_data = { greeting = "Hello"}
+
 ScriptCB_DoFile("ifs_missionselect_console")
 ScriptCB_DoFile("ifs_mod_menu_tree")
 
@@ -295,6 +300,10 @@ AddModMenuItem( "campaignList",  "ifs.sp.campaign", "ifs_sp_briefing")
 AddModMenuItem( "font_test",  "font test", "ifs_fonttest")
 AddModMenuItem("spacetraining", "Space Training", "ifs_spacetraining") -- add back in a way to get to this
 AddModMenuItem("ifs_ingame_log", "Debug Log", "ifs_ingame_log")
+
+ifs_mod_menu_tree.SaveSettings = function(this)
+    print("TODO: Implement Save Settings")
+end
 
 zero_patch_addon_mission_list = {}
 

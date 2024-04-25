@@ -39,7 +39,6 @@ function ifs_mod_menu_tree_listbox_PopulateItem(Dest, Data, bSelected, iColorR, 
 		else
 			theText = Data.showstr
 		end
-
 		if( Data.action ~= nil and type(Data.action) == "table") then
 			IFText_fnSetString(Dest.NameStr, "[+] " .. theText)
 			IFObj_fnSetColor(Dest.NameStr, 200, 150, 0) -- mustard yellow
@@ -198,6 +197,9 @@ ifs_mod_menu_tree = NewIFShellScreen {
 			this.currentMenu = nil
 			print("mod_menu.Pop_List no more to show, exiting...")
 			ScriptCB_PopScreen()
+			if(this.SaveSettings) then
+				this:SaveSettings()
+			end
 		end
 	end,
 	Enter = function(this, bFwd)
@@ -410,7 +412,7 @@ end
 
 
  local help_CreateOptionsSetting = [[ 
-'help_CreateOptionsSetting()' will return an item that can be added to a menu with 'AddModMenu'
+'CreateOptionsSetting()' will return an item that can be added to a menu with 'AddModMenu'
  expects data in a form like :
  {
 		default = 9,                             -- > used when target_table[property_name] is nil
