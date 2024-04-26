@@ -1,0 +1,3050 @@
+FileInfo("1playerhud")
+{
+    Viewports(1)
+}
+
+
+
+Group("player1weaponinformation")
+{
+    PropagateAlpha(1)
+    Viewport(1)
+    Position(0.020000, 0.90000, 0.000000, "Viewport")
+    ZOrder(255)
+    EventEnable("player1.weaponsEnable")
+    EventDisable("player1.weaponsDisable")
+        Text("player1weapon1ammo")
+        {
+            TextBreak("Word")
+            TextFont("gamefont_large")
+            EventNumber("player1.weapon1.totalAmmoBullets")
+            InfiniteDashes(0)
+            Viewport(1)
+            Position(0.020000, -0.125000, 0.000000, "Viewport")
+			TextStyle("Shadow")
+            ZOrder(6)
+            Color(255, 255, 255)
+            EventEnable("player1.weapon1.totalAmmoBullets")
+            EventDisable("player1.weapon1.disable")
+        }
+
+        Model3D("player1weapon1ammoInfinite")
+        {
+            Mesh("hud_infinite_ammo_icon")
+            Viewport(1)
+            Position(0.026323, -0.095274, 0.000000, "Viewport")
+            Scale(0.600000, 0.600000, 0.600000)
+            ZOrder(0)
+            EventEnable("player1.weapon1.ammoInfinite")
+            EventDisable("player1.weapon1.disable")
+        }
+
+        Text("player1weapon1name")
+        {
+            TextBox(0.328125, 0.000000)
+            TextBreak("Word")
+            TextFont("gamefont_small")
+            TextStyle("Shadow")
+            EventText("player1.weapon1.name")
+            Viewport(1)
+            Position(0.08500, -0.238389, 0.000000, "Viewport")
+            ZOrder(5)
+            Alpha(0.750000)
+            FadeInTime(0.250000)
+            FadeHoldTime(2.500000)
+            FadeOutTime(1.000000)
+            EventEnable("player1.weapon1.change")
+            EventDisable("player1.weapon1.disable")
+        }
+
+        Text("player1weapon2ammo")
+        {
+            TextBreak("Word")
+            TextFont("gamefont_large")
+            EventNumber("player1.weapon2.totalAmmoBullets")
+            InfiniteDashes(0)
+            Viewport(1)
+            Position(0.020000, -0.195000, 0.000000, "Viewport")
+			TextStyle("Shadow")
+            ZOrder(5)
+            Color(255, 255, 255)
+            EventEnable("player1.weapon2.totalAmmoBullets")
+            EventDisable("player1.weapon2.disable")
+        }
+
+        Model3D("player1weapon2ammoInfinite")
+        {
+            Mesh("hud_infinite_ammo_icon")
+            Viewport(1)
+            Position(0.026323, -0.163877, 0.000000, "Viewport")
+            Scale(0.600000, 0.600000, 0.600000)
+            ZOrder(0)
+            EventEnable("player1.weapon2.ammoInfinite")
+            EventDisable("player1.weapon2.disable")
+        }
+
+        Text("player1weapon2name")
+        {
+            TextBox(0.400391, 0.000000)
+            TextBreak("Word")
+            TextFont("gamefont_small")
+            TextStyle("Shadow")
+            EventText("player1.weapon2.name")
+            Viewport(1)
+            Position(0.085000, -0.264822, 0.000000, "Viewport")
+            ZOrder(5)
+            Alpha(0.750000)
+            FadeInTime(0.250000)
+            FadeHoldTime(2.500000)
+            FadeOutTime(1.000000)
+            EventEnable("player1.weapon2.change")
+            EventDisable("player1.weapon2.disable")
+        }
+
+        Model3D("player1weapon1backdrop")
+        {
+            Mesh("hud_weapon_backdrop")
+            Viewport(1)
+            Position(0.152284, -0.098922, -0.002803, "Viewport")
+            Scale(0.210000, 0.210000, 0.210000)
+            ZOrder(8)
+            Alpha(0.980000)
+            FadeOutTime(0.250001)
+            EventEnable("player1.weapon1.mesh")
+            EventDisable("player1.weapon1.disable")
+        }
+
+        Model3D("player1weapon2backdrop")
+        {
+            Mesh("hud_weapon2_backdrop")
+            Viewport(1)
+            Position(0.152284, -0.166659, -0.025075, "Viewport")
+            Scale(0.210001, 0.210001, 0.210001)
+            ZOrder(8)
+            Alpha(0.980000)
+            FadeOutTime(0.250001)
+            EventEnable("player1.weapon2.mesh")
+            EventDisable("player1.weapon2.disable")
+        }
+
+        Group("player1weapon1group")
+        {
+            Viewport(1)
+            Position(0.346161, -0.450412, 0.000000, "Viewport")
+            EventEnable("initialize")
+            Model3D("player1weapon1mesh")
+            {
+                EventMesh("player1.weapon1.mesh")
+                Viewport(1)
+                ZOrder(5)
+                EventEnable("player1.weapon1.mesh")
+                EventDisable("player1.weapon1.disable")
+                MeshInfo("hud_vehicle_lasers")
+                {
+                    Position(-0.185992, 0.354928, -0.000509, "Viewport")
+                    Rotation(0.804269, 359.994110, 359.999695)
+                    Scale(1.200000, 1.200000, 1.200000)
+                }
+
+                MeshInfo("hud_stealth")
+                {
+                    Position(-0.269501, 0.352591, 1.800601, "Viewport")
+                    Rotation(0.002055, 90.580322, 0.000000)
+                    Scale(0.270001, 0.270001, 0.270001)
+                }
+
+                MeshInfo("hud_vehicle_beam_cannon")
+                {
+                    Position(-0.217103, 0.354157, 0.006280, "Viewport")
+                    Scale(1.200000, 1.200000, 1.200000)
+                }
+
+                MeshInfo("hud_vehicle_chaingun")
+                {
+                    Position(-0.201828, 0.356458, 0.006280, "Viewport")
+                }
+
+                MeshInfo("hud_vehicle_guided_rocket")
+                {
+                    Position(-0.228913, 0.354333, 0.006280, "Viewport")
+                    Scale(1.2500000, 1.250000, 1.250000)
+                }
+
+                MeshInfo("hud_geo_turret")
+                {
+                    Position(-0.203592, 0.354333, 0.006280, "Viewport")
+                    Scale(1.909999, 1.909999, 1.909999)
+                }
+
+                MeshInfo("hud_vehicle_stingers")
+                {
+                    Position(-0.278276, 0.250243, 0.006280, "Viewport")
+                }
+
+                MeshInfo("hud_vehicle_torpedo")
+                {
+                    Position(-0.278276, 0.250243, 0.006280, "Viewport")
+                }
+
+                MeshInfo("hud_vehicle_missile")
+                {
+                    Position(-0.240880, 0.356816, 0.006280, "Viewport")
+                }
+
+                MeshInfo("hud_vehicle_mortar")
+                {
+                    Position(-0.278276, 0.250243, 0.006280, "Viewport")
+                }
+
+                MeshInfo("hud_vehicle_recoiless")
+                {
+                    Position(-0.232116, 0.355484, 0.006280, "Viewport")
+                    Scale(1.280000, 1.280000, 1.280000)
+                }
+
+                MeshInfo("hud_vehicle_flak")
+                {
+                    Position(-0.270610, 0.353623, 0.006280, "Viewport")
+                }
+
+                MeshInfo("hud_vehicle_bombs")
+                {
+                    Position(-0.278276, 0.250243, 0.006280, "Viewport")
+                }
+
+                MeshInfo("cis_weap_inf_pistol")
+                {
+                    Position(-0.260316, 0.356366, -0.002834, "Viewport")
+                    Rotation(0.804269, 90.747269, 359.999695)
+                    Scale(0.800000, 0.800000, 0.800000)
+                }
+
+                MeshInfo("cis_weap_inf_sniperrifle")
+                {
+                    Position(-0.230193, 0.361898, -0.003271, "Viewport")
+                    Rotation(359.802399, 90.747269, 359.999695)
+                }
+
+                MeshInfo("cis_weap_inf_rifle")
+                {
+                    Position(-0.236938, 0.359879, 0.001903, "Viewport")
+                    Rotation(0.804269, 90.747269, 359.999695)
+                }
+
+                MeshInfo("cis_weap_inf_fusioncutter")
+                {
+                    Position(-0.237654, 0.359785, -0.003261, "Viewport")
+                    Rotation(355.836060, 135.827820, 69.479843)
+                }
+
+                MeshInfo("cis_weap_inf_launcher")
+                {
+                    Position(-0.206654, 0.362510, 0.003622, "Viewport")
+                    Rotation(0.804269, 90.747269, 359.999695)
+                    Scale(0.660000, 0.660000, 0.660000)
+                }
+
+                MeshInfo("hud_cis_wristblaster")
+                {
+                    Position(-0.264100, 0.350311, 1.022745, "Viewport")
+                    Rotation(0.000000, 0.000000, 120.000000)
+                    Scale(0.653289, 0.653289, 0.653289)
+                }
+
+                MeshInfo("hud_cis_trishot")
+                {
+                    Position(-0.268002, 0.352302, 0.734317, "Viewport")
+                    Rotation(359.967194, 359.763428, 119.966087)
+                    Scale(0.653289, 0.653289, 0.653289)
+                }
+
+                MeshInfo("hud_lightsaber")
+                {
+                    Position(-0.232567, 0.355873, -0.087683, "Viewport")
+                    Rotation(359.967194, 359.763428, 0.003998)
+                    Scale(1.170000, 1.170000, 1.170000)
+                }
+
+                MeshInfo("rep_weap_inf_pistol")
+                {
+                    Position(-0.249442, 0.359076, 0.007261, "Viewport")
+                    Rotation(0.804269, 90.747269, 359.999695)
+                    Scale(1.140000, 1.140000, 1.140000)
+                }
+
+                MeshInfo("rep_weap_inf_fusioncutter")
+                {
+                    Position(-0.247656, 0.353992, -0.002562, "Viewport")
+                    Rotation(355.836060, 135.827820, 69.479843)
+                }
+
+                MeshInfo("rep_weap_inf_launcher")
+                {
+                    Position(-0.207665, 0.361767, 0.007124, "Viewport")
+                    Rotation(0.804269, 90.747269, 359.999695)
+                    Scale(0.670000, 0.670000, 0.670000)
+                }
+
+                MeshInfo("rep_weap_inf_chaingun")
+                {
+                    Position(-0.193610, 0.368393, 0.007124, "Viewport")
+                    Rotation(354.177856, 99.922020, 359.610596)
+                    Scale(0.700000, 0.700000, 0.700000)
+                }
+
+                MeshInfo("com_weap_inf_torpedo")
+                {
+                    Position(-0.229334, 0.360748, 0.009504, "Viewport")
+                    Rotation(0.804269, 90.747269, 359.999695)
+                    Scale(0.810000, 0.810000, 0.810000)
+                }
+
+                MeshInfo("rep_weap_inf_sniperrifle")
+                {
+                    Position(-0.228348, 0.367230, -0.007488, "Viewport")
+                    Rotation(0.804269, 90.747269, 359.999695)
+                    Scale(0.820000, 0.820000, 0.820000)
+                }
+
+                MeshInfo("rep_weap_inf_rifle")
+                {
+                    Position(-0.219723, 0.364485, 0.003263, "Viewport")
+                    Rotation(1.538445, 95.690582, 4.455857)
+                    Scale(0.800000, 0.800000, 0.800000)
+                }
+
+                MeshInfo("hud_imp_flamethrower")
+                {
+                    Position(-0.173776, 0.358333, 0.205979, "Viewport")
+                    Rotation(0.013809, 0.000000, 359.991669)
+                    Scale(0.250001, 0.250001, 0.250001)
+                }
+
+                MeshInfo("imp_weap_inf_rifle")
+                {
+                    Position(-0.242922, 0.360546, 0.003365, "Viewport")
+                    Rotation(0.804269, 90.747269, 359.999695)
+                }
+
+                MeshInfo("imp_weap_inf_pistol")
+                {
+                    Position(-0.264184, 0.356163, -0.003873, "Viewport")
+                    Rotation(0.804269, 90.747269, 359.999695)
+                    Scale(1.240000, 1.240000, 1.240000)
+                }
+
+                MeshInfo("imp_weap_inf_launcher")
+                {
+                    Position(-0.206202, 0.374467, 0.011042, "Viewport")
+                    Rotation(0.804269, 90.747269, 359.999695)
+                    Scale(0.640000, 0.640000, 0.640000)
+                }
+
+                MeshInfo("imp_weap_inf_fusioncutter")
+                {
+                    Position(-0.239710, 0.356673, -0.000329, "Viewport")
+                    Rotation(355.836060, 135.827820, 69.479843)
+                }
+
+                MeshInfo("imp_weap_inf_sniperrifle")
+                {
+                    Position(-0.211808, 0.367069, 0.001418, "Viewport")
+                    Rotation(0.804269, 90.747269, 359.999695)
+                    Scale(0.810000, 0.810000, 0.810000)
+                }
+
+                MeshInfo("all_weap_inf_pistol")
+                {
+                    Position(-0.264115, 0.358155, 0.013887, "Viewport")
+                    Rotation(0.804269, 90.747269, 359.999695)
+                    Scale(0.720000, 0.720000, 0.720000)
+                }
+
+                MeshInfo("all_weap_inf_lightsabre")
+                {
+                    Position(-0.399193, 0.415118, -49.262363, "Viewport")
+                    Rotation(0.804269, 90.747269, 359.999695)
+                }
+
+                MeshInfo("all_weap_inf_rifle")
+                {
+                    Position(-0.222677, 0.361293, 0.014590, "Viewport")
+                    Rotation(0.804269, 90.747269, 359.999695)
+                }
+
+                MeshInfo("all_weap_inf_launcher")
+                {
+                    Position(-0.213354, 0.367216, 0.000847, "Viewport")
+                    Rotation(0.804269, 90.747269, 359.999695)
+                    Scale(0.560000, 0.560000, 0.560000)
+                }
+
+                MeshInfo("all_weap_inf_fusioncutter")
+                {
+                    Position(-0.240446, 0.358461, 0.001095, "Viewport")
+                    Rotation(355.836060, 135.827820, 69.479843)
+                }
+
+                MeshInfo("all_weap_inf_sniperrifle")
+                {
+                    Position(-0.231335, 0.355448, 0.003653, "Viewport")
+                    Rotation(0.804269, 90.573097, 359.999695)
+                }
+
+                MeshInfo("all_weap_inf_bowcaster")
+                {
+                    Position(-0.241302, 0.357451, -0.001890, "Viewport")
+                    Rotation(353.358673, 99.140221, 1.132509)
+                    Scale(0.630000, 0.630000, 0.630000)
+                }
+
+                MeshInfo("all_weap_inf_seeker")
+                {
+                    Position(-0.235594, 0.360432, 0.000240, "Viewport")
+                    Rotation(347.354980, 117.284363, 1.132509)
+                    Scale(0.950000, 0.950000, 0.950000)
+                }
+
+                MeshInfo("ewk_spear")
+                {
+                    Position(-0.086126, 0.206732, 199.969666, "Viewport")
+                    Rotation(0.804269, 90.747269, 359.999695)
+                    Scale(0.590000, 0.590000, 0.590000)
+                }
+
+                MeshInfo("des_weap_inf_fusioncutter")
+                {
+                    Position(-0.240446, 0.358461, 0.001095, "Viewport")
+                    Rotation(355.836060, 135.827820, 69.479843)
+                }
+
+                MeshInfo("tat_weap_tuskrifle")
+                {
+                    Position(-0.214412, 0.355448, 0.003653, "Viewport")
+                    Rotation(0.804269, 90.573097, 359.999695)
+                }
+
+                MeshInfo("wok_weap_inf_bowcaster")
+                {
+                    Position(-0.197062, 0.357451, -0.001890, "Viewport")
+                    Rotation(353.358673, 99.140221, 1.132509)
+                    Scale(0.830000, 0.830000, 0.830000)
+                }
+
+                MeshInfo("wok_weap_inf_fusioncutter")
+                {
+                    Position(-0.240446, 0.358461, 0.001095, "Viewport")
+                    Rotation(355.836060, 135.827820, 69.479843)
+                }
+               
+                MeshInfo("geo_weap_inf_blunderbuss")
+                {
+                    Position(-0.253835, 0.363164, -0.002834, "Viewport")
+                    Rotation(325.134644, 90.232857, 342.582642)
+                }
+                            
+                MeshInfo("gun_weap_inf_fusioncutter")
+                {
+                    Position(-0.254565, 0.357203, -0.002834, "Viewport")
+                    Rotation(124.471199, 68.442780, 177.787216)
+                    Scale(0.872851, 0.872851, 0.872851)
+                }                
+               
+            }
+
+        }
+
+        Group("player1weapon2group")
+        {
+            Viewport(1)
+            Position(0.353928, -0.414382, 0.000000, "Viewport")
+            EventEnable("initialize")
+            Model3D("player1weapon2mesh")
+            {
+                EventMesh("player1.weapon2.mesh")
+                Viewport(1)
+                ZOrder(5)
+                EventEnable("player1.weapon2.mesh")
+                EventDisable("player1.weapon2.disable")
+                
+                MeshInfo("hud_thermaldetonator")
+                {
+                    Position(-0.284209, 0.250243, 0.006280, "Viewport")
+                    Rotation(0.056783, 359.996582, 359.999695)
+                    Scale(0.610000, 0.610000, 0.610000)
+                }
+
+                MeshInfo("wok_weap_inf_thermaldetonator")
+                {
+                    Position(-0.281954, 0.240963, 0.006280, "Viewport")
+                    Rotation(51.626522, 352.026947, 0.000000)
+                    Scale(1.653860, 1.653860, 1.653860)
+                }
+
+                MeshInfo("gun_weap_inf_grenadethermal")
+                {
+                    Position(-0.256918, 0.236531, 0.000000, "Viewport")
+                    Rotation(0.804269, 90.747269, 359.999695)
+                }
+
+
+                MeshInfo("hud_droideka_shield")
+                {
+                    Position(-0.254297, 0.247155, 0.013074, "Viewport")
+                    Scale(0.640000, 0.640000, 0.640000)
+                }
+
+                MeshInfo("hud_detpack_plunger")
+                {
+                    Position(-0.276081, 0.242515, 0.039169, "Viewport")
+                    Rotation(0.056783, 359.996582, 359.999695)
+                    Scale(0.440000, 0.440000, 0.440000)
+                }
+
+                MeshInfo("hud_vehicle_beam_cannon")
+                {
+                    Position(-0.221990, 0.250243, 0.006280, "Viewport")
+                }
+
+                MeshInfo("hud_vehicle_chaingun")
+                {
+                    Position(-0.278276, 0.250243, 0.006280, "Viewport")
+                }
+
+                MeshInfo("hud_vehicle_guided_rocket")
+                {
+                    Position(-0.229027, 0.251896, 0.006280, "Viewport")
+                }
+
+                MeshInfo("hud_vehicle_stingers")
+                {
+                    Position(-0.227707, 0.251667, 0.006280, "Viewport")
+                    Scale(1.430000, 1.430000, 1.430000)
+                }
+
+                MeshInfo("hud_vehicle_torpedo")
+                {
+                    Position(-0.229027, 0.251896, 0.006280, "Viewport")
+                    Scale(1.260000, 1.260000, 1.260000)
+                }
+
+                MeshInfo("hud_vehicle_missile")
+                {
+                    Position(-0.240880, 0.250430, 0.006280, "Viewport")
+                }
+
+                MeshInfo("hud_vehicle_mortar")
+                {
+                    Position(-0.233111, 0.250243, 0.006280, "Viewport")
+                    Scale(2.039999, 2.039999, 2.039999)
+                }
+
+                MeshInfo("hud_vehicle_recoiless")
+                {
+                    Position(-0.230713, 0.251495, 0.006280, "Viewport")
+                    Scale(1.280000, 1.280000, 1.280000)
+                }
+
+                MeshInfo("hud_vehicle_flak")
+                {
+                    Position(-0.278276, 0.250243, 0.006280, "Viewport")
+                }
+
+                MeshInfo("hud_vehicle_bombs")
+                {
+                    Position(-0.265339, 0.250243, 0.006280, "Viewport")
+                    Scale(0.630000, 0.630000, 0.630000)
+                }
+
+                MeshInfo("com_weap_inf_torpedo")
+                {
+                    Rotation(0.804269, 90.747269, 359.999695)
+                }
+
+                MeshInfo("com_weap_inf_grenadethermal")
+                {
+                    Rotation(0.804269, 90.747269, 359.999695)
+                }
+
+                MeshInfo("com_weap_inf_thermaldetonator")
+                {
+                    Rotation(353.358673, 99.140221, 1.132509)
+                }
+
+                MeshInfo("com_weap_inf_seismic_mine")
+                {
+                    Position(-0.266703, 0.248956, 0.000000, "Viewport")
+                    Rotation(0.056783, 359.996582, 359.999695)
+                    Scale(0.810000, 0.810000, 0.810000)
+                }
+
+                MeshInfo("com_weap_inf_detpack")
+                {
+                    Position(-0.265352, 0.243674, 0.000000, "Viewport")
+                    Rotation(0.056783, 359.996582, 359.999695)
+                    Scale(0.810000, 0.810000, 0.810000)
+                }
+
+                MeshInfo("com_weap_inf_torpedo")
+                {
+                    Rotation(0.804269, 90.747269, 359.999695)
+                }
+
+                MeshInfo("com_weap_inf_landmine")
+                {
+                    Position(-0.273909, 0.229540, 0.000000, "Viewport")
+                    Rotation(302.401611, 288.247955, 359.707031)
+                    Scale(0.790000, 0.790000, 0.790000)
+                }
+
+                MeshInfo("all_weap_inf_powerup_dispenser")
+                {
+                    Rotation(0.804269, 90.747269, 359.999695)
+                }
+
+                MeshInfo("all_weap_inf_thermaldetonator")
+                {
+                    Rotation(0.804269, 90.747269, 359.999695)
+                }
+
+                MeshInfo("all_weap_inf_grenadethermal")
+                {
+                    Rotation(0.804269, 90.747269, 359.999695)
+                }
+
+                MeshInfo("cis_weap_walk_droideka_shield")
+                {
+                    Rotation(0.804269, 90.747269, 359.999695)
+                }
+
+                MeshInfo("cis_weap_inf_mine_dispenser")
+                {
+                    Rotation(0.804269, 90.747269, 359.999695)
+                }
+
+                MeshInfo("hud_cis_wristrocket")
+                {
+                    Position(-0.258918, 0.249950, 0.000000, "Viewport")
+                    Rotation(0.067146, 0.027435, 0.869930)
+                }
+
+                MeshInfo("hud_imp_wristrocket")
+                {
+                    Position(-0.235938, 0.252083, 0.000000, "Viewport")
+                    Rotation(0.067146, 0.027435, 0.869930)
+                    Scale(1.220000, 1.220000, 1.220000)
+                }
+
+                MeshInfo("rep_weap_inf_grenadethermal")
+                {
+                    Rotation(0.804269, 90.747269, 359.999695)
+                }
+
+                MeshInfo("rep_weap_inf_landmine")
+                {
+                    Rotation(106.459229, 90.747269, 359.999695)
+                }
+
+                MeshInfo("rep_weap_inf_powerup_dispenser")
+                {
+                    Rotation(0.804269, 90.747269, 359.999695)
+                }
+
+                MeshInfo("hud_rep_weap_defense_buff_icon")
+                {
+                    Position(-0.235665, 0.230309, 0.013074, "Viewport")
+                    Rotation(0.056783, 359.996582, 359.999695)
+                    Scale(0.340001, 0.340001, 0.340001)
+                }
+
+                MeshInfo("hud_rep_defense_buff")
+                {
+                    Position(-0.259348, 0.250207, 0.013074, "Viewport")
+                    Scale(0.500001, 0.500001, 0.500001)
+                }
+
+                MeshInfo("hud_health_regen")
+                {
+                    Position(-0.295264, 0.249070, 0.000000, "Viewport")
+                    Rotation(4.668793, 7.205190, 0.869930)
+                    Scale(0.530001, 0.530001, 0.530001)
+                }
+
+                MeshInfo("imp_weap_inf_powerup_dispenser")
+                {
+                    Rotation(0.804269, 90.747269, 359.999695)
+                }
+
+                MeshInfo("com_item_powerup_dual")
+                {
+                    Position(-0.281854, 0.276486, 0.000000, "Viewport")
+                    Rotation(358.137604, 304.921997, 0.000000)
+                    Scale(0.540000, 0.540000, 0.540000)
+                }
+
+                MeshInfo("ewk_rock")
+                {
+                    Position(-0.060943, 0.076415, 276.444824, "Viewport")
+                    Rotation(0.056783, 359.996582, 359.999695)
+                    Scale(0.780000, 0.780000, 0.780000)
+                }
+
+                MeshInfo("com_weap_probedroid")
+                {
+                    Position(-0.275655, 0.258602, 0.000000, "Viewport")
+                    Rotation(346.000000, 202.460000, 6.200000)
+                    Scale(1.180000, 1.180000, 1.180000)
+                }
+
+                MeshInfo("com_weap_inf_dropturret")
+                {
+                    Position(-0.282107, 0.373784, 0.000000, "Viewport")
+                    Rotation(10.050000, 26.660000, 7.010000)
+                    Scale(0.540187, 0.540187, 0.540187)
+                }
+
+                MeshInfo("hud_poison")
+                {
+                    Position(-0.251899, 0.248431, 0.000000, "Viewport")
+                    Scale(0.330001, 0.330001, 0.330001)
+                }
+
+                MeshInfo("hud_rage")
+                {
+                    Position(-0.251899, 0.248431, -0.010000, "Viewport")
+                    Scale(0.330001, 0.330001, 0.330001)
+                }
+
+                MeshInfo("hud_invun_buff")
+                {
+                    Position(-0.259348, 0.250207, 0.013074, "Viewport")
+                    Scale(0.500001, 0.500001, 0.500001)
+                }
+
+                MeshInfo("hud_defencebuff")
+                {
+                    Position(-0.259348, 0.250207, 0.013074, "Viewport")
+                    Scale(0.500001, 0.500001, 0.500001)
+                }
+
+                MeshInfo("hud_force_choke")
+                {
+                    Position(-0.277730, 0.250243, 0.060000, "Viewport")
+                    Rotation(0.020765, 359.925140, 359.999695)
+                }
+
+                MeshInfo("hud_force_saberthrow")
+                {
+                    Position(-0.272903, 0.241462, 5.214769, "Viewport")
+                    Rotation(0.020765, 359.925140, 359.999695)
+                    Scale(0.180001, 0.180001, 0.180001)
+                }
+
+                MeshInfo("hud_force_pull")
+                {
+                    Position(-0.258612, 0.253261, 0.060000, "Viewport")
+                    Rotation(0.020765, 359.925140, 359.999695)
+                }
+
+                MeshInfo("hud_force_push")
+                {
+                    Position(-0.260633, 0.250827, 0.060000, "Viewport")
+                    Rotation(0.020765, 359.925140, 359.999695)
+                }
+
+                MeshInfo("hud_force_lightning")
+                {
+                    Position(-0.259680, 0.251856, 0.060000, "Viewport")
+                    Rotation(0.020765, 359.925140, 359.999695)
+                    Scale(0.490000, 0.490000, 0.490000)
+                }
+
+            }
+
+        }
+}
+
+Group("player1energybar")
+{
+    PropagateAlpha(1)
+    Viewport(1)
+    Position(0.035000, 0.910000, 0.000000, "Viewport")
+    Alpha(0.600000)
+    EventEnable("player1.energyFraction")
+    EventDisable("player1.energyDisable")
+    BarBitmap("player1energy_fill")
+    {
+        FlashyScale(1.000000)
+        EventValue("player1.energyFraction")
+        Bitmap("hud_jetpack_and_energybar_fill")
+        BitmapRect(0.201996, 0.007658, "Left", "Top", "Viewport")
+        Viewport(1)
+        Position(0.000031, -0.000900, 0.000000, "Viewport")
+        ZOrder(253)
+        Alpha(0.920000)
+        Color(209, 168, 41)
+        EventEnable("player1.energyFraction")
+        EventDisable("player1.energyDisable")
+        EventColor("player1.energyColor")
+        EventPulseRate("player1.energyRegenPulseRate")
+    }
+
+    BarBitmap("player1energy_empty")
+    {
+        FlashyScale(1.000000)
+        Bitmap("hud_jetpack_and_energybar_fill")
+        BitmapRect(0.212315, 0.016690, "Left", "Top", "Viewport")
+        Viewport(1)
+        Position(-0.005518, -0.003194, 0.000000, "Viewport")
+        ZOrder(255)
+        Alpha(0.750000)
+        Color(0, 0, 0)
+        EventEnable("player1.energyFraction")
+        EventDisable("player1.energyDisable")
+    }
+}
+
+Group("player1jetpackbar")
+{
+    PropagateAlpha(1)
+    Viewport(1)
+    Position(-0.000000, 0.425000, 0.000000, "Viewport")
+    Rotation(359.988129, 359.970917, 270.005432)
+    Scale(0.146068, 0.146068, 0.146068)
+    FadeInTime(0.1000000)
+    FadeHoldTime(999999999.000000000)
+    FadeOutTime(1.000001)
+    EventEnable("player1.jetFuelFraction")
+    EventDisable("player1.jetDisable")
+    Model3D("player1jetpack_interiorfield")
+    {
+        Mesh("hud_jetpackbar_frame_front")
+        Viewport(1)
+        Position(-0.001175, 0.006385, 0.000000, "Viewport")
+        Alpha(0.750000)
+        Color(49, 66, 53)
+        EventEnable("initialize")
+    }
+
+    Model3D("player1jetpack_whiteoutsideborder")
+    {
+        Mesh("hud_jetpackbar_frame_back")
+        Viewport(1)
+        Position(0.000000, -0.000816, 0.000000, "Viewport")
+        Alpha(0.500000)
+        Color(205, 236, 234)
+        EventEnable("initialize")
+    }
+
+    BarBitmap("player1jetpack_fill")
+    {
+        EventValue("player1.jetFuelFraction")
+        Bitmap("hud_jetpack_and_energybar_blankfill")
+        BitmapRect(1.189230, 0.181946, "Left", "Top", "Viewport")
+        TexCoords(0.000000, 0.518232, 1.000000, 1.000000)
+        Viewport(1)
+        Position(-0.400000, 0.117000, 0.000000, "Viewport")
+        Scale(0.6500000, 0.400000, 1.000000)
+        ZOrder(38)
+        Color(200, 200, 200)
+        EventEnable("player1.jetFuelFraction")
+        EventDisable("player1.jetDisable")
+        EventColor("player1.jetFuelColor")
+    }
+
+    BarBitmap("player1jetpack_threshold")
+    {
+        EventValue("player1.jetFuelThreshold")
+        Bitmap("hud_jetpack_and_energybar_blankfill")
+        BitmapRect(1.189230, 0.181946, "Left", "Top", "Viewport")
+        TexCoords(0.000000, 0.534073, 0.490000, 1.000000)
+        Viewport(1)
+        Position(-0.410000, 0.080000, 0.000000, "Viewport")
+        Scale(1.047654, 0.740389, 1.000000)
+        ZOrder(252)
+        Color(132, 0, 0)
+        ColorPulseRate(0.000000)
+        UseChangeColor(1)
+        EventEnable("player1.jetFuelThreshold")
+        EventDisable("player1.jetDisable")
+        EventPulseRate("player1.jetFuelWarning")
+    }
+
+}
+
+Group("player1healthbar")
+{
+    PropagateAlpha(1)
+    Viewport(1)
+    Position(0.035000, 0.890000, 0.000000, "Viewport")
+    Alpha(0.600000)
+    Color(255, 231, 255)
+    FadeInTime(1.000000)
+    FadeOutTime(0.200000)
+    EventEnable("player1.health")
+    EventDisable("player1.healthDisable")
+    BarBitmap("player1health_fill")
+    {
+        FlashyIncFadeOutTime(1.000000)
+        FlashyDecFadeOutTime(1.000000)
+        EventValue("player1.healthFraction")
+        Bitmap("hud_jetpack_and_energybar_fill")
+        BitmapRect(0.201996, 0.014658, "Left", "Top", "Viewport")
+        TexCoords(0.000000, 0.500000, 1.000000, 1.000000)
+        Viewport(1)
+        Position(0.000000, -0.940352, 0.000000, "Pixels")
+        ZOrder(2)
+        Color(0, 150, 213)
+        ColorChange(0, 0, 0)
+        ColorChangeRate(0.200000)
+        EventEnable("player1.healthFraction")
+        EventDisable("player1.healthDisable")
+        EventColor("player1.healthColor")
+        EventPulseRate("player1.healthRegenPulseRate")
+    }
+
+    BarBitmap("player1health_empty")
+    {
+        Bitmap("hud_jetpack_and_energybar_fill")
+        BitmapRect(0.211292, 0.029295, "Left", "Top", "Viewport")
+        TexCoords(0.000000, 0.500000, 1.000000, 1.000000)
+        Viewport(1)
+        Position(-0.004992, -0.007543, 0.000000, "Viewport")
+        ZOrder(3)
+        Alpha(0.750000)
+        Color(0, 0, 0)
+        EventEnable("player1.health")
+        EventDisable("player1.healthDisable")
+    }
+
+    BarBitmap("player1bonushealth_fill")
+    {
+        EventValue("player1.bonusHealthFraction")
+        Bitmap("hud_jetpack_and_energybar_fill")
+        BitmapRect(0.201996, 0.014658, "Left", "Top", "Viewport")
+        TexCoords(0.000000, 0.500000, 1.000000, 1.000000)
+        Viewport(1)
+        ZOrder(1)
+        Color(0, 150, 240)
+        ColorChangeRate(0.400000)
+        ColorPulseRate(0.750000)
+        EventEnable("player1.bonusHealthFraction")
+        EventDisable("player1.healthDisable")
+    }
+
+}
+
+Group("player1targethealthbar")
+{
+    PropagateAlpha(1)
+    Viewport(1)
+    Position(0.500000, 0.015000, 0.000000, "Viewport")
+    Scale(0.263237, 0.230000, 0.230000)
+    Alpha(0.800000)
+    Color(192, 224, 224)
+    EventEnable("initialize")
+    BarBitmap("player1targethealth_blankfill")
+    {
+        FlashyScale(1.000000)
+        Value(1.000000)
+        Bitmap("hud_jetpack_and_energybar_fill")
+        BitmapRect(1.189230, 0.181946, "Center", "Center", "Viewport")
+        TexCoords(0.000000, 0.500000, 1.000000, 1.000000)
+        Viewport(1)
+        Position(0.000000, 0.253896, 0.000000, "Viewport")
+        Scale(0.924622, 0.498552, 0.540316)
+        ZOrder(103)
+        Color(39, 40, 46)
+        ColorChange(0, 0, 0)
+        ColorChangeRate(0.000000)
+        FadeInTime(0.100000)
+        FadeOutTime(1.000000)
+        EventEnable("player1.weapon1.target.healthFraction")
+        EventDisable("player1.weapon1.target.disable")
+    }
+
+    BarBitmap("player1targethealth_fill")
+    {
+        FlashyScale(1.000000)
+        FlashyIncFadeOutTime(1.000000)
+        FlashyDecFadeOutTime(1.000000)
+        EventValue("player1.weapon1.target.healthFraction")
+        Bitmap("hud_jetpack_and_energybar_fill")
+        BitmapRect(1.189230, 0.181946, "Center", "Top", "Viewport")
+        TexCoords(0.000000, 0.500000, 1.000000, 1.000000)
+        Viewport(1)
+        Position(0.000000, 0.231774, 0.000000, "Viewport")
+        Scale(0.890714, 0.222995, 0.900000)
+        ZOrder(1)
+        ColorChange(0, 0, 0)
+        ColorChangeRate(0.010000)
+        FadeOutTime(1.000000)
+        EventEnable("player1.weapon1.target.healthFraction")
+        EventDisable("player1.weapon1.target.disable")
+        EventColor("player1.weapon1.target.teamColor")
+    }
+
+}
+
+Group("player1vehiclehealthbar")
+{
+    PropagateAlpha(1)
+    Viewport(1)
+    Position(0.035000, 0.890000, 0.000000, "Viewport")
+    Alpha(0.500000)
+    ColorChangeRate(0.000000)
+    FadeInTime(0.500000)
+    FadeOutTime(0.500001)
+    EventEnable("player1.vehicle.health")
+    EventDisable("player1.vehicle.healthDisable")
+    BarBitmap("player1vehiclehealth_fill")
+    {
+        FlashyIncFadeOutTime(1.000000)
+        FlashyDecFadeOutTime(1.000000)
+        EventValue("player1.vehicle.healthFraction")
+        Bitmap("hud_jetpack_and_energybar_fill")
+        BitmapRect(0.200801, 0.014658, "Left", "Top", "Viewport")
+        TexCoords(0.000000, 0.500000, 1.000000, 1.000000)
+        Viewport(1)
+        ZOrder(1)
+        Color(0, 200, 0)
+        ColorChange(0, 0, 0)
+        ColorChangeRate(0.000000)
+        EventEnable("player1.vehicle.healthFraction")
+        EventDisable("player1.vehicle.healthDisable")
+        EventColor("player1.vehicle.healthColor")
+    }
+
+    BarBitmap("player1vehiclehealth_empty")
+    {
+        EventValue("player1.vehicle.health")
+        Bitmap("hud_jetpack_and_energybar_fill")
+        BitmapRect(0.211387, 0.029295, "Left", "Top", "Viewport")
+        TexCoords(0.000000, 0.500000, 1.000000, 1.000000)
+        Viewport(1)
+        Position(-0.004992, -0.007543, 0.000000, "Viewport")
+        ZOrder(1)
+        Alpha(0.750000)
+        Color(0, 0, 0)
+        EventEnable("player1.vehicle.health")
+        EventDisable("player1.vehicle.healthDisable")
+    }
+
+}
+
+Group("player1targetnamegroup")
+{
+    Viewport(1)
+    Position(0.500000, 0.020000, 0.000000, "Viewport")
+    EventEnable("initialize")
+    Text("player1targetinfo_classNameNEW")
+    {
+        TextBreak("Word")
+        TextStyle("Shadow")
+        TextAlignment("Center", "Top")
+        TextFont("gamefont_tiny")
+        EventText("player1.weapon1.target.className")
+        Viewport(1)
+        Position(0.000000, 0.065248, 0.000000, "Viewport")
+        Alpha(0.600000)
+        FadeOutTime(1.000000)
+        EventEnable("player1.weapon1.target.className")
+        EventDisable("player1.weapon1.target.disable")
+    }
+
+    Text("player1targetinfo_shieldName")
+    {
+        TextBreak("Word")
+        TextAlignment("Center", "Top")
+        TextFont("gamefont_tiny")
+        TextStyle("Shadow")
+        EventText("player1.weapon1.target.shieldName")
+        Viewport(1)
+        Position(0.000000, 0.085000, 0.000000, "Viewport")
+        Alpha(0.600000)
+        Color(40, 255, 255)
+        FadeOutTime(1.000000)
+        EventEnable("player1.weapon1.target.shieldName")
+        EventDisable("player1.weapon1.target.disableShieldName")
+    }
+
+}
+
+ObjectiveList("player1objectives")
+{
+    Rect(0.650000, 0.850000, "Right", "Top", "Viewport")
+    PropagateAlpha(1)
+    Position(1.111000, 0.050000, 0.000000, "Viewport")
+    FadeInTime(0.250000)
+    FadeOutTime(0.250000)
+    EventEnable("player1.objectivelist.enable")
+    EventDisable("player1.objectivelist.disable")
+    Bitmap("player1objectives_background")
+    {
+        Bitmap("opaque_black")
+        BitmapRect(2.000000, 1.200000, "Left", "Top", "Viewport")
+        Position(-0.876552, -0.164966, 0.000000, "Viewport")
+        ZOrder(250)
+        Color(0, 0, 0)
+        EventEnable("player1.objectivelist.enable")
+        EventDisable("player1.objectivelist.disable")
+    }
+}
+
+Group("objectivetimerGROUP")
+{
+    Position(0.725000, 0.065000, 0.000000, "Viewport")
+    EventEnable("objectivetimer")
+    EventDisable("objectivetimer.disable")
+    Text("objectivetimer")
+    {
+        TextBox(0.296875, 0.093750)
+        TextBreak("Word")
+        TextScale(1.254636, 1.246966)
+        TextFont("gamefont_tiny")
+        TextStyle("Shadow")
+        EventNumber("objectivetimer")
+        NumberToTime("%m:%02s")
+        Position(-0.361608, 0.441139, 0.000000, "Pixels")
+        ZOrder(0)
+        Alpha(0.750000)
+        Color(255, 255, 0)
+        EventEnable("objectivetimer")
+        EventDisable("objectivetimer.disable")
+    }
+}
+
+Group("VictoryTimerGroup")
+{
+    Position(0.90000, 0.550000, 0.000000, "Viewport")
+    EventEnable("victorytimer")
+    EventDisable("victorytimer.disable")
+    Text("victorytext")
+    {
+        TextBreak("Word")
+        Text("common.victoryin")
+        TextStyle("Shadow")
+        TextAlignment("Center", "Top")
+        Position(0.000139, 0.040171, 0.000000, "Viewport")
+        ZOrder(0)
+        EventEnable("victorytimer")
+        EventDisable("victorytimer.disable")
+    }
+
+    Text("victorytimer")
+    {
+        TextBox(0.296875, 0.093750)
+        TextBreak("Word")
+        TextScale(1.250000, 1.250000)
+        TextFont("gamefont_tiny")
+        TextStyle("Shadow")
+        EventNumber("victorytimer")
+        NumberToTime("%m:%02s")
+        Position(-0.019694, 0.057038, 0.000000, "Viewport")
+        ZOrder(0)
+        Color(0, 87, 213)
+        EventEnable("victorytimer")
+        EventDisable("victorytimer.disable")
+    }
+}
+Group("DefeatTimerGroup")
+{
+    Position(0.90000, 0.650000, 0.000000, "Viewport")
+    EventEnable("defeattimer")
+    EventDisable("defeattimer.disable")
+    Text("defeattext")
+    {
+        TextBreak("Word")
+        Text("common.defeatin")
+        TextAlignment("Center", "Top")
+        TextStyle("Shadow")
+        Position(0.000139, 0.040171, 0.000000, "Viewport")
+        ZOrder(0)
+        EventEnable("defeattimer")
+        EventDisable("defeattimer.disable")
+    }
+
+    Text("defeattimer")
+    {
+        TextBox(0.296875, 0.093750)
+        TextBreak("Word")
+        TextScale(1.250000, 1.250000)
+        TextFont("gamefont_tiny")
+        TextStyle("Shadow")
+        EventNumber("defeattimer")
+        NumberToTime("%m:%02s")
+        Position(-0.019694, 0.057038, 0.000000, "Viewport")
+        ZOrder(0)
+        Alpha(0.400001)
+        Color(230, 10, 0)
+        EventEnable("defeattimer")
+        EventDisable("defeattimer.disable")
+    }
+}
+
+Map("player1map")
+{
+
+    PositionSmall(0.880000, 0.170000, 0.250000, "Viewport")
+    PositionLarge(0.230000, 0.600000, -30.000000, "Viewport")
+    PositionSpawn(0.230000, 0.525000, -30.000000, "Viewport")
+    EventToggleMapMode("player1.map.modeToggle")
+    EventChangeMapMode("player1.map.mode")
+    EventPostHide("player1.map.hideCPs")
+    EventRefreshTarget("player1.map.refreshTarget")
+    EventRefreshPost("player1.map.refreshPost")
+    EventRefreshMarker("player1.map.refreshMarker")
+    EventPlayerIndex("player1.index")
+    PropagateAlpha(1)
+    Position(0.917484, 0.110884, 0.004111, "Viewport")
+    Scale(1.100000, 1.100000, 1.100000)
+    ZOrder(127)
+    Alpha(0.850000)
+    EventEnable("player1.map.enable")
+    EventDisable("player1.map.disable")
+	
+    BackdropSmall("BackdropSmall")
+    {
+        Mask("map_mask")
+        TexCoords(0.248419, 0.564873, 0.470641, 0.787095)
+        ZOrder(255)
+        Alpha(0.500000)
+    }
+
+    PlayerFOVSmall("PlayerFOVSmall")
+    {
+        Mesh("")
+        ZOrder(123)
+    }
+
+    PlayerDirectionSmall("PlayerDirectionSmall")
+    {
+        Mesh("")
+        ZOrder(124)
+        Alpha(0.200000)
+        Color(255, 255, 0)
+    }
+
+    TargetSmall("TargetSmall")
+    {
+        BitmapStyle("Shadow")
+        ZOrder(126)
+        Color(0, 0, 0)
+    }
+
+    PostSmall("PostSmall")
+    {
+        BitmapStyle("Shadow")
+    }
+
+    PostTextSmall("PostTextSmall")
+    {
+        TextBreak("Word")
+        TextAlignment("Center", "Bottom")
+        ZOrder(127)
+    }
+
+    PostSelectSmall("PostSelectSmall")
+    {
+        Bitmap("hud_icon_flash")
+        BitmapStyle("Shadow")
+    }
+
+    MarkerSmall("MarkerSmall")
+    {
+        BitmapStyle("Shadow")
+        ZOrder(0)
+    }
+
+    NorthSmall("NorthSmall")
+    {
+        Bitmap("hud_map_northpointer")
+        BitmapStyle("Shadow")
+        Position(0.000000, -0.110000, 0.000000, "Viewport")
+        Scale(2.000000, 2.000000, 2.000000)
+        ZOrder(127)
+    }
+
+    BackdropLarge("BackdropLarge")
+    {
+        Mask("map_mask")
+        ZOrder(255)
+        Alpha(0.500000)
+    }
+
+    PlayerFOVLarge("PlayerFOVLarge")
+    {
+        Mesh("")
+        ZOrder(0)
+        Alpha(0.500000)
+    }
+
+    PlayerDirectionLarge("PlayerDirectionLarge")
+    {
+        Mesh("")
+        ZOrder(124)
+        Alpha(0.200000)
+        Color(255, 255, 0)
+    }
+
+    TargetLarge("TargetLarge")
+    {
+        BitmapStyle("Shadow")
+        ZOrder(254)
+        Color(0, 0, 0)
+    }
+
+    PostLarge("PostLarge")
+    {
+        BitmapStyle("Shadow")
+        ZOrder(0)
+    }
+
+    PostTextLarge("PostTextLarge")
+    {
+        TextBreak("Word")
+        TextAlignment("Center", "Bottom")
+        ZOrder(127)
+    }
+
+    PostSelectLarge("PostSelectLarge")
+    {
+        Bitmap("hud_icon_flash")
+        BitmapStyle("Shadow")
+    }
+
+    MarkerLarge("MarkerLarge")
+    {
+        BitmapStyle("Shadow")
+        ZOrder(0)
+    }
+
+    NorthLarge("NorthLarge")
+    {
+        Bitmap("hud_map_northpointer")
+        BitmapStyle("Shadow")
+        Position(0.000000, -0.375000, 0.000000, "Viewport")
+        Scale(5.000000, 5.000000, 5.000000)
+        ZOrder(127)
+    }
+
+    BackdropSpawn("BackdropSpawn")
+    {
+        Mask("map_mask")
+        ZOrder(255)
+        Alpha(0.500000)
+    }
+
+    PlayerFOVSpawn("PlayerFOVSpawn")
+    {
+        ZOrder(123)
+    }
+
+    PlayerDirectionSpawn("PlayerDirectionSpawn")
+    {
+        ZOrder(124)
+    }
+
+    TargetSpawn("TargetSpawn")
+    {
+        BitmapStyle("Shadow")
+        ZOrder(126)
+        Color(0, 0, 0)
+    }
+
+    PostSpawn("PostSpawn")
+    {
+        BitmapStyle("Shadow")
+    }
+
+    PostTextSpawn("PostTextSpawn")
+    {
+        TextBreak("Word")
+        TextAlignment("Center", "Bottom")
+        ZOrder(127)
+    }
+
+    PostSelectSpawn("PostSelectSpawn")
+    {
+        Bitmap("hud_icon_flash")
+        BitmapStyle("Shadow")
+    }
+
+    MarkerSpawn("MarkerSpawn")
+    {
+        BitmapStyle("Shadow")
+        ZOrder(0)
+    }
+
+    NorthSpawn("NorthSpawn")
+    {
+        Bitmap("hud_map_northpointer")
+        BitmapStyle("Shadow")
+        Position(0.000000, -0.325000, 0.000000, "Viewport")
+        Scale(5.000000, 5.000000, 5.000000)
+        ZOrder(127)
+    }
+
+}
+
+Target("player1target")
+{
+    EventResetTargetCommon("targetResetCommon")
+    EventResetTargetPlayer("player1.targetResetPlayer")
+    FourSegmentLockOn(1)
+    EventPlayerIndex("player1.index")
+    EventEnable("player1.spawn")
+    EventDisable("player1.die")
+
+    ObjectiveOnScreen("ObjectiveOnScreen")
+    {
+        ColorFriendly(0, 0, 255)
+        MinScale(1.000000)
+        MaxScale(0.500000)
+        Bitmap("hud_objective_icon")
+        BitmapRect(0.050000, 0.060000, "Center", "Bottom", "Viewport")
+    }
+
+    ObjectiveOnScreenBehind("ObjectiveOnScreenBehind")
+    {
+        ColorFriendly(0, 0, 255)
+        MinScale(1.000000)
+        MaxScale(0.500000)
+        Bitmap("hud_objective_icon_hidden")
+        BitmapRect(0.050000, 0.060000, "Center", "Bottom", "Viewport")
+        Alpha(0.900000)
+    }
+
+    ObjectiveOffScreen("ObjectiveOffScreen")
+    {
+        ColorFriendly(0, 0, 255)
+        MinScale(1.000000)
+        MaxScale(0.500000)
+        Bitmap("hud_objective_icon_offscreen")
+        BitmapRect(0.050000, 0.060000, "Center", "Center", "Viewport")
+    }
+
+    ObjectiveOffScreenBehind("ObjectiveOffScreenBehind")
+    {
+        ColorFriendly(0, 0, 255)
+        MinScale(1.000000)
+        MaxScale(0.500000)
+        Bitmap("hud_objective_icon_offscreen")
+        BitmapRect(0.050000, 0.060000, "Center", "Center", "Viewport")
+        Alpha(0.500000)
+    }
+
+    FlagOnScreen("FlagOnScreen")
+    {
+        ColorFriendly(0, 0, 255)
+        MinScale(1.000000)
+        MaxScale(0.500000)
+        Bitmap("hud_target_flag_onscreen")
+        BitmapRect(0.050000, 0.060000, "Center", "Bottom", "Viewport")
+        Alpha(0.900000)
+    }
+
+    FlagOnScreenBehind("FlagOnScreenBehind")
+    {
+        ColorFriendly(0, 0, 255)
+        MinScale(1.000000)
+        MaxScale(0.500000)
+        Bitmap("hud_target_flag_onscreen")
+        BitmapRect(0.050000, 0.060000, "Center", "Bottom", "Viewport")
+        Alpha(0.200000)
+    }
+
+    FlagOffScreen("FlagOffScreen")
+    {
+        ColorFriendly(0, 0, 255)
+        MinScale(1.000000)
+        MaxScale(0.500000)
+        Bitmap("hud_objective_icon_offscreen")
+        BitmapRect(0.050000, 0.060000, "Center", "Center", "Viewport")
+    }
+
+    FlagOffScreenBehind("FlagOffScreenBehind")
+    {
+        ColorFriendly(0, 0, 255)
+        MinScale(1.000000)
+        MaxScale(0.500000)
+        Bitmap("hud_objective_icon_offscreen")
+        BitmapRect(0.050000, 0.060000, "Center", "Center", "Viewport")
+        Alpha(0.500000)
+    }
+
+    AttackerOnScreen("AttackerOnScreen")
+    {
+        ColorFriendly(0, 0, 255)
+        MinScale(1.000000)
+        MaxScale(0.250000)
+        Bitmap("hud_target_hint_onscreen")
+        BitmapRect(0.050000, 0.060000, "Center", "Bottom", "Viewport")
+        Position(0.000000, -0.050000, 0.000000, "Viewport")
+    }
+
+    AttackerOnScreenBehind("AttackerOnScreenBehind")
+    {
+        ColorFriendly(0, 0, 255)
+        MinScale(1.000000)
+        MaxScale(0.500000)
+        Bitmap("hud_target_hint_hidden")
+        BitmapRect(0.050000, 0.060000, "Center", "Bottom", "Viewport")
+        Position(0.000000, -0.050000, 0.000000, "Viewport")
+    }
+
+    AttackerOffScreen("AttackerOffScreen")
+    {
+        ColorFriendly(0, 0, 255)
+        MinScale(1.000000)
+        MaxScale(0.500000)
+        Bitmap("hud_target_hint_offscreen")
+        BitmapRect(0.050000, 0.060000, "Center", "Center", "Viewport")
+        Alpha(0.500000)
+    }
+
+    AttackerOffScreenBehind("AttackerOffScreenBehind")
+    {
+        ColorFriendly(0, 0, 255)
+        MinScale(1.000000)
+        MaxScale(0.500000)
+        Bitmap("hud_target_hint_offscreen")
+        BitmapRect(0.050000, 0.060000, "Center", "Center", "Viewport")
+        Alpha(0.500000)
+    }
+
+    LockedOnScreen("LockedOnScreen")
+    {
+        ColorFriendly(0, 0, 255)
+        MinScale(3.000000)
+        MaxScale(0.000000)
+        Bitmap("hud_target_onscreen")
+        BitmapRect(0.025000, 0.030000, "Right", "Bottom", "Viewport")
+        TexCoords(0.000000, 0.000000, 0.500000, 0.500000)
+        Color(255, 50, 50)
+    }
+
+    LockedOnScreenBehind("LockedOnScreenBehind")
+    {
+        ColorFriendly(0, 0, 255)
+        MinScale(3.000000)
+        MaxScale(0.000000)
+        Bitmap("hud_target_hidden")
+        BitmapRect(0.025000, 0.030000, "Right", "Bottom", "Viewport")
+        TexCoords(0.000000, 0.000000, 0.500000, 0.500000)
+        Alpha(0.600000)
+        Color(200, 90, 90)
+    }
+
+    LockedOffScreen("LockedOffScreen")
+    {
+        ColorFriendly(0, 0, 255)
+        MinScale(1.600000)
+        MaxScale(1.400000)
+        Bitmap("hud_target_pointer_solid")
+        BitmapRect(0.050000, 0.060000, "Center", "Center", "Viewport")
+        Color(255, 50, 50)
+    }
+
+    LockedOffScreenBehind("LockedOffScreenBehind")
+    {
+        ColorFriendly(0, 0, 255)
+        MinScale(1.600000)
+        MaxScale(1.400000)
+        Bitmap("hud_target_pointer")
+        BitmapRect(0.050000, 0.060000, "Center", "Center", "Viewport")
+        Color(200, 90, 90)
+    }
+
+    HintOnScreen("HintOnScreen")
+    {
+        ColorFriendly(0, 86, 213)
+        MinScale(1.000000)
+        MaxScale(0.500000)
+        Bitmap("hud_target_hint_onscreen")
+        BitmapRect(0.050000, 0.060000, "Center", "Bottom", "Viewport")
+        Position(0.000000, -0.050000, 0.000000, "Viewport")
+        Color(175, 0, 0)
+    }
+
+    HintOnScreenBehind("HintOnScreenBehind")
+    {
+        ColorFriendly(0, 86, 213)
+        MinScale(1.000000)
+        MaxScale(0.500000)
+        Bitmap("hud_target_hint_onscreen")
+        BitmapRect(0.050000, 0.060000, "Center", "Bottom", "Viewport")
+        Position(0.000000, -0.050000, 0.000000, "Viewport")
+        Alpha(0.400000)
+        Color(175, 0, 0)
+    }
+
+    HintOffScreen("HintOffScreen")
+    {
+        ColorFriendly(0, 0, 255)
+        Alpha(0.000000)
+    }
+
+    HintOffScreenBehind("HintOffScreenBehind")
+    {
+        ColorFriendly(0, 0, 255)
+        Alpha(0.000000)
+    }
+
+    HintFlagOnScreen("HintFlagOnScreen")
+    {
+        ColorFriendly(0, 86, 213)
+        MinScale(1.500000)
+        MaxScale(0.750000)
+        Bitmap("hud_target_flag_onscreen")
+        BitmapRect(0.050000, 0.060000, "Center", "Bottom", "Viewport")
+        Position(0.000000, -0.050000, 0.000000, "Viewport")
+        Color(175, 0, 0)
+    }
+
+    HintFlagOnScreenBehind("HintFlagOnScreenBehind")
+    {
+        ColorFriendly(0, 86, 213)
+        MinScale(1.500000)
+        MaxScale(0.750000)
+        Bitmap("hud_target_flag_onscreen")
+        BitmapRect(0.050000, 0.060000, "Center", "Bottom", "Viewport")
+        Position(0.000000, -0.050000, 0.000000, "Viewport")
+        Alpha(0.400000)
+        Color(175, 0, 0)
+    }
+
+    HintFlagOffScreen("HintFlagOffScreen")
+    {
+        ColorFriendly(0, 86, 213)
+        MinScale(1.200000)
+        MaxScale(0.900000)
+        Bitmap("hud_objective_icon_offscreen")
+        BitmapRect(0.050000, 0.060000, "Center", "Center", "Viewport")
+        Color(175, 0, 0)
+    }
+
+    HintFlagOffScreenBehind("HintFlagOffScreenBehind")
+    {
+        ColorFriendly(0, 86, 213)
+        MinScale(1.200000)
+        MaxScale(0.900000)
+        Bitmap("hud_objective_icon_offscreen")
+        BitmapRect(0.050000, 0.060000, "Center", "Center", "Viewport")
+        Alpha(0.500000)
+        Color(175, 0, 0)
+    }
+
+}
+
+Group("player1reticule")
+{
+    EventPosition("player1.weapon1.reticule.position")
+    Position(0.500000, 0.5000, 0.000000, "Viewport")
+    Scale(0.7500, 0.7500, 0.7500)
+    PropagateAlpha(1)
+    Alpha(1.0000)
+    EventEnable("player1.weapon1.reticule.position")
+    EventDisable("player1.weapon1.reticule.disable")
+    EventAlpha("player1.reticule.alpha")
+    
+    Model3D("player1reticule_shape")
+    {
+        Mesh("hud_main_reticule")
+        Scale(0.260000, 0.260000, 0.260000)
+        Alpha(0.520000)
+        ColorChangeRate(0.001000)
+        EventEnable("initialize")
+        EventColor("player1.weapon1.target.teamColor")
+    }
+
+    Group("player1bullseye")
+    {
+        EventEnable("initialize")
+        PropagateAlpha(0)
+        Model3D("player1reticule_bullseye")
+        {
+            Mesh("hud_main_reticule_bullseye")
+            Scale(0.35, 0.35, 0.35)
+            Alpha(0.80000)
+            EventEnable("initialize")
+            ColorChangeRate(0.001000)
+            EventColor("player1.weapon1.target.teamColorBright")
+        }
+    }
+
+    Model3D("player1reticule_outline")
+    {
+        Mesh("hud_main_reticule_outline")
+        Scale(0.260000, 0.260000, 0.260000)
+        Alpha(0.500000)
+        Color(0, 0, 0)
+        EventEnable("initialize")
+    }
+
+    Model3D("player1reticule_hit")
+    {
+        Mesh("hud_main_reticule_hit")
+        Lighting(0)
+        Scale(0.260000, 0.260000, 0.260000)
+        ZOrder(0)
+        Alpha(0.900000)
+        Color(1, 86, 213)
+        ColorChangeRate(0.010000)
+        FadeHoldTime(0.330000)
+        EventEnable("player1.weapon1.target.hit")
+        EventColor("player1.weapon1.target.hitColor")
+    }
+
+    Model3D("player1reticule_criticalhit")
+    {
+        Mesh("hud_main_reticule_criticalhit")
+        Scale(0.260000, 0.260000, 0.260000)
+        Alpha(0.900000)
+        Color(1, 86, 213)
+        ColorChangeRate(0.010000)
+        FadeHoldTime(0.600000)
+        FadeSustainTime(0.500000)
+        FadeOutTime(0.010000)
+        EventEnable("player1.weapon1.target.hitCritical")
+        EventColor("player1.weapon1.target.hitColor")
+    }
+
+    BarSegmented("player1weapon1clipbar")
+    {
+        AngleStart(-135.296936)
+        AngleEnd(144.795883)
+        NumSegments(30)
+        Value(1.000000)
+        EventValue("player1.weapon1.totalClipFraction")
+        Rect(0.050000, 0.100000, "Center", "Center", "Viewport")
+        PropagateAlpha(1)
+        Position(-0.000581, -0.001564, 0.000000, "Viewport")
+        ColorChangeRate(0.100000)
+        FadeHoldTime(6.030002)
+        FadeSustainTime(1.020000)
+        FadeOutTime(0.500000)
+        EventEnable("player1.weapon1.totalClipFraction")
+        EventDisable("player1.weapon1.target.disable")
+        Segment("Segment")
+        {
+            Bitmap("hud_clipbar_segment")
+            BitmapStyle("Shadow")
+            BitmapRect(0.003122, 0.014606, "Center", "Center", "Viewport")
+            Alpha(0.750000)
+            Color(160, 160, 224)
+            FadeInTime(0.100000)
+            FadeOutTime(0.250000)
+        }
+
+    }
+
+    BarSegmented("player1weapon2refirebar")
+    {
+        AngleStart(-119.999985)
+        AngleEnd(240.095596)
+        NumSegments(3)
+        Value(1.000000)
+        EventValue("player1.weapon2.refire")
+        Rect(0.050000, 0.100000, "Center", "Center", "Viewport")
+        PropagateAlpha(1)
+        Position(-0.008000, -0.017000, 0.000000, "Viewport")
+        Scale(1.280000, 1.280000, 1.280000)
+        ZOrder(0)
+        Color(177, 50, 0)
+        ColorChangeRate(0.100000)
+        FadeHoldTime(0.600000)
+        FadeOutTime(0.320000)
+        EventEnable("player1.weapon2.refire")
+        EventDisable("player1.weapon2.disable")
+        Segment("Segment")
+        {
+            Bitmap("hud_secondary_refire_segment")
+            BitmapStyle("Shadow")
+            BitmapRect(0.006262, 0.008351, "Center", "Center", "Viewport")
+            FadeInTime(0.100000)
+            FadeOutTime(0.250000)
+        }
+
+    }
+
+    BarSegmented("player1weapon1heatbar")
+    {
+        AngleStart(-149.999832)
+        AngleEnd(149.999832)
+        NumSegments(30)
+        Value(1.000000)
+        EventValue("player1.weapon1.heat")
+        Rect(0.050000, 0.100000, "Center", "Center", "Viewport")
+        PropagateAlpha(1)
+        Alpha(0.600000)
+        Color(239, 255, 41)
+        EventEnable("player1.weapon1.heat")
+        EventDisable("player1.weapon1.disable")
+        EventColor("player1.weapon1.heatcolor")
+        Segment("Segment")
+        {
+            Bitmap("white")
+            BitmapStyle("Shadow")
+            BitmapRect(0.016252, 0.012504, "Center", "Center", "Viewport")
+            Alpha(0.750000)
+            FadeInTime(0.100000)
+            FadeOutTime(0.300000)
+        }
+
+    }
+
+    BarSegmented("player1weapon1refire_leftbit")
+    {
+        AngleStart(-179.999893)
+        AngleEnd(-139.999939)
+        NumSegments(3)
+        Value(1.000000)
+        EventValue("player1.weapon1.refire")
+        Rect(0.092845, 0.120721, "Center", "Center", "Viewport")
+        PropagateAlpha(1)
+        Alpha(0.600000)
+        Color(255, 0, 0)
+        EventEnable("player1.weapon1.refire")
+        EventDisable("player1.weapon1.disable")
+        Segment("Segment")
+        {
+            Bitmap("white")
+            BitmapStyle("Shadow")
+            BitmapRect(0.007862, 0.012504, "Center", "Center", "Viewport")
+            FadeInTime(0.050000)
+            FadeOutTime(0.100000)
+        }
+
+    }
+
+    BarSegmented("player1weapon1refire_rightbit")
+    {
+        AngleStart(-179.999893)
+        AngleEnd(-139.999939)
+        NumSegments(3)
+        Value(1.000000)
+        EventValue("player1.weapon1.refire")
+        Rect(0.092845, 0.120721, "Center", "Center", "Viewport")
+        PropagateAlpha(1)
+        Position(0.092858, 0.001168, 0.000000, "Viewport")
+        Rotation(0.000000, 180.000000, 0.000000)
+        Alpha(0.600000)
+        Color(255, 0, 0)
+        EventEnable("player1.weapon1.refire")
+        EventDisable("player1.weapon1.disable")
+        Segment("Segment")
+        {
+            Bitmap("white")
+            BitmapStyle("Shadow")
+            BitmapRect(0.007862, 0.012504, "Center", "Center", "Viewport")
+            FadeInTime(0.050000)
+            FadeOutTime(0.100000)
+        }
+
+    }
+
+}
+
+Text("player1weapon1overheat")
+{
+    TextBreak("Word")
+    TextStyle("Shadow")
+    Text("game.weaponOverheat")
+    TextAlignment("Center", "Top")
+    TextFont("gamefont_tiny")
+    Position(0.500000, 0.750000, 0.000000, "Viewport")
+    ZOrder(5)
+    Color(230, 70, 0)
+    ColorPulseRate(0.750000)
+    FadeInTime(0.250000)
+    FadeHoldTime(0.100000)
+    FadeOutTime(1.000000)
+    EventEnable("player1.weaponsOverheat")
+    EventDisable("player1.weaponsDisable")
+}
+
+Group("player1weapon1lockon")
+{
+    EventPosition("player1.weapon1.lockOnPosition")
+    EventRotation("player1.weapon1.chargeRotate")
+    EventScale("player1.weapon1.chargeScale")
+    Position(0.461625, 0.459230, 0.000000, "Viewport")
+    EventEnable("player1.weapon1.lockOnPosition")
+    EventDisable("player1.weapon1.lockOnDisable")
+    Model3D("player1reticule_backdrop")
+    {
+        Mesh("hud_main_reticule_rocketlockon_active")
+        Scale(0.260000, 0.260000, 0.260000)
+        ColorChangeRate(0.000000)
+        EventEnable("initialize")
+        EventColor("player1.weapon1.chargeColor")
+    }
+
+}
+
+Group("player1weapon2lockon")
+{
+    EventPosition("player1.weapon2.lockOnPosition")
+    EventRotation("player1.weapon2.chargeRotate")
+    EventScale("player1.weapon2.chargeScale")
+    Position(0.589291, 0.795639, 0.000000, "Viewport")
+    EventEnable("player1.weapon2.lockOnPosition")
+    EventDisable("player1.weapon2.lockOnDisable")
+    Model3D("player1reticule_backdrop")
+    {
+        Mesh("hud_main_reticule_rocketlockon_active")
+        Scale(0.260000, 0.260000, 0.260000)
+        ColorChangeRate(0.000000)
+        EventEnable("initialize")
+        EventColor("player1.weapon2.chargeColor")
+    }
+
+}
+
+Text("player1spawnvehicle")
+{
+    TextBox(0.384766, 0.500000)
+    TextBreak("Word")
+    TextFont("gamefont_tiny")
+    TextStyle("Shadow")
+    EventText("player1.spawnDisplay.vehicle")
+    Position(0.497674, 0.338058, 0.000000, "Viewport")
+    ZOrder(0)
+    EventEnable("player1.spawnDisplay.enable")
+    EventDisable("player1.spawnDisplay.disable")
+}
+
+Text("player1spawninfo")
+{
+    TextBox(0.500000, 0.500000)
+    TextBreak("Word")
+    TextFont("gamefont_tiny")
+    TextStyle("Shadow")
+    EventText("player1.spawnDisplay.spawninfo")
+    Position(0.498295, 0.192691, 0.000000, "Viewport")
+    ZOrder(0)
+    EventEnable("player1.spawnDisplay.enable")
+    EventDisable("player1.spawnDisplay.disable")
+}
+
+MultilineText("player1systemMessages")
+{
+
+
+    EventText("player1.message")
+    EventColor("player1.message.color")
+    NumLines(8)
+    DisplayTime(5.0)
+    AlwaysScroll(1)
+    ScrollSpeed(5.0)
+    AddToTop(1)
+    Rect(1.000000, 0.90000, "Left", "Top", "Viewport")
+    PropagateAlpha(1)
+    Position(0.04, 0.13, 0.000000, "Viewport")
+    ZOrder(0)
+    EventEnable("player1.message")
+    EventDisable("player1.message.disable")
+    Format("Format")
+    {
+        TextBox(0.500000, 0.250000)
+        TextBreak("Word")
+        TextStyle("Shadow")
+        TextAlignment("Left", "Center")
+        TextFont("gamefont_tiny")
+        ZOrder(0)
+        Color(223, 32, 32)
+        FadeInTime(0.250000)
+        FadeOutTime(0.250000)
+    }
+}
+
+Group("player1teams")
+{
+    PropagateAlpha(1)
+    Position(0.500000, 0.089000, 0.000000, "Viewport")
+	Scale(1.0000, 1.0000, 1.0000)
+    Alpha(0.800000)
+    FadeInTime(3.000000)
+    FadeOutTime(2.000000)
+    EventEnable("initialize")
+    Group("player1team1_group")
+    {
+        Position(-0.174945, 0.030501, 0.000000, "Viewport")
+        EventEnable("initialize")
+        Group("player1teams_team1icongroup")
+        {
+            Position(-0.012502, -0.024102, 0.000000, "Viewport")
+			Scale(0.0, 0.0, 0.0)
+            EventEnable("initialize")
+            Bitmap("player1teams_team1icon")
+            {
+                BitmapRect(0.070000, 0.090000, "Center", "Center", "Viewport")
+                BitmapStyle("Shadow")
+                EventBitmap("player1.team1.texture")
+                Scale(0.650000, 0.650000, 0.650000)
+                ZOrder(6)
+                Alpha(0.750000)
+                Color(1, 86, 213)
+                EventEnable("player1.team1.texture")
+                EventDisable("player1.team1.textureDisable")
+            }
+        }
+
+        Group("player1teams_team1pointsgroup")
+        {
+            Position(-0.010948, -0.060000, 0.000000, "Viewport")
+			
+            EventEnable("initialize")
+            Text("player1teams_team1points")
+            {
+                TextBreak("Word")
+                TextAlignment("Center", "Top")
+                TextFont("gamefont_tiny")
+                TextStyle("Shadow")
+                EventText("player1.team1.pointsText")
+                Color(1, 86, 213)
+                EventEnable("player1.team1.pointsText")
+                EventDisable("player1.team1.pointsDisable")
+            }
+        }
+
+        Group("player1teams_team1reinforcementsgroup")
+        {
+            Position(0.004654, -0.060000, 0.000000, "Viewport")
+            EventEnable("initialize")
+            Text("player1teams_team1reinforcements")
+            {
+                TextBreak("Word")
+                TextAlignment("Center", "Top")
+                TextFont("gamefont_tiny")
+                TextStyle("Shadow")
+                EventNumber("player1.team1.reinforcements")
+                ZOrder(5)
+                Color(1, 86, 213)
+                EventEnable("player1.team1.reinforcements")
+                EventDisable("player1.team1.reinforcementsDisable")
+                EventPulseRate("player1.team1.bleedRate")
+            }
+        }
+
+    }
+
+    Group("player1team2_group")
+    {
+        Position(0.174945, 0.030501, 0.000000, "Viewport")
+        EventEnable("initialize")
+        Group("player1teams_team2icongroup")
+        {
+            Position(0.012502, -0.024102, 0.000000, "Viewport")
+			Scale(0.0, 0.0, 0.0)
+            EventEnable("initialize")
+            Bitmap("player1teams_team2icon")
+            {
+                BitmapRect(0.070000, 0.090000, "Center", "Center", "Viewport")
+                BitmapStyle("Shadow")
+                EventBitmap("player1.team2.texture")
+                Scale(0.650000, 0.650000, 0.650000)
+                ZOrder(6)
+                Alpha(0.750000)
+                Color(150, 15, 25)
+                EventEnable("player1.team2.texture")
+                EventDisable("player1.team2.textureDisable")
+            }
+        }
+
+        Group("player1teams_team2pointsgroup")
+        {
+            Position(0.014120, -0.060000, 0.000000, "Viewport")
+			
+            EventEnable("initialize")
+            Text("player1teams_team2points")
+            {
+                TextBreak("Word")
+                TextAlignment("Center", "Top")
+                TextFont("gamefont_tiny")
+                TextStyle("Shadow")
+                EventText("player1.team2.pointsText")
+                Color(133, 32, 32)
+                EventEnable("player1.team2.points")
+                EventDisable("player1.team2.pointsDisable")
+            }
+        }
+
+        Group("player1teams_team2reinforcementsgroup")
+        {
+            Position(0.001109, -0.060000, 0.000000, "Viewport")
+            EventEnable("initialize")
+            Text("player1teams_team2reinforcements")
+            {
+                TextBreak("Word")
+                TextAlignment("Center", "Top")
+                TextFont("gamefont_tiny")
+                TextStyle("Shadow")
+                EventNumber("player1.team2.reinforcements")
+                ZOrder(5)
+                Color(150, 30, 30)
+                EventEnable("player1.team2.reinforcements")
+                EventDisable("player1.team2.reinforcementsDisable")
+                EventPulseRate("player1.team2.bleedRate")
+            }
+        }
+
+    }
+
+}
+
+Group("player1herobar")
+{
+	Position(0.035000, 0.860000, 0.000000, "Viewport")
+    EventEnable("player1.hero.healthFraction")
+    EventDisable("player1.hero.healthDisable")
+    BarBitmap("player1herobar_COLOR")
+    {
+        ScaleTexture(0)
+        EventValue("player1.hero.healthFraction")
+        Bitmap("hud_herobar_saberglow")
+        BitmapRect(0.300000, 0.030000, "Left", "Top", "Viewport")
+        Position(0.111500, -0.009900, 0.000000, "Viewport")
+        Scale(1.901000, 1.450000, 1.000000)
+        ZOrder(7)
+        Alpha(0.800000)
+        Color(40, 126, 255)
+        EventEnable("initialize")
+    }
+    BarBitmap("player1herobar_INNERWHITE")
+    {
+        ScaleTexture(0)
+        FlashyScale(0.000000)
+        EventValue("player1.hero.healthFraction")
+        Bitmap("hud_herobar_saberglow")
+        BitmapRect(0.300000, 0.030000, "Left", "Top", "Viewport")
+        Position(0.111000, 0.004000, 0.000000, "Viewport")
+        Scale(1.901000, 0.450000, 1.000000)
+        ZOrder(6)
+        Alpha(0.800000)
+        EventEnable("initialize")
+    }
+    ProceduralBarBitmap("player1herobar_PULSE")
+    {
+        ScaleTexture(0)
+        EventValue("player1.hero.healthFraction")
+        Bitmap("hud_herobar_saberglow")
+        BitmapRect(0.300000, 0.000052, "Left", "Top", "Viewport")
+        Position(0.111500, 0.001000, 0.000000, "Viewport")
+        Scale(1.450000, 1.000000, 1.000000)
+        ZOrder(0)
+        Alpha(0.096829)
+        Color(167, 255, 0)
+        BlendMode("Additive")
+        EventEnable("initialize")
+    }
+    Bitmap("player1herobar_herobarsaberhilt")
+    {
+        Bitmap("hud_herobar_saberhilt")
+        BitmapRect(0.400000, 0.133000, "Left", "Top", "Viewport")
+        Position(0.000034, -0.013004, 0.000000, "Viewport")
+        Scale(0.280000, 0.280000, 0.280000)
+        Alpha(0.500000)
+        EventEnable("player1.hero.health")
+        EventDisable("player1.hero.healthDisable")
+    }
+}
+
+Group("player1vehicleseatinggroup")
+{
+    PropagateAlpha(1)
+    Position(0.045645, 0.705077, 0.000000, "Viewport")
+	Scale(0.600000, 0.600000, 0.600000)
+    FadeInTime(0.250000)
+    FadeHoldTime(4.000000)
+    FadeOutTime(0.250000)
+    EventEnable("player1.vehicle.seatingMesh")
+    EventDisable("player1.vehicle.healthDisable")
+    VehicleSeating("player1vehicleseating")
+    {
+        EventPlayerIndex("player1.index")
+        PropagateAlpha(1)
+        EventEnable("initialize")
+        Backdrop("Backdrop")
+        {
+        }
+
+        Empty("Empty")
+        {
+            Mesh("hud_vehicle_seatingchart_empty_icon")
+            Position(-0.017477, 0.000000, 0.000000, "Viewport")
+            Scale(0.300000, 0.300000, 0.300000)
+            Alpha(0.500000)
+        }
+
+        EmptyText("EmptyText")
+        {
+            TextBreak("Word")
+            TextFont("gamefont_tiny")
+            TextStyle("Shadow")
+            Alpha(0.500000)
+        }
+
+        Self("Self")
+        {
+            Mesh("hud_vehicle_seatingchart_player1_icon")
+            Position(-0.017477, 0.000000, 0.000000, "Viewport")
+            Scale(0.300000, 0.300000, 0.300000)
+        }
+
+        SelfText("SelfText")
+        {
+            TextBreak("Word")
+            TextFont("gamefont_small")
+            TextStyle("Shadow")
+        }
+
+        Player("Player")
+        {
+            Mesh("hud_vehicle_seatingchart_player1_icon")
+            Position(-0.017477, 0.000000, 0.000000, "Viewport")
+            Scale(0.300000, 0.300000, 0.300000)
+            Alpha(0.500000)
+        }
+
+        PlayerText("PlayerText")
+        {
+            TextBreak("Word")
+            TextFont("gamefont_tiny")
+            TextStyle("Shadow")
+            Alpha(0.500000)
+        }
+
+        AI("AI")
+        {
+            Mesh("hud_vehicle_seatingchart_ai_icon")
+            Position(-0.017477, 0.000000, 0.000000, "Viewport")
+            Scale(0.300000, 0.300000, 0.300000)
+            Alpha(0.750000)
+        }
+
+        AIText("AIText")
+        {
+            TextBreak("Word")
+            TextFont("gamefont_tiny")
+            TextStyle("Shadow")
+            Alpha(0.500000)
+        }
+
+    }
+
+}
+
+BorderedBox("player1HintPopupText.BorderBox")
+{
+    Background("border_3_pieces")
+    Border(2.000000, 2.000000)
+    Rect(1.098883, 1.095483, "Left", "Top", "Viewport")
+    PropagateAlpha(1)
+    Position(-0.056699, -0.053812, 0.000000, "Viewport")
+    ZOrder(0)
+    Color(192, 224, 224)
+    EventEnable("hintPopup")
+    EventDisable("hintPopup.disable")
+    Text("player1HintPopupText.popup_title")
+    {
+        TextBreak("Word")
+        Text("game.popup.hintTitle")
+        TextAlignment("Center", "Top")
+        TextFont("gamefont_tiny")
+        TextStyle("Shadow")
+        Position(0.541136, 0.167189, 0.000000, "Viewport")
+        ZOrder(0)
+        Color(115, 115, 255)
+        EventEnable("hintPopup")
+        EventDisable("hintPopup.disable")
+    }
+
+    Text("player1HintPopupText.myText")
+    {
+        TextBox(0.447266, 0.343750)
+        TextBreak("Word")
+        TextAlignment("Center", "Top")
+        TextFont("gamefont_tiny")
+        TextStyle("Shadow")
+        EventText("hintPopup")
+        Position(0.317333, 0.255543, 0.000000, "Viewport")
+        ZOrder(123)
+        EventEnable("hintPopup")
+        EventDisable("hintPopup.disable")
+    }
+
+    Text("player1HintPopupText.press_to_continue")
+    {
+        TextBreak("Word")
+        Text("game.popup.pressToContinue")
+        TextAlignment("Center", "Top")
+        TextFont("gamefont_tiny")
+        TextStyle("Shadow")
+        Position(0.554724, 0.729572, 0.000000, "Viewport")
+        ZOrder(127)
+        EventEnable("hintPopup")
+        EventDisable("hintPopup.disable")
+    }
+
+    Text("player1HintPopupText.pageNumber")
+    {
+        TextBreak("Word")
+        Text("game.popup.pressToContinue")
+        TextAlignment("Center", "Top")
+        TextFont("gamefont_tiny")
+        TextStyle("Shadow")
+        EventText("hintPopup.pageNumber")
+        Position(0.539965, 0.208581, 0.000000, "Viewport")
+        ZOrder(127)
+        EventEnable("hintPopup")
+        EventDisable("hintPopup.disable")
+    }
+
+    Model3D("player1HintPopupText")
+    {
+        Mesh("hud_hint_backdrop")
+        Position(0.516398, 0.431267, -3.572391, "Viewport")
+        Rotation(0.013153, 0.000000, 0.000000)
+        Scale(2.509999, 2.509999, 2.509999)
+        ZOrder(255)
+        Alpha(0.900000)
+        EventEnable("hintPopup")
+        EventDisable("hintPopup.disable")
+    }
+
+    Bitmap("player1HintPopupText.LeftArrow")
+    {
+        Bitmap("OptionL")
+        BitmapRect(0.050000, 0.050000, "Center", "Center", "Viewport")
+        Position(0.269701, 0.500000, 0.000000, "Viewport")
+        ColorChange(150, 150, 0)
+        ColorPulseRate(0.500000)
+        EventEnable("hintPopup")
+        EventDisable("hintPopup.disable")
+    }
+
+    Bitmap("player1HintPopupText.RightArrow")
+    {
+        Bitmap("OptionR")
+        BitmapRect(0.050000, 0.050000, "Center", "Center", "Viewport")
+        Position(0.800000, 0.500000, 0.000000, "Viewport")
+        ColorChange(150, 150, 0)
+        ColorPulseRate(0.500000)
+        EventEnable("hintPopup")
+        EventDisable("hintPopup.disable")
+    }
+
+}
+
+Group("player1ObjectivePopupText.Group")
+{
+    Rect(1.000000, 1.000000, "Center", "Top", "Viewport")
+    PropagateAlpha(1)
+    Position(0.500000, 0.000000, 0.000000, "Viewport")
+    ZOrder(0)
+    EventEnable("objectivePopup")
+    EventDisable("objectivePopup.disable")
+    Bitmap("ObjectivePopupText.Backdrop")
+    {
+        Bitmap("hud_white")
+        BitmapRect(2.000000, 2.000000, "Center", "Center", "Viewport")
+        Position(0.000000, 0.000000, 0.000000, "Viewport")
+        Alpha(0.750000)
+        Color(0, 0, 0)
+        EventEnable("objectivePopup")
+        EventDisable("objectivePopup.disable")
+    }
+
+    Text("player1ObjectivePopupText.popup_title")
+    {
+        TextBreak("Word")
+        Text("game.popup.objectiveTitle")
+        TextAlignment("Center", "Top")
+        TextFont("gamefont_tiny")
+        TextStyle("Shadow")
+        Position(0.500000, 0.192183, 0.000000, "Viewport")
+        ZOrder(127)
+        Color(241, 235, 35)
+        EventEnable("objectivePopup")
+        EventDisable("objectivePopup.disable")
+    }
+
+    Text("player1ObjectivePopupText.myText")
+    {
+        TextBox(0.750000, 0.559896)
+        TextBreak("Word")
+        TextAlignment("Center", "Top")
+        TextFont("gamefont_tiny")
+        TextStyle("Shadow")
+        EventText("objectivePopup")
+        Position(0.133711, 0.261700, 0.000000, "Viewport")
+        ZOrder(127)
+        ColorChange(150, 150, 255)
+        EventEnable("objectivePopup")
+        EventDisable("objectivePopup.disable")
+    }
+
+    Text("player1ObjectivePopupText.press_to_continue")
+    {
+        TextBreak("Word")
+        Text("game.popup.pressToContinue")
+        TextAlignment("Center", "Top")
+        TextFont("gamefont_tiny")
+        TextStyle("Shadow")
+        Position(0.513249, 0.701385, 0.000000, "Viewport")
+        ZOrder(127)
+        EventEnable("objectivePopup")
+        EventDisable("objectivePopup.disable")
+    }
+
+}
+
+Text("player1ObjectivesUpdatedReminder")
+{
+    TextBox(0.416250, 0.355000)
+    TextBreak("Word")
+    TextStyle("Shadow")
+    Text("game.objectives.updated")
+    TextAlignment("Right", "Top")
+    TextCharacterSpacing(-1)
+    TextFont("gamefont_tiny")
+    Position(0.525000, 0.300000, 0.000000, "Viewport")
+    ZOrder(0)
+    ColorChange(150, 150, 0)
+    ColorPulseRate(0.304004)
+    FadeInTime(0.200000)
+    FadeOutTime(10.000000)
+    EventEnable("player1.objectivesUpdated")
+    EventDisable("player1.objectivesUpdated.disable")
+}
+
+Text("player1ShowObjectiveDetails")
+{
+    TextBox(0.346680, 0.355469)
+    TextBreak("Word")
+    TextStyle("Shadow")
+    Text("game.objectives.showdetails")
+    TextCharacterSpacing(-1)
+    TextFont("gamefont_tiny")
+    Position(0.275000, 0.100000, 0.000000, "Viewport")
+	ZOrder(0)
+    ColorChange(150, 150, 0)
+    ColorPulseRate(0.750000)
+    EventEnable("player1.objectiveDetails")
+    EventDisable("player1.objectiveDetails.disable")
+}
+
+Text("player1ShowHints")
+{
+    TextBox(0.265625, 0.355469)
+    TextBreak("Word")
+    TextStyle("Shadow")
+    Text("game.objectives.showhints")
+    TextCharacterSpacing(-1)
+    TextFont("gamefont_tiny")
+    Position(0.275000, 0.1250000, 0.000000, "Viewport")
+	ZOrder(0)
+    ColorChange(150, 150, 0)
+    ColorPulseRate(0.750000)
+    EventEnable("player1.hintsAvailable")
+    EventDisable("player1.hintsAvailable.disable")
+}
+
+
+
+Group("player1flags")
+{
+    PropagateAlpha(1)
+    Position(0.917500, 0.450000, 0.000000, "Viewport")
+    EventEnable("initialize")
+    Bitmap("player1_1stperson_hastheflag")
+    {
+        Bitmap("hud_player_captured_flag")
+        BitmapRect(0.052442, 0.070000, "Left", "Top", "Viewport")
+        Position(0.000000, 0.185644, 0.000000, "Viewport")
+        Color(0, 86, 213)
+        FadeInTime(0.500000)
+        FadeOutTime(0.200000)
+        EventEnable("player1.flag.player.carried")
+        EventDisable("player1.flag.player.disable")
+    }
+
+    Bitmap("player1.flag.friend.carried")
+    {
+        Bitmap("flag_carried")
+        BitmapRect(0.040000, 0.070000, "Left", "Top", "Viewport")
+        Color(150, 10, 10)
+        FadeInTime(0.500000)
+        FadeOutTime(0.200000)
+        EventEnable("player1.flag.friend.carried")
+        EventDisable("player1.flag.friend.carried.disable")
+    }
+
+    Bitmap("player1.flag.friend.team.carried")
+    {
+        Bitmap("flag_team_carried")
+        BitmapRect(0.040000, 0.070000, "Left", "Top", "Viewport")
+        Position(0.017312, -0.033098, 0.000000, "Viewport")
+        Scale(0.700000, 0.700000, 0.700000)
+        Color(0, 86, 213)
+        FadeInTime(0.500000)
+        FadeOutTime(0.200000)
+        EventEnable("player1.flag.friend.carried")
+        EventDisable("player1.flag.friend.carried.disable")
+    }
+
+    Text("player1.flag.friend.carried.number")
+    {
+        TextBreak("Word")
+        TextStyle("Shadow")
+        TextFont("gamefont_tiny")
+        EventNumber("player1.flag.friend.carried.number")
+        Position(0.045156, 0.009000, 0.000000, "Viewport")
+        Color(150, 0, 0)
+        FadeInTime(0.500000)
+        FadeOutTime(0.200000)
+        EventEnable("player1.flag.friend.carried.number")
+        EventDisable("player1.flag.friend.carried.number.disable")
+    }
+
+    Bitmap("player1.flag.friend.dropped")
+    {
+        Bitmap("flag_dropped")
+        BitmapRect(0.050026, 0.056726, "Left", "Top", "Viewport")
+        Position(-0.007348, -0.007380, 0.000000, "Viewport")
+        Scale(1.300000, 1.299803, 1.300000)
+        Alpha(0.750000)
+        Color(0, 86, 213)
+        FadeInTime(0.500000)
+        FadeOutTime(0.200000)
+        EventEnable("player1.flag.friend.dropped")
+        EventDisable("player1.flag.friend.dropped.disable")
+    }
+
+    Text("player1.flag.friend.dropped.number")
+    {
+        TextBreak("Word")
+        TextStyle("Shadow")
+        TextFont("gamefont_tiny")
+        EventNumber("player1.flag.friend.dropped.number")
+        Position(0.045156, 0.089000, 0.000000, "Viewport")
+        Color(150, 0, 0)
+        FadeInTime(0.500000)
+        FadeOutTime(0.200000)
+        EventEnable("player1.flag.friend.dropped.number")
+        EventDisable("player1.flag.friend.dropped.number.disable")
+    }
+
+    Bitmap("player1.flag.enemy.carried")
+    {
+        Bitmap("flag_carried")
+        BitmapRect(0.040000, 0.070000, "Left", "Top", "Viewport")
+        Position(0.002930, 0.116245, 0.000000, "Viewport")
+        Color(0, 86, 213)
+        FadeInTime(0.500000)
+        FadeOutTime(0.200000)
+        EventEnable("player1.flag.enemy.carried")
+        EventDisable("player1.flag.enemy.carried.disable")
+    }
+
+    Bitmap("player1.flag.enemy.team.carried")
+    {
+        Bitmap("flag_team_carried")
+        BitmapRect(0.040000, 0.070000, "Left", "Top", "Viewport")
+        Position(0.019844, 0.076532, 0.000000, "Viewport")
+        Scale(0.700000, 0.700000, 0.700000)
+        Color(150, 0, 0)
+        FadeInTime(0.500000)
+        FadeOutTime(0.200000)
+        EventEnable("player1.flag.enemy.carried")
+        EventDisable("player1.flag.enemy.carried.disable")
+    }
+
+    Text("player1.flag.enemy.carried.number")
+    {
+        TextBreak("Word")
+        TextStyle("Shadow")
+        TextFont("gamefont_tiny")
+        EventNumber("player1.flag.enemy.carried.number")
+        Position(0.045156, 0.169000, 0.000000, "Viewport")
+        Color(0, 86, 213)
+        FadeInTime(0.500000)
+        FadeOutTime(0.200000)
+        EventEnable("player1.flag.enemy.carried.number")
+        EventDisable("player1.flag.enemy.carried.number.disable")
+    }
+
+    Bitmap("player1.flag.enemy.dropped")
+    {
+        Bitmap("flag_dropped")
+        BitmapRect(0.050000, 0.056335, "Left", "Top", "Viewport")
+        Position(-0.006854, 0.103979, 0.000000, "Viewport")
+        Scale(1.300000, 1.300000, 1.300000)
+        Alpha(0.750000)
+        Color(150, 0, 0)
+        FadeInTime(0.500000)
+        FadeOutTime(0.200000)
+        EventEnable("player1.flag.enemy.dropped")
+        EventDisable("player1.flag.enemy.dropped.disable")
+    }
+
+    Text("player1.flag.enemy.dropped.number")
+    {
+        TextBreak("Word")
+        TextStyle("Shadow")
+        TextFont("gamefont_tiny")
+        EventNumber("player1.flag.enemy.dropped.number")
+        Position(0.045156, 0.249000, 0.000000, "Viewport")
+        Color(0, 86, 213)
+        FadeInTime(0.500000)
+        FadeOutTime(0.200000)
+        EventEnable("player1.flag.enemy.dropped.number")
+        EventDisable("player1.flag.enemy.dropped.number.disable")
+    }
+
+}
+
+Text("player1.vehicle.hackingTime")
+{
+    TextBreak("Word")
+    TextStyle("Shadow")
+    TextAlignment("Center", "Top")
+    TextFont("gamefont_tiny")
+    EventText("player1.vehicle.hackingTimeFraction")
+    Viewport(1)
+    Position(0.500000, 0.400000, 0.000000, "Viewport")
+    Color(0, 240, 0)
+    EventEnable("player1.vehicle.hackingTimeFraction")
+    EventDisable("player1.vehicle.hackingTimeDisable")
+}
+
+Text("player1.vehicle.hackedTime")
+{
+    TextBreak("Word")
+    TextStyle("Shadow")
+    TextAlignment("Center", "Top")
+    TextFont("gamefont_tiny")
+    EventText("player1.vehicle.hackedTimeFraction")
+    Viewport(1)
+    Position(0.500000, 0.400000, 0.000000, "Viewport")
+    Color(200, 0, 0)
+    ColorPulseRate(0.750000)
+    EventEnable("player1.vehicle.hackedTimeFraction")
+    EventDisable("player1.vehicle.hackedTimeDisable")
+}
+
+Group("player1.heroSelect")
+{
+    Position(0.500542, 0.850000, 0.000000, "Viewport")
+    EventEnable("player1.heroSelect.message")
+    EventDisable("player1.heroSelect.disable")
+    Text("player1.heroSelectMessage")
+    {
+        TextBreak("Word")
+        TextStyle("Shadow")
+        TextAlignment("Center", "Top")
+        TextFont("gamefont_small")
+        EventText("player1.heroSelect.message")
+        EventEnable("initialize")
+    }
+
+    Text("player1.heroSelectTimer")
+    {
+        TextBreak("Word")
+        TextStyle("Shadow")
+        TextFont("gamefont_small")
+        EventNumber("player1.heroSelect.timer")
+        NumberToTime("%s")
+        Position(-0.01, 0.080000, 0.000000, "Viewport")
+        Color(255, 255, 0)
+        ColorChangeRate(0.100000)
+        UseChangeColor(1)
+        EventEnable("initialize")
+    }
+
+    Bitmap("player1.heroAcceptDecline")
+    {
+        Bitmap("ns_btn_directional_pad_LR")
+        BitmapRect(0.039840, 0.053168, "Left", "Top", "Viewport")
+        Position(-0.021993, 0.035093, 0.000000, "Viewport")
+        EventEnable("initialize")
+    }
+
+    Text("player1.heroAccept")
+    {
+        TextBreak("Word")
+        TextStyle("Shadow")
+        Text("common.yes")
+        TextFont("gamefont_small")
+        Position(-0.051000, 0.044118, 0.000000, "Viewport")
+        EventEnable("initialize")
+    }
+
+    Text("player1.heroDecline")
+    {
+        TextBreak("Word")
+        TextStyle("Shadow")
+        Text("common.no")
+        TextFont("gamefont_small")
+        Position(0.025000, 0.044118, 0.000000, "Viewport")
+        EventEnable("initialize")
+    }
+
+}
+
+Group("player1SelectionPopupGroup")
+{
+    Position(0.343786, 0.746624, 0.000000, "Viewport")
+    EventEnable("selectionPopup")
+    EventDisable("selectionPopup.disable")
+    Text("player1SelectionPopupText.popup_text")
+    {
+        TextBreak("Word")
+        TextStyle("Shadow")
+        TextFont("gamefont_small")
+        EventText("selectionPopup")
+        Position(0.082000, 0.000000, 0.000000, "Viewport")
+        EventEnable("selectionPopup")
+        EventDisable("selectionPopup.disable")
+    }
+
+    Bitmap("player1SelectionPopupText.configAcceptDecline")
+    {
+        Bitmap("ns_btn_directional_pad_LR")
+        BitmapRect(0.039840, 0.053168, "Left", "Top", "Viewport")
+        Position(0.130928, 0.035322, 0.000000, "Viewport")
+        EventEnable("selectionPopup")
+        EventDisable("selectionPopup.disable")
+    }
+
+    Text("player1SelectionPopupText.configAccept")
+    {
+        TextBreak("Word")
+        TextStyle("Shadow")
+        Text("ifs.controls.presets.A")
+        TextFont("gamefont_small")
+        Position(0.320000, 0.042472, 0.000000, "Viewport")
+        EventEnable("selectionPopup")
+        EventDisable("selectionPopup.disable")
+    }
+
+    Text("player1SelectionPopupText.configDecline")
+    {
+        TextBreak("Word")
+        TextStyle("Shadow")
+        Text("ifs.controls.presets.B")
+        TextFont("gamefont_small")
+        Position(0.182248, 0.042472, 0.000000, "Viewport")
+        EventEnable("selectionPopup")
+        EventDisable("selectionPopup.disable")
+    }
+
+}
+
+Group("player1stats")
+{
+    Rect(1.000000, 1.000000, "Left", "Center", "Viewport")
+    PropagateAlpha(1)
+    Position(0.030000, 1.0750000, 0.000000, "Viewport")
+	Scale(1.0000, 1.0000, 1.0000)
+    Alpha(0.990000)
+    FadeHoldTime(999999.000000)
+    FadeOutTime(999999.000000)
+    EventEnable("player1.statistic.changed")
+    EventDisable("player1.statistic.disable")
+    Group("player1pointsgroup")
+    {
+        PropagateAlpha(1)
+        Position(0.002237, -0.005473, 0.000000, "Viewport")
+        Alpha(0.500000)
+        EventEnable("initialize")
+        Text("player1statspoints")
+        {
+            TextBreak("Word")
+            TextFont("gamefont_tiny")
+            TextStyle("Shadow")
+            EventNumber("player1.statistic.points")
+            Position(0.049872, -0.121851, 0.000000, "Viewport")
+            ZOrder(5)
+            EventEnable("player1.statistic.changed")
+            EventDisable("player1.statistic.disable")
+        }
+    }
+
+    Bitmap("player1statspoints.icon")
+    {
+        Bitmap("points")
+        BitmapRect(0.039840, 0.053168, "Left", "Top", "Viewport")
+        Position(0.000000, -0.130000, 0.000000, "Viewport")
+		Scale(0.7000, 0.7000, 0.7000)
+        Alpha(0.500000)
+        EventEnable("player1.statistic.changed")
+        EventDisable("player1.statistic.disable")
+    }
+
+    Group("player1pointsdeltagroup")
+    {
+        PropagateAlpha(1)
+        Position(0.084261, -0.127866, 0.000000, "Viewport")
+        Alpha(0.500000)
+        EventEnable("initialize")
+        Text("player1statspointsDelta")
+        {
+            TextBreak("Word")
+            TextFont("gamefont_tiny")
+            TextStyle("Shadow")
+            EventText("player1.statistic.pointsDelta")
+            Position(0.000045, 0.000094, 0.000000, "Viewport")
+            ZOrder(5)
+            Color(190, 190, 190)
+            ColorPulseRate(0.750000)
+            EventEnable("player1.statistic.changed")
+            EventDisable("player1.statistic.disable")
+        }
+    }
+
+    Group("player1statskillsgroup")
+    {
+        PropagateAlpha(1)
+        Position(0.001862, 0.002454, 0.000000, "Viewport")
+        Alpha(0.500000)
+        EventEnable("initialize")
+        Text("player1statskills")
+        {
+            TextBreak("Word")
+            TextFont("gamefont_tiny")
+            TextStyle("Shadow")
+            EventNumber("player1.statistic.kills")
+            Position(0.048524, -0.201660, 0.000000, "Viewport")
+            ZOrder(5)
+            EventEnable("player1.statistic.changed")
+            EventDisable("player1.statistic.disable")
+        }
+    }
+
+    Bitmap("player1statskills.icon")
+    {
+        Bitmap("stats_kills")
+        BitmapRect(0.039840, 0.053168, "Left", "Top", "Viewport")
+        Position(-0.000000, -0.200000, 0.000000, "Viewport")
+		Scale(0.7000, 0.7000, 0.7000)
+        Alpha(0.500000)
+        EventEnable("player1.statistic.changed")
+        EventDisable("player1.statistic.disable")
+    }
+
+    Group("player1statskillsdeltagroup")
+    {
+        PropagateAlpha(1)
+        Position(0.084904, -0.199495, 0.000000, "Viewport")
+        Alpha(0.500000)
+        EventEnable("initialize")
+        Text("player1statskillsDelta")
+        {
+            TextBreak("Word")
+            TextFont("gamefont_tiny")
+            TextStyle("Shadow")
+            EventText("player1.statistic.killsDelta")
+            Position(0.000017, -0.000793, 0.000000, "Viewport")
+            ZOrder(5)
+            Color(190, 190, 190)
+            ColorPulseRate(0.750000)
+            EventEnable("player1.statistic.changed")
+            EventDisable("player1.statistic.disable")
+        }
+    }
+
+}
+
+Group("player1lockoninfo")
+{
+    PropagateAlpha(1)
+    Position(0.787504, 0.828324, 0.000000, "Viewport")
+    Alpha(0.500000)
+    FadeOutTime(1.000000)
+    EventEnable("player1.lockOnClassName")
+    EventDisable("player1.lockOnDisable")
+    Text("player1lockon.className")
+    {
+        TextBreak("Word")
+        TextAlignment("Center", "Top")
+        TextFont("gamefont_tiny")
+        TextStyle("Shadow")
+        EventText("player1.lockOnClassName")
+        Position(0.006355, 0.015880, 0.000000, "Viewport")
+        ZOrder(127)
+        EventEnable("initialize")
+    }
+
+    Text("player1lockon.name")
+    {
+        TextBreak("Word")
+        TextAlignment("Center", "Top")
+        TextFont("gamefont_tiny")
+        TextStyle("Shadow")
+        EventText("player1.lockOnName")
+        Position(0.007546, 0.057666, 0.000000, "Viewport")
+        ZOrder(127)
+        EventEnable("player1.lockOnName")
+        EventDisable("player1.lockOnDisable")
+    }
+    
+    Text("player1lockon.distance")
+    {
+        TextBox(0.136719, 0.000000)
+        TextBreak("Word")
+        TextFont("gamefont_tiny")
+        TextStyle("Shadow")
+        TextAlignment("Center", "Top")
+        EventNumber("player1.lockOnDistance")
+        FloatFormat("%.0f")
+        Position(-0.059591, 0.082852, 0.000000, "Viewport")
+        ZOrder(127)
+        EventEnable("initialize")
+    }
+
+    Bitmap("player1lockon.flag")
+    {
+        Bitmap("flag_team_carried")
+        BitmapRect(64.000000, 64.000000, "Left", "Top", "Screen")
+        BitmapStyle("Shadow")
+        Position(-0.093732, 0.086974, 0.000000, "Viewport")
+        Scale(0.300000, 0.300000, 0.300000)
+        Color(175, 0, 0)
+        EventEnable("player1.lockOnFlagCarrier")
+        EventDisable("player1.lockOnFlagCarrierDisable")
+    }
+
+    Group("player1lockon.directionIconGroup")
+    {
+        PropagateAlpha(1)
+        EventRotation("player1.lockOnDirection")
+        Position(-0.024274, 0.095270, 0.000000, "Viewport")
+        ZOrder(127)
+        Color(223, 60, 60)
+        ColorPulseRate(0.750000)
+        EventEnable("player1.lockOnDirection")
+        EventDisable("player1.lockOnDirectionDisable")
+        EventColor("player1.lockOnTeamColor")
+        Bitmap("player1lockon.directionIcon")
+        {
+            Bitmap("player_icon")
+            BitmapRect(0.050000, 0.050000, "Center", "Center", "Viewport")
+            Scale(0.590000, 0.590000, 0.590000)
+            EventEnable("initialize")
+        }
+
+    }
+
+    BarBitmap("player1lockon.health")
+    {
+        FlashyIncFadeOutTime(1.000000)
+        FlashyDecFadeOutTime(1.000000)
+        EventValue("player1.lockOnHealthFraction")
+        Bitmap("hud_jetpack_and_energybar_fill")
+        BitmapRect(0.275464, 0.020224, "Center", "Top", "Viewport")
+        TexCoords(0.000000, 0.500000, 1.000000, 1.000000)
+        Position(0.000000, 0.041337, 0.000000, "Viewport")
+        Scale(1.000000, 0.474493, 1.000000)
+        ZOrder(1)
+        Color(223, 60, 60)
+        ColorChange(0, 0, 0)
+        ColorChangeRate(0.000000)
+        EventEnable("player1.lockOnHealthFraction")
+        EventDisable("player1.lockOnDisable")
+        EventColor("player1.lockOnTeamColor")
+    }
+
+    Bitmap("player1lockon.healthBackdrop")
+    {
+        Bitmap("hud_jetpack_and_energybar_fill")
+        BitmapRect(0.293620, 0.042034, "Center", "Top", "Viewport")
+        TexCoords(0.000000, 0.500000, 1.000000, 1.000000)
+        Position(0.000000, 0.036624, 0.000000, "Viewport")
+        Scale(1.000000, 0.474493, 1.000000)
+        ZOrder(10)
+        Color(0, 0, 0)
+        EventEnable("initialize")
+    }
+
+}
+
+Group("player1spaceassaultgroup")
+{
+    Rect(0.200751, 0.201064, "Left", "Top", "Viewport")
+    Position(0.800000, 0.050000, 0.000000, "Viewport")
+    Scale(0.997739, 1.000000, 1.000000)
+    ZOrder(250)
+    EventEnable("player1.spaceAssaultStatus")
+    EventDisable("player1.spaceAssaultStatus.disable")
+}
+
+Text("player1missilelock")
+{
+    TextBox(0.000000, 0.500000)
+    TextBreak("Word")
+    Text("game.missilelock")
+    TextAlignment("Center", "Top")
+    TextFont("gamefont_tiny")
+    TextStyle("Shadow")
+    Position(0.500000, 0.60, 0.000000, "Viewport")
+    Color(255, 0, 0)
+    ColorPulseRate(0.700000)
+    FadeInTime(0.500000)
+    FadeOutTime(1.000000)
+    EventEnable("player1.missileLock")
+    EventDisable("player1.missileLockDisable")
+}
+
+Text("player1missilelockdistance")
+{
+    TextBox(0.000000, 0.500000)
+    TextBreak("Word")
+    TextAlignment("Center", "Top")
+    TextFont("gamefont_tiny")
+    TextStyle("Shadow")
+    EventNumber("player1.missileLockDistance")
+    Position(0.500000, 0.55, 0.000000, "Viewport")
+    Color(255, 0, 0)
+    ColorPulseRate(0.700000)
+    FadeInTime(0.500000)
+    FadeOutTime(1.000000)
+    EventEnable("player1.missileLockDistance")
+    EventDisable("player1.missileLockDisable")
+}
+
+Group("player1mapkey")
+{
+    Position(0.145555, 0.811111, 0.000000, "Viewport")
+    ZOrder(125)
+    EventEnable("initialize")
+    Group("player1mapkey_spawnonly")
+    {
+        Position(0.000000, 0.069934, 0.000000, "Viewport")
+        EventEnable("player1.map.spawn")
+        EventDisable("player1.map.spawnLargeDisable")
+        Bitmap("player1mapkey_CPIcon")
+        {
+            Bitmap("hud_flag_icon")
+            BitmapRect(0.031117, 0.046218, "Left", "Top", "Viewport")
+            Position(0.009730, 0.000002, 0.000000, "Viewport")
+            Color(1, 86, 213)
+            EventEnable("initialize")
+        }
+
+        Text("player1mapkey_CPText")
+        {
+            TextBreak("Word")
+            Text("game.spawndisplay.commandpost")
+            TextStyle("Shadow")
+            Position(0.052833, 0.006737, 0.000000, "Viewport")
+            Alpha(0.590000)
+            EventEnable("initialize")
+        }
+
+    }
+
+}
+

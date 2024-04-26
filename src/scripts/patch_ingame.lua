@@ -121,6 +121,32 @@ function trimToFileName(filePath)
     return fileName
 end
 
+zero_patch_data ={}
+
+
+function LoadZeroPatchSettings()
+    print("info: LoadZeroPatchSettings begin")
+    if ScriptCB_IsMissionSetupSaved() then
+        local missionSetup = ScriptCB_LoadMissionSetup()
+        if (missionSetup ~= nil ) then
+            --print("Mission Setup:"); tprint(missionSetup)
+            if(missionSetup.zero_patch_data ~= nil) then
+                for key, value in string.gfind(missionSetup.zero_patch_data, "([A-Za-z0-9_]+):([A-Za-z0-9_]+);") do
+                    print(string.format("info:zero_patch setting: %s:%s",key, tostring(value)))
+                    addIngameMessage(string.format("info:zero_patch setting: %s:%s",key, tostring(value)))
+                    zero_patch_data[key] = tonumber(value) or value
+                end
+            end
+        end
+    else
+        print("info: LoadZeroPatchSettings: no mission setup saved")
+    end
+    print("info: LoadZeroPatchSettings end")
+end
+
+LoadZeroPatchSettings()
+
+
 function Run_uop_UserScripts()
     local scriptName = ""
     local files = zero_patch_fs.getFiles("user_script_", {".lvl", ".script"})

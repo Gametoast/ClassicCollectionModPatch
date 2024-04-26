@@ -238,7 +238,7 @@ else
 end
 
 -- A place to attach settings to.
--- TODO: Implement Save Settings
+-- TODO: Implement Save Settings to .gc file
 zero_patch_data = { greeting = "Hello"}
 
 ScriptCB_DoFile("ifs_missionselect_console")
@@ -284,14 +284,14 @@ if( custom_gc_count > 0 ) then
             print("info: try to localize " .. value.string)
             display_text = ScriptCB_ununicode( ScriptCB_getlocalizestr(display_text))
             if(display_text) then
-                display_text = "Custom GC: " .. display_text
+                display_text = display_text
             end
         else
-            display_text = "Custom GC: " .. value.string
+            display_text = value.string
         end
         AddModMenuItem(value.tag, display_text, HandleCustomGC, gc_menu)
     end
-    AddModMenuItem("gc_menu", string.format("Custom GC Mods %d", custom_gc_count), gc_menu)
+    AddModMenuItem("gc_menu", "Custom GC Mods ", gc_menu)
 end
 
 AddModMenuItem( "IA",  "Instant Action (alt)", "ifs_missionselect_console")
@@ -305,6 +305,7 @@ ifs_mod_menu_tree.SaveSettings = function(this)
     print("TODO: Implement Save Settings")
 end
 
+-- keep track of the addon missions, for fun.
 zero_patch_addon_mission_list = {}
 
 -- keep track of mission count
@@ -314,6 +315,44 @@ AddDownloadableContent = function(mapLuaFile, missionName, defaultMemoryModelPlu
   __ADDDOWNLOADABLECONTENT_COUNT__ = __ADDDOWNLOADABLECONTENT_COUNT__ + 1
   table.insert(zero_patch_addon_mission_list,missionName)
   return oldAddDownloadableContent(mapLuaFile, missionName, defaultMemoryModelPlus)
+end
+
+-- stringify a table into "key:value;" pairs.
+-- Won't truncate a key/value pair but will stop serializing key-value pairs
+-- when the limit is reached.
+local function stringify(data, maxSize)
+    local retVal = ""
+    for key, value in data do
+        retVal = retVal .. string.format("%s:%s;", key,value)
+        if( maxSize ~= nil and string.len(retVal) > maxSize)then
+            print("stringify maxSize reached.")
+            break
+        end
+    end
+    return retVal
+end
+
+-- Plumb through 'zero_patch_data' to ingame
+local zeroPatch_original_ScriptCB_EnterMission = ScriptCB_EnterMission
+ScriptCB_EnterMission = function()
+    print("ScriptCB_EnterMission ")
+    local missionSetup = { }
+    if ScriptCB_IsMissionSetupSaved() then
+        missionSetup = ScriptCB_LoadMissionSetup()
+    end
+    -- attach the data
+    missionSetup.zero_patch_data = stringify(zero_patch_data, 200)
+    ScriptCB_SaveMissionSetup(missionSetup)
+    print("ScriptCB_EnterMission calling orig ScriptCB_EnterMission ...")
+    zeroPatch_original_ScriptCB_EnterMission()
+end
+
+local orig_ScriptCB_SaveMissionSetup = ScriptCB_SaveMissionSetup
+ScriptCB_SaveMissionSetup = function(missionSetup)
+	if( missionSetup~= nil and missionSetup.zero_patch_data == nil and zero_patch_data ~= nil) then
+		missionSetup.zero_patch_data = stringify(zero_patch_data)
+	end
+	return orig_ScriptCB_SaveMissionSetup(missionSetup)
 end
 
 print("info: platform> " .. ScriptCB_GetPlatform() )

@@ -281,25 +281,25 @@ function ff_rebuildFakeConsoleList()
         end,
         nil
     )
-    -- ff_AddCommand(
-        -- "Code Console",
-        -- "", -- no desc because I'm too lazy to adjust the location of the code box so it doesn't overlap
-        -- function()
-            -- local temp = function(value)
-                -- if not value then
-                    -- return
-                -- end
-                -- local userFunction = loadstring(value)
-                -- local result = pcall(userFunction)
-            -- end
-            -- ff_AskUser(
-                -- "Type some valid Lua code for SWBFII and press enter.",
-                -- temp,
-                -- ifs_fakeconsole
-            -- )
-        -- end,
-        -- nil
-    -- )
+     ff_AddCommand(
+         "Code Console",
+         "Enter some code", -- no desc because I'm too lazy to adjust the location of the code box so it doesn't overlap
+         function()
+             local temp = function(value)
+                 if not value then
+                     return
+                 end
+                 local userFunction = loadstring(value)
+                 local result = pcall(userFunction)
+             end
+             ff_AskUser(
+                 "Type some valid Lua code for SWBFII and press enter.",
+                 temp,
+                 ifs_fakeconsole
+             )
+         end,
+         nil
+     )
     -- ff_AddCommand(
         -- "Change Your Online Name",
         -- "This lets you change your multiplayer name. Must rejoin current session, do not use Gamespy login. Does not work on Steam or GOG.",
