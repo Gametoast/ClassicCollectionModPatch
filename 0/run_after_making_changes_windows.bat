@@ -18,8 +18,8 @@ if /i "%CurrentFolderName%" neq "%ExpectedFolderName%" (
     )
 )
 
-if /i "%CurrentFolderName%" eq "%ExpectedFolderName2%" (
-    echo Checking folders to _lvl_common for Classic Collection...
+if /i "%CurrentFolderName%" equ "%ExpectedFolderName2%" (
+    echo changing folders to _lvl_common for Classic Collection...
     :: Set the root directory to start searching from
     set "root_directory=."
 
