@@ -22,10 +22,9 @@ if /i "%CurrentFolderName%" neq "%ExpectedFolderName%" (
 if /i "%CurrentFolderName%" equ "%ExpectedFolderName2%" (
     echo changing folders to _lvl_common for Classic Collection...
     :: Set the root directory to start searching from
-    set "root_directory=."
 
     :: Use dir /b /s /ad to list directories case-insensitively
-    for /f "delims=" %%D in ('dir /b /s /ad "%root_directory%\*LVL_PC*"') do (
+    for /f "delims=" %%D in ('dir /b /s /ad ".\*LVL_PC*"') do (
         set "dirName=%%~nxD"
         set "dirPath=%%~dpD"
         set "fullPath=%%D"
