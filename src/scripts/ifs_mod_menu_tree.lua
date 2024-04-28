@@ -15,8 +15,10 @@ function ifs_mod_menu_tree_listbox_CreateItem(layout)
 		x = layout.x - 0.5 * layout.width, 
 		y=layout.y - 10,
 		bHotspot = true,
-		fHotspotH = layout.yHeight,
+		fHotspotH = layout.height,
 		fHotspotW = layout.width,
+		fHotspotX = 0,
+		fHotspotY = -layout.height /2,
 	}
 
 	Temp.NameStr = NewIFText{ 
@@ -286,33 +288,51 @@ ifs_mod_menu_tree = NewIFShellScreen {
 
 	Input_Accept = function(this)
 
+		-- If base class handled this work, then we're done
+		if(gShellScreen_fnDefaultInputAccept(this,1)) then
+			-- this code chunk helps/makes slider function
+			return
+		end
+
 		print("ifs_mod_menu_tree.Accept CurButton", tostring(this.CurButton) )
-		-- we want to 'debounce' menu selection; if you hold down the button while going into a menu you 
+		if(gMouseListBox) then
+			print( string.format("ifs_mod_menu_tree: Got Mouse click, update selected idx from %s to %s", 
+					tostring(gMouseListBox.Layout.SelectedIdx) ,  tostring(gMouseListBox.Layout.CursorIdx) ) )
+			-- set the selection 
+			--gMouseListBox.Layout.SelectedIdx = gMouseListBox.Layout.CursorIdx
+			if( ( gMouseListBox.Layout.SelectedIdx == gMouseListBox.Layout.CursorIdx ) and
+				( this.lastDoubleClickTime ) and
+				( ScriptCB_GetMissionTime()<this.lastDoubleClickTime+0.4 ) ) then
+				print( "+++1111 DoubleClicked " )
+				-- double clicked
+				this.iLastClickTime = nil
+				this.bDoubleClicked = 1
+			else
+				-- single clicked
+				this.iLastClickTime = ScriptCB_GetMissionTime()
+				gMouseListBox.Layout.SelectedIdx = gMouseListBox.Layout.CursorIdx
+				ListManager_fnMoveCursor(this.listbox,ifs_mod_menu_tree_listbox_layout)
+			end
+
+			if( gMouseListBox.Layout.SelectedIdx == gMouseListBox.Layout.CursorIdx and this.lastDoubleClickTime and ScriptCB_GetMissionTime()<this.lastDoubleClickTime+0.4) then
+				this.lastDoubleClickTime = nil
+			else
+				this.lastDoubleClickTime = ScriptCB_GetMissionTime()
+				gMouseListBox.Layout.SelectedIdx = gMouseListBox.Layout.CursorIdx
+				--ListManager_fnMoveCursor(this.listbox,ifs_mod_menu_tree_listbox_layout)
+				ListManager_fnMoveCursor(gMouseListBox,gMouseListBox.Layout)
+				return 1 -- note we did all the work
+			end
+		end
+
+		-- we want to 'debounce' menu selection; if you hold down the button while going into a menu you
 		-- get another 'accept'
 		local theTime = ScriptCB_GetMissionTime()
-		if( (theTime - this.timeOfLastAction) < 0.700  ) then 
+		if( (theTime - this.timeOfLastAction) < 0.700  ) then
 			--print("ifs_mod_menu_tree: debounce selection")
 			return
 		end
 		this.timeOfLastAction = theTime
-		if(gMouseListBoxSlider) then
-			ListManager_fnScrollbarClick(gMouseListBoxSlider)
-			return 1 -- note we did all the work
-		end
-
-		if(gMouseListBox) then
-			-- Mouse Support; works on normal BF2; CC changed mouse stuff
-			print( string.format("ifs_mod_menu_tree: Got Mouse click, update selected idx from %s to %s", 
-					tostring(gMouseListBox.Layout.SelectedIdx) ,  tostring(gMouseListBox.Layout.CursorIdx) ) )
-		
-			-- set the selection 
-			if(gMouseListBox.Layout.SelectedIdx ~= gMouseListBox.Layout.CursorIdx) then
-				gMouseListBox.Layout.SelectedIdx = gMouseListBox.Layout.CursorIdx
-				return 1
-			end
-		else 
-			print("gMouseListBox == nil")
-		end
 
 		if( this.CurButton == "_back" ) then
 			-- If base class handled this work, then we're done
