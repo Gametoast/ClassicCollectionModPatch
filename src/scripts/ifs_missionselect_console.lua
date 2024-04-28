@@ -54,6 +54,8 @@ function ifs_ms_MapList_CreateItem_console(layout)
 		bHotspot = true,
 		fHotspotH = layout.height,
 		fHotspotW = layout.width,
+		fHotspotX = 0,
+		fHotspotY = -layout.height /2,
 	}
 	
 
@@ -78,7 +80,9 @@ function ifs_ms_ModeList_CreateItem_console(layout)
 		y = layout.y,
 		bHotspot = true,
 		fHotspotH = layout.height,
+		fHotspotX = 0,
 		fHotspotW = layout.width,
+		fHotspotY = -layout.height /2,
 	}
 
 	local IconHeight = layout.height * 0.75
@@ -115,6 +119,8 @@ function ifs_ms_EraList_CreateItem_console(layout)
 		bHotspot = true,
 		fHotspotH = layout.height,
 		fHotspotW = layout.width,
+		fHotspotX = 0,
+		fHotspotY = -layout.height /2,
 	}
 
 	local IconHeight = layout.height * 0.375
@@ -149,6 +155,11 @@ function ifs_ms_PlayList_CreateItem_console(layout)
 	local Temp = NewIFContainer { 
 		x = layout.x - 0.5 * layout.width, 
 		y = layout.y,
+		bHotspot = true,
+		fHotspotH = layout.height,
+		fHotspotW = layout.width,
+		fHotspotX = 0,
+		fHotspotY = -layout.height /2,
 	}
 
 	local HAlign = "left"
@@ -1035,17 +1046,11 @@ ifs_missionselect_console = NewIFShellScreen {
 
 	Input_Accept = function(this)
 		print("ifs_missionselect_console.Input_Accept: this.CurButton:" .. tostring(this.CurButton))
-		print("ifs_missionselect_console.Input_Accept: iState: " .. this.iState)
-
-		local debug1 = nil 
-		if( gMouseListBox and gMouseListBox.Layout and gMouseListBox.Layout.name ~= nil) then
-			debug1 = gMouseListBox.Layout.name
-		end
-		print("ifs_missionselect_console.Input_Accept: Listbox: " .. tostring(debug1) )
+		--print("ifs_missionselect_console.Input_Accept: iState: " .. this.iState)
 
 		-- If base class handled this work, then we're done
 		if(gShellScreen_fnDefaultInputAccept(this,1)) then
-			print("ifs_missionselect_console: handled, early return")
+			-- this code chunk helps/makes slider function
 			return
 		end
 
@@ -1067,6 +1072,7 @@ ifs_missionselect_console = NewIFShellScreen {
 					-- single clicked
 					this.iLastClickTime = ScriptCB_GetMissionTime()
 					gMouseListBox.Layout.SelectedIdx = gMouseListBox.Layout.CursorIdx
+					ListManager_fnMoveCursor(gMouseListBox,gMouseListBox.Layout)
 				end
 			end
 			
@@ -1082,6 +1088,7 @@ ifs_missionselect_console = NewIFShellScreen {
 			else
 				this.lastDoubleClickTime = ScriptCB_GetMissionTime()
 				gMouseListBox.Layout.SelectedIdx = gMouseListBox.Layout.CursorIdx
+				ListManager_fnMoveCursor(gMouseListBox,gMouseListBox.Layout)
 				--ListManager_fnFillContents(gMouseListBox,gMouseListBox.Contents,gMouseListBox.Layout)
 				--start to play the movie
 				--ifs_missionselect_pcMulti_fnSetMapPreview(this)

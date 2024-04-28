@@ -61,7 +61,12 @@ function ingamekeys_Listbox_CreateItem(layout)
     local Temp = NewIFContainer {
         x = layout.x - 0.5 * insidewidth, 
         y = layout.y + 2,
-        bInertPos = 1,
+        --bInertPos = 1, --- what's this do ???
+        bHotspot = true,
+		fHotspotH = layout.height,
+		fHotspotW = layout.width,
+		fHotspotX = 0,
+		fHotspotY = -layout.height /2,
     }
     local FontHeight = ingamekeys_listbox_layout.fontheight
     Temp.showstr = NewIFText{
@@ -237,6 +242,25 @@ ifs_ingame_log = NewIFShellScreen {
         ListManager_fnFillContents(ifs_ingame_log.listbox,gInGameDebugList, ingamekeys_listbox_layout)
     end,
 
+    HandleMouse = function(this, x, y)
+		gHandleMouse(this,x,y)
+	end,
+    
+	Input_Accept = function(this)
+		-- If base class handled this work, then we're done
+		if(gShellScreen_fnDefaultInputAccept(this,1)) then
+			-- this code chunk helps/makes slider function
+			return
+		end
+
+		if(gMouseListBox) then
+			if(gMouseListBox.Layout.SelectedIdx ~= gMouseListBox.Layout.CursorIdx) then
+                gMouseListBox.Layout.SelectedIdx = gMouseListBox.Layout.CursorIdx
+                ListManager_fnMoveCursor(this.listbox,ifs_mod_menu_tree_listbox_layout)
+            end
+		end
+    end,
+
     --Back button quits this screen
     Input_Back = function(this)
         --TODO this doesn't seem to trigger on PC
@@ -333,7 +357,7 @@ end
 function ifs_ingamekeys_fnBuildScreen(this)
     ingamekeys_listbox_layout.fontheight = ScriptCB_GetFontHeight(ingamekeys_listbox_layout.font)
     ingamekeys_listbox_layout.yHeight = ingamekeys_listbox_layout.fontheight
-
+    
     this.listbox = NewButtonWindow {
         ZPos = 200, x = 0, y = 0,
         --ScreenRelativeX = 0.9, -- mostly right
