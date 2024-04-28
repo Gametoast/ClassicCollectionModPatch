@@ -18,7 +18,10 @@ function Fakeconsole_Listbox_CreateItem(layout)
         NewIFContainer {
         x = layout.x - 0.5 * insidewidth,
         y = layout.y + 2,
-        bInertPos = 1
+        bInertPos = 1,
+        bHotspot = true,
+		fHotspotH = layout.height,
+		fHotspotW = layout.width,
     }
     local FontHeight = fakeconsole_listbox_layout.fontheight
     Temp.showstr =
@@ -459,15 +462,16 @@ end
     -- }
 -- end
 fakeconsole_listbox_layout = {
-yHeight = 330, -- 22
-ySpacing  = 0,
-showcount = 22, -- 13
-font = "gamefont_small",
-width = 400, -- 208
-x = 0,
-slider = 1,
-CreateFn = Fakeconsole_Listbox_CreateItem,
-PopulateFn = Fakeconsole_Listbox_PopulateItem,
+    bCreateSlider = true,
+    yHeight = 330, -- 22
+    ySpacing  = 0,
+    showcount = 22, -- 13
+    font = "gamefont_small",
+    width = 400, -- 208
+    x = 0,
+    slider = 1,
+    CreateFn = Fakeconsole_Listbox_CreateItem,
+    PopulateFn = Fakeconsole_Listbox_PopulateItem,
 }
 
 gConsoleCmdList = {}
@@ -539,11 +543,14 @@ ifs_fakeconsole =
     end,
     Input_KeyDown = function(this, iKey)
         if (iKey == 27) then -- handle Escape
-            this:Input_Back()
+            if(ScriptCB_CheckProfanity == nil) then
+                -- do not do this for Aspyr's game version
+                this:Input_Back()
+            end
 				-- AnthonyBF2 3/17/2024
 				-- Asypr's game doesn't know how to unpause from console so we have to hand hold it
-			ScriptCB_PopScreen()
-			ScriptCB_Unpause()
+			--ScriptCB_PopScreen()
+			--ScriptCB_Unpause()
         end
         --[[
 			Keys that are handled in the ifs scripts:

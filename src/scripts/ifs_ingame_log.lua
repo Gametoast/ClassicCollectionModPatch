@@ -97,15 +97,17 @@ function ingamekeys_Listbox_PopulateItem(Dest, Data, bSelected, iColorR, iColorG
     IFObj_fnSetVis(Dest,Data) -- Show if there are contents
 end
 
+local scrnW, scrnH = ScriptCB_GetScreenInfo()
 ingamekeys_listbox_layout = {
     -- Height is calculated from yHeight, Spacing, showcount.
     yHeight = 22,
     ySpacing  = 0,
     showcount = 20,
-    --font = gListboxItemFont,
+    bCreateSlider = true,
     font = "gamefont_tiny",
 
-    width =  900,--320,
+    --width =  900,--320,
+    width = scrnW *0.7,
     x = 0,
     slider = 1,
     CreateFn = ingamekeys_Listbox_CreateItem,
@@ -315,7 +317,8 @@ if gPlatformStr == "PC" then
         elseif ifs_ingame_log.fromPauseMenu then
             -- from pause menu
 
-            if iKey == 27 then
+            if iKey == 27 and ScriptCB_CheckProfanity == nil then
+                -- do not do this for Aspyr's game version
                 --pressed ESC, exit the screen
                 -- go back to pause menu
                 ScriptCB_SndPlaySound("shell_menu_exit");

@@ -51,7 +51,11 @@ function ifs_ms_MapList_CreateItem_console(layout)
 	local Temp = NewIFContainer { 
 		x = layout.x - 0.5 * layout.width, 
 		y = layout.y,
+		bHotspot = true,
+		fHotspotH = layout.height,
+		fHotspotW = layout.width,
 	}
+	
 
 	Temp.map = NewIFText { 
 		x = 8,
@@ -72,6 +76,9 @@ function ifs_ms_ModeList_CreateItem_console(layout)
 	local Temp = NewIFContainer { 
 		x = layout.x - 0.5 * layout.width, 
 		y = layout.y,
+		bHotspot = true,
+		fHotspotH = layout.height,
+		fHotspotW = layout.width,
 	}
 
 	local IconHeight = layout.height * 0.75
@@ -95,7 +102,6 @@ function ifs_ms_ModeList_CreateItem_console(layout)
 		localpos_t = (IconHeight * -0.5) + 2,
 		localpos_b = (IconHeight * 0.5) + 2,
 	}
-
 	return Temp
 end
 
@@ -106,6 +112,9 @@ function ifs_ms_EraList_CreateItem_console(layout)
 	local Temp = NewIFContainer { 
 		x = layout.x - 0.5 * layout.width, 
 		y = layout.y,
+		bHotspot = true,
+		fHotspotH = layout.height,
+		fHotspotW = layout.width,
 	}
 
 	local IconHeight = layout.height * 0.375
@@ -342,6 +351,7 @@ end
 
 ifs_ms_MapList_layout_console = {
 	name = "ifs_ms_MapList_layout_console",
+	bCreateSlider = true,
 	showcount = 10,
 --	yTop = -130 + 13, -- auto-calc'd now
 	yHeight = 20,
@@ -355,6 +365,7 @@ ifs_ms_MapList_layout_console = {
 
 ifs_ms_ModeList_layout_console = {
 	name="ifs_ms_ModeList_layout_console",
+	bCreateSlider = true,
 	showcount = 10,
 --	yTop = -130 + 13, -- auto-calc'd now
 	yHeight = 20,
@@ -368,6 +379,7 @@ ifs_ms_ModeList_layout_console = {
 
 ifs_ms_EraList_layout_console = {
 	name = "ifs_ms_EraList_layout_console",
+	bCreateSlider = true,
 	showcount = 10,
 -- 	showcount = 3,
 --	yTop = -130 + 13, -- auto-calc'd now
@@ -382,6 +394,7 @@ ifs_ms_EraList_layout_console = {
 
 ifs_ms_PlayList_layout_console = {
 	name ="ifs_ms_PlayList_layout_console",
+	bCreateSlider = true,
 	showcount = 7,
 --	yTop = -130 + 13, -- auto-calc'd now
 	yHeight = 22,
@@ -1113,6 +1126,10 @@ ifs_missionselect_console = NewIFShellScreen {
 		-----------------------------------
 		
 	end, -- end of Input_Accept
+	HandleMouse = function(this, x, y)
+		gHandleMouse(this,x,y)
+		ifs_missionselect_console_fnUpdateInfoBoxes(this)
+	end,
 
 	Input_Back = function(this)
 		print("ifs_missionselect_console.Input_Back: iState=".. tostring(this.iState))
