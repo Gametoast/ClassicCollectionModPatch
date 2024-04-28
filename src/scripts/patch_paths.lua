@@ -62,8 +62,7 @@ function redirectBF2Path(func)
 
         if string.find(arg_1, "addon\\") then
 			arg[1] = string.gsub(arg_1, "addon\\", "addon2\\")
-            --msg = "info:" .. __scriptName__ .. " FOUND addon call. redirecting -> " .. arg[1]
-            msg = "info: redirect -> " .. arg[1]
+            msg = " redirect -> " .. arg[1]
         end
 
         -- We'll re-direct calls to the _lvl_common folder when the asset exists in _lvl_common
@@ -73,8 +72,7 @@ function redirectBF2Path(func)
             local commonTest = string.gsub(arg_1, "\\_lvl_pc\\", "\\_lvl_common\\")
             if( THE_ORIGINAL_ScriptCB_IsFileExist(arg_1) == 0 and THE_ORIGINAL_ScriptCB_IsFileExist(commonTest) == 1) then
                 arg[1] = commonTest
-                --msg = "info: " .. __scriptName__ .. " Redirecting to  " .. arg[1]
-                msg = "info: redirect -> " .. arg[1]
+                msg = "redirect -> " .. arg[1]
             end
         end
         if(msg) then
@@ -148,6 +146,17 @@ end
 --ReadDataFile = function(...)
 --    print("info: enter ReadDataFile " .. arg[1])
 --    return old_ReadDataFile(unpack(arg))
+--end
+
+--local old_ScriptCB_PushScreen = ScriptCB_PushScreen
+--ScriptCB_PushScreen = function(screenName)
+--    print("ScriptCB_PushScreen: " .. screenName)
+--    old_ScriptCB_PushScreen(screenName)
+--end
+--local old_ScriptCB_SetIFScreen = ScriptCB_SetIFScreen
+--ScriptCB_SetIFScreen = function(screenName)
+--    print("ScriptCB_SetIFScreen: ".. screenName)
+--    return old_ScriptCB_SetIFScreen(screenName)
 --end
 
 -- This does not work. Find a better solution asap.
