@@ -180,5 +180,7 @@ function SetupZeroPatchDebugLog()
     end
     print("info: SetupZeroPatchDebugLog end")
 end
+-- load/save settings setup
+ScriptCB_DoFile("load_save")
 
 print("patch_shell end")
