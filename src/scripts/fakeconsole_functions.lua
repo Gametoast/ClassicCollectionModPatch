@@ -300,6 +300,14 @@ function ff_rebuildFakeConsoleList()
          end,
          nil
      )
+     ff_AddCommand(
+         "Debug Log",
+         "View Debug Log",
+         function()
+            ScriptCB_PushScreen("ifs_ingame_log")
+        end,
+         nil
+     )
     -- ff_AddCommand(
         -- "Change Your Online Name",
         -- "This lets you change your multiplayer name. Must rejoin current session, do not use Gamespy login. Does not work on Steam or GOG.",
