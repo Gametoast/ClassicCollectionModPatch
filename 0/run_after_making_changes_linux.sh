@@ -30,9 +30,14 @@ if [[ "$current_directory" == "addon2"  ]]; then
         fi
     done
 fi
+echo done checking folders.
 
+echo creating fake file system...
 echo zero_patch_files_string = [[ > "0/patch_scripts/fs.lua"
 
 find $PWD -type f >> "0/patch_scripts/fs.lua"
 
 echo ]] >> "0/patch_scripts/fs.lua"
+
+echo done creating fake file system.
+echo all done.
