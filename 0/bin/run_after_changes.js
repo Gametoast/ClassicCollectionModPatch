@@ -9,12 +9,12 @@
 
 var forSwitch = false;
 var shell = WScript.CreateObject("WScript.Shell");
-var fso = new ActiveXObject("Scripting.FileSystemObject");
+var fso = new ActiveXObject("Scripting.FileSystemObject"); // https://www.devguru.com/content/technologies/vbscript/objects-filesystemobject.html
 var currentDir = shell.CurrentDirectory;
-var folderNameToFind = "_lvl_pc";
-var folderNameToReplace = "lvl_common";
 var expectedFolder1 = "addon"
 var expectedFolder2 = "addon2"
+
+var foldersRenamed = 0;
 
 function print(arg){
     WScript.Echo(arg);
@@ -28,6 +28,13 @@ function showMessageBox(message, title){
 
 function showErrorBox(message, title){
     shell.Popup(message, 0, title, 0x0 + 0x10); 
+}
+
+function runCommand(c) {
+    var command = "cmd /c " + c;
+    var exec = shell.Exec(command);
+    var output = exec.StdOut.ReadAll();
+    return output.split('\r\n'); // Split the output into an array of paths
 }
 
 function runProgram(programPath, arguments){
@@ -50,22 +57,6 @@ function writeFile(filePath, contents) {
     file.Write(contents);
     file.Close();
     WScript.Echo("File written successfully: " + filePath);
-}
-
-// rename folders + child folders
-function renameFolders(folderToLookUnder) {
-    var folder = fso.GetFolder(folderToLookUnder);
-    var subFolders = new Enumerator(folder.SubFolders);
-
-    for (; !subFolders.atEnd(); subFolders.moveNext()) {
-        var subFolder = subFolders.item();
-        if (subFolder.Name.toLowerCase() === folderNameToFind.toLowerCase()) {
-            var newPath = subFolder.Path.replace(folderNameToFind, folderNameToReplace);
-            fso.MoveFolder(subFolder.Path, newPath);
-            print("Renamed: to " + newPath);
-        }
-        renameFolders(subFolder.Path);
-    }
 }
 
 // Gets all the files under the given folder, populates the fileList array.
@@ -144,7 +135,7 @@ function lowerCaseDirectories(strDirectory) {
 // ===================== used for switch end ==============================
 
 // start of script functionality
-
+var message = "";
 print("Current Dir> " + currentDir);
 
 // make sure we're in a good folder.
@@ -166,7 +157,18 @@ for(var i = 0; i < WScript.Arguments.length; i++){
 // Start the renaming process from the current directory
 if(endsWith(currentDir,"addon2")){
     print("Check for folders to rename...");
-    renameFolders(currentDir);
+    //renameFolders(currentDir);
+    var foldersToRename = runCommand("dir /b /s | findstr /i _lvl_pc$ ");
+    var current, target;
+    for(var i=0; i < foldersToRename.length; i++){
+        current = foldersToRename[i];
+        target = current.toLowerCase().replace("_lvl_pc", "_lvl_common");
+        if( fso.FolderExists(current) && !fso.FolderExists(target)){
+            fso.MoveFolder( current, target);
+            foldersRenamed++;
+        }
+    }
+    message += "renamed " + foldersRenamed + " folders.\r\n";
 
     if(forSwitch){
         print("Lower-case the files for switch.")
@@ -176,6 +178,7 @@ if(endsWith(currentDir,"addon2")){
 
 print("Create the fake file system")
 writeFakeFileSystem();
+message += "Created fake File System\r\n";
 
 if(forSwitch){
     print("Creating fs.script for the switch version")
@@ -188,4 +191,5 @@ if(forSwitch){
     }
 }
 
-print("Done")
+//print("Done")
+showMessageBox(message, "All done!");
