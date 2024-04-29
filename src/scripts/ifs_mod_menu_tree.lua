@@ -12,7 +12,13 @@ end
 function ifs_mod_menu_tree_listbox_CreateItem(layout)
 	-- Make a coordinate system pegged to the top-left of where the cursor would go.
 	local Temp = NewIFContainer { 
-		x = layout.x - 0.5 * layout.width, y=layout.y - 10
+		x = layout.x - 0.5 * layout.width, 
+		y=layout.y - 10,
+		bHotspot = true,
+		fHotspotH = layout.height,
+		fHotspotW = layout.width,
+		fHotspotX = 0,
+		fHotspotY = -layout.height /2,
 	}
 
 	Temp.NameStr = NewIFText{ 
@@ -61,14 +67,15 @@ local ifs_mod_menu_tree_listbox_contents = {
 	--{id="fontTest", showstr= "Font Test", action="ifs_fonttest"},
 	--{id="campaignList", showstr = "ifs.sp.campaign", action="ifs_sp_briefing"},
 }
-
+local scrnW, scrnH = ScriptCB_GetScreenInfo()
 ifs_mod_menu_tree_listbox_layout = {
-	showcount = 8,
+	showcount = 10,
+	bCreateSlider = true, -- can't figure out how to make slider mouse sensitive :( 
 	yHeight = 34,
 	ySpacing  = 0,
 	--width = 260,
-	width = 400,
---	x = 0,
+	width = scrnW *0.7,
+	x = 0,
 	slider = 1,
 	CreateFn = ifs_mod_menu_tree_listbox_CreateItem,
 	PopulateFn = ifs_mod_menu_tree_listbox_PopulateItem,
@@ -150,9 +157,22 @@ ifs_mod_menu_tree = NewIFShellScreen {
 	UpdateTitle = function(this)
 		IFText_fnSetString(this.listbox.titleBarElement, this.GetTitleString(this))
 	end,
+	HandleMouse = function(this, x, y)
+		gHandleMouse(this,x,y)
+	end,
 	Input_KeyDown = function (this, iKey)
+		--[[
+			b			98	The b key.
+			Back		8	The BACKSPACE key.
+			Escape		27	The ESC key.
+			PageDown	34	The PAGE DOWN key.
+			PageUp		33	The PAGE UP key.
+			Space		32	The Space bar key.
+			Tab          9  The Tab Key
+		]]
 		print("gInput_KeyDown: " .. iKey)
-		if(iKey == 27 or iKey == 8 or iKey == 66) then
+		if (iKey == 8 or iKey == 98) or (iKey == 27 and ScriptCB_CheckProfanity == nil) then
+			-- do not handle 'esc' for Aspyr's game version here
 			this.Input_Back(this)
 		elseif(iKey == 13 or iKey == 32) then
 			this.Input_Accept(this)
@@ -267,26 +287,53 @@ ifs_mod_menu_tree = NewIFShellScreen {
 	end,
 
 	Input_Accept = function(this)
+
+		-- If base class handled this work, then we're done
+		if(gShellScreen_fnDefaultInputAccept(this,1)) then
+			-- this code chunk helps/makes slider function
+			return
+		end
+
 		print("ifs_mod_menu_tree.Accept CurButton", tostring(this.CurButton) )
-		-- we want to 'debounce' menu selection; if you hold down the button while going into a menu you 
+		if(gMouseListBox) then
+			print( string.format("ifs_mod_menu_tree: Got Mouse click, update selected idx from %s to %s", 
+					tostring(gMouseListBox.Layout.SelectedIdx) ,  tostring(gMouseListBox.Layout.CursorIdx) ) )
+			-- set the selection 
+			--gMouseListBox.Layout.SelectedIdx = gMouseListBox.Layout.CursorIdx
+			if( ( gMouseListBox.Layout.SelectedIdx == gMouseListBox.Layout.CursorIdx ) and
+				( this.lastDoubleClickTime ) and
+				( ScriptCB_GetMissionTime()<this.lastDoubleClickTime+0.4 ) ) then
+				print( "+++1111 DoubleClicked " )
+				-- double clicked
+				this.iLastClickTime = nil
+				this.bDoubleClicked = 1
+			else
+				-- single clicked
+				this.iLastClickTime = ScriptCB_GetMissionTime()
+				gMouseListBox.Layout.SelectedIdx = gMouseListBox.Layout.CursorIdx
+				ListManager_fnMoveCursor(this.listbox,ifs_mod_menu_tree_listbox_layout)
+			end
+
+			if( gMouseListBox.Layout.SelectedIdx == gMouseListBox.Layout.CursorIdx and this.lastDoubleClickTime and ScriptCB_GetMissionTime()<this.lastDoubleClickTime+0.4) then
+				this.lastDoubleClickTime = nil
+			else
+				this.lastDoubleClickTime = ScriptCB_GetMissionTime()
+				gMouseListBox.Layout.SelectedIdx = gMouseListBox.Layout.CursorIdx
+				--ListManager_fnMoveCursor(this.listbox,ifs_mod_menu_tree_listbox_layout)
+				ListManager_fnMoveCursor(gMouseListBox,gMouseListBox.Layout)
+				return 1 -- note we did all the work
+			end
+		end
+
+		-- we want to 'debounce' menu selection; if you hold down the button while going into a menu you
 		-- get another 'accept'
 		local theTime = ScriptCB_GetMissionTime()
-		if( (theTime - this.timeOfLastAction) < 0.700  ) then 
+		if( (theTime - this.timeOfLastAction) < 0.700  ) then
 			--print("ifs_mod_menu_tree: debounce selection")
 			return
 		end
 		this.timeOfLastAction = theTime
 
-		if(gMouseListBox) then
-			-- Mouse Support; works on normal BF2; CC changed mouse stuff
-			print( string.format("ifs_mod_menu_tree: Got Mouse click, update selected idx from %s to %s", 
-					tostring(gMouseListBox.Layout.SelectedIdx) ,  tostring(gMouseListBox.Layout.CursorIdx) ) )
-		
-			-- set the selection 
-			gMouseListBox.Layout.SelectedIdx = gMouseListBox.Layout.CursorIdx
-		else 
-			print("gMouseListBox == nil")
-		end
 		if( this.CurButton == "_back" ) then
 			-- If base class handled this work, then we're done
 			if(gShellScreen_fnDefaultInputAccept(this)) then

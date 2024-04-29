@@ -51,7 +51,13 @@ function ifs_ms_MapList_CreateItem_console(layout)
 	local Temp = NewIFContainer { 
 		x = layout.x - 0.5 * layout.width, 
 		y = layout.y,
+		bHotspot = true,
+		fHotspotH = layout.height,
+		fHotspotW = layout.width,
+		fHotspotX = 0,
+		fHotspotY = -layout.height /2,
 	}
+	
 
 	Temp.map = NewIFText { 
 		x = 8,
@@ -72,6 +78,11 @@ function ifs_ms_ModeList_CreateItem_console(layout)
 	local Temp = NewIFContainer { 
 		x = layout.x - 0.5 * layout.width, 
 		y = layout.y,
+		bHotspot = true,
+		fHotspotH = layout.height,
+		fHotspotX = 0,
+		fHotspotW = layout.width,
+		fHotspotY = -layout.height /2,
 	}
 
 	local IconHeight = layout.height * 0.75
@@ -95,7 +106,6 @@ function ifs_ms_ModeList_CreateItem_console(layout)
 		localpos_t = (IconHeight * -0.5) + 2,
 		localpos_b = (IconHeight * 0.5) + 2,
 	}
-
 	return Temp
 end
 
@@ -106,6 +116,11 @@ function ifs_ms_EraList_CreateItem_console(layout)
 	local Temp = NewIFContainer { 
 		x = layout.x - 0.5 * layout.width, 
 		y = layout.y,
+		bHotspot = true,
+		fHotspotH = layout.height,
+		fHotspotW = layout.width,
+		fHotspotX = 0,
+		fHotspotY = -layout.height /2,
 	}
 
 	local IconHeight = layout.height * 0.375
@@ -140,6 +155,11 @@ function ifs_ms_PlayList_CreateItem_console(layout)
 	local Temp = NewIFContainer { 
 		x = layout.x - 0.5 * layout.width, 
 		y = layout.y,
+		bHotspot = true,
+		fHotspotH = layout.height,
+		fHotspotW = layout.width,
+		fHotspotX = 0,
+		fHotspotY = -layout.height /2,
 	}
 
 	local HAlign = "left"
@@ -342,6 +362,7 @@ end
 
 ifs_ms_MapList_layout_console = {
 	name = "ifs_ms_MapList_layout_console",
+	bCreateSlider = true,
 	showcount = 10,
 --	yTop = -130 + 13, -- auto-calc'd now
 	yHeight = 20,
@@ -355,6 +376,7 @@ ifs_ms_MapList_layout_console = {
 
 ifs_ms_ModeList_layout_console = {
 	name="ifs_ms_ModeList_layout_console",
+	bCreateSlider = true,
 	showcount = 10,
 --	yTop = -130 + 13, -- auto-calc'd now
 	yHeight = 20,
@@ -368,6 +390,7 @@ ifs_ms_ModeList_layout_console = {
 
 ifs_ms_EraList_layout_console = {
 	name = "ifs_ms_EraList_layout_console",
+	bCreateSlider = true,
 	showcount = 10,
 -- 	showcount = 3,
 --	yTop = -130 + 13, -- auto-calc'd now
@@ -382,6 +405,7 @@ ifs_ms_EraList_layout_console = {
 
 ifs_ms_PlayList_layout_console = {
 	name ="ifs_ms_PlayList_layout_console",
+	bCreateSlider = true,
 	showcount = 7,
 --	yTop = -130 + 13, -- auto-calc'd now
 	yHeight = 22,
@@ -1027,40 +1051,53 @@ ifs_missionselect_console = NewIFShellScreen {
 
 	Input_Accept = function(this)
 		print("ifs_missionselect_console.Input_Accept: this.CurButton:" .. tostring(this.CurButton))
-		print("ifs_missionselect_console.Input_Accept: iState: " .. this.iState)
-
-		local debug1 = nil 
-		if( gMouseListBox and gMouseListBox.Layout and gMouseListBox.Layout.name ~= nil) then
-			debug1 = gMouseListBox.Layout.name
-		end
-		print("ifs_missionselect_console.Input_Accept: Listbox: " .. tostring(debug1) )
+		--print("ifs_missionselect_console.Input_Accept: iState: " .. this.iState)
 
 		-- If base class handled this work, then we're done
 		if(gShellScreen_fnDefaultInputAccept(this,1)) then
-			print("ifs_missionselect_console: handled, early return")
+			-- this code chunk helps/makes slider function
 			return
 		end
 
-		-- Mouse Support
+		-- Mouse Support code
+		-- (from ifs_missionselect_pcmulti)
 		if(gMouseListBox) then
-			print("ifs_missionselect_console: Got Mouse click")
-			--tprint(gMouseListBox.Layout)
-			if(gMouseListBox and gMouseListBox.Layout and gMouseListBox.Layout.name) then
-				print("Clicked list box: ",gMouseListBox.Layout.name)
+			if( ( gMouseListBox == this.ModeListbox ) or
+				( gMouseListBox == this.MapListbox ) or
+				( gMouseListBox == this.EraListbox ) ) then
+				--this.bClicked = 1
+				if( ( gMouseListBox.Layout.SelectedIdx == gMouseListBox.Layout.CursorIdx ) and
+					( this.lastDoubleClickTime ) and
+					( ScriptCB_GetMissionTime()<this.lastDoubleClickTime+0.4 ) ) then
+					print( "+++1111 DoubleClicked " )
+					-- double clicked
+					this.iLastClickTime = nil
+					this.bDoubleClicked = 1
+				else
+					-- single clicked
+					this.iLastClickTime = ScriptCB_GetMissionTime()
+					gMouseListBox.Layout.SelectedIdx = gMouseListBox.Layout.CursorIdx
+					ListManager_fnMoveCursor(gMouseListBox,gMouseListBox.Layout)
+				end
 			end
-
-			gMouseListBox.Layout.SelectedIdx = gMouseListBox.Layout.CursorIdx
-			if(gMouseListBox.Layout == ifs_ms_MapList_layout_console) then
-				SetCurButton("add")
-				this.CurButton = "add"
-				this.iState = ifs_ms_state.map
-			elseif(gMouseListBox.Layout == ifs_ms_ModeList_layout_console) then
-
-			elseif(gMouseListBox.Layout == ifs_ms_EraList_layout_console) then
-
-			elseif(gMouseListBox.Layout == ifs_ms_PlayList_layout_console) then
-				SetCurButton("remove")
-				this.CurButton = "remove"
+			
+			--ScriptCB_SndPlaySound("shell_select_change")
+--			if( gMouseListBox.Layout.SelectedIdx == gMouseListBox.Layout.CursorIdx )then
+			if( gMouseListBox.Layout.SelectedIdx == gMouseListBox.Layout.CursorIdx and this.lastDoubleClickTime and ScriptCB_GetMissionTime()<this.lastDoubleClickTime+0.4) then
+				this.lastDoubleClickTime = nil
+--				if(gMouseListBox == this.listboxL) then
+--					this.CurButton = "_add"
+--				else
+--					this.CurButton = "_del"
+--				end
+			else
+				this.lastDoubleClickTime = ScriptCB_GetMissionTime()
+				gMouseListBox.Layout.SelectedIdx = gMouseListBox.Layout.CursorIdx
+				ListManager_fnMoveCursor(gMouseListBox,gMouseListBox.Layout)
+				--ListManager_fnFillContents(gMouseListBox,gMouseListBox.Contents,gMouseListBox.Layout)
+				--start to play the movie
+				--ifs_missionselect_pcMulti_fnSetMapPreview(this)
+				return 1 -- note we did all the work
 			end
 		end
 
@@ -1118,6 +1155,10 @@ ifs_missionselect_console = NewIFShellScreen {
 		-----------------------------------
 		
 	end, -- end of Input_Accept
+	HandleMouse = function(this, x, y)
+		gHandleMouse(this,x,y)
+		ifs_missionselect_console_fnUpdateInfoBoxes(this)
+	end,
 
 	Input_Back = function(this)
 		print("ifs_missionselect_console.Input_Back: iState=".. tostring(this.iState))
