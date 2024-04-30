@@ -1,4 +1,9 @@
 
+-- Mod Menu Tree Example usage
+-- author: BAD-AL 
+
+-- silly example used to demponstrate an easy way to give the user a choice from an option list.
+
 print("info: simple_settings\\addme.lua start")
 
 

@@ -1,7 +1,9 @@
+-- Mod Menu Tree Example usage
+-- author: BAD-AL 
 
-if( AddModMenuItem ~= nil) then
+if( AddModMenuItem ~= nil) then  -- check if ModMenuTree's 'AddModMenuItem' function is available
 
-	if ( ScriptCB_IsFileExist("..\\..\\addon\\995\\data\\_lvl_pc\\mission.lvl") == 1) then
+	if ( ScriptCB_IsFileExist("..\\..\\addon\\995\\data\\_lvl_pc\\mission.lvl") == 1) then  -- Check if 'The Clone Wars Revised' mod is available
 		local function LaunchMyMission(missionName)
 			print('Function: LaunchMyMission() ' .. 'mission= ' .. missionName)
 			ScriptCB_SetMissionNames({{Map = missionName, dnldable = nil, Side = 1, SideChar = nil, Team1 = 'team1', Team2 = 'team2'}}, false)

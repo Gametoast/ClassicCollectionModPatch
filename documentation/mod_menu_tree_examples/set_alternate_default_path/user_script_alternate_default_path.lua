@@ -1,6 +1,10 @@
+-- 'user_script' companion to 'set_alternate_path' Mod Menu Tree Example
+-- author: BAD-AL 
 
+-- Attempts to override the base game path.
+-- Will check to see if there exists a file at the override file path location and if so, will read that file instead.
 
-if( zero_patch_data ~= nil and zero_patch_data.override_path ~= nil) then 
+if( zero_patch_data ~= nil and zero_patch_data.override_path ~= nil) then -- check for the setting before we attempt to do any of this stuff
 	print("info: setup alternate default path from addon folder.")
 	
 	-- we'll use the more traditional (OG BF2 ) style path here and let the zero patch take care of
