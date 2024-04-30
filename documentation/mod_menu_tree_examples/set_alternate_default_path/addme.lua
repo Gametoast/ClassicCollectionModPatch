@@ -1,10 +1,16 @@
+-- Mod Menu Tree Example usage
+-- author: BAD-AL 
 
 -- Settings option that works in conjunction with 'user_script_alternate_default_path.lua'
 -- to do easy 'replacements' probably useful for 'sides' or 'world' replacements.
 
-if( zero_patch_fs ~= nil and zero_patch_data ~= nil) then
+if( zero_patch_fs ~= nil and zero_patch_data ~= nil) then  -- check if the zero_patch_fs and zero_patch_data are available
 	print("info: setting up 'Mod Folder Override Path'")
 	
+
+	-- helper function; 
+	-- try not to pollute the global env with functions no one else will know how to use
+	-- returns the mod folder name
 	local function getBaseFolder(filePath)
 		local pattern = "\\([A-Za-z0-9_-]+)\\data\\"
 		local s,e, retVal = string.find(filePath, pattern)
@@ -13,9 +19,8 @@ if( zero_patch_fs ~= nil and zero_patch_data ~= nil) then
 
 	-- we'll try to get an idea about which mods are installed by getting all the 'nab2.lvl' files
 	local files = zero_patch_fs.getFiles("nab2.lvl") --> "..\..\addon2\HF2\data\_lvl_common\dea\nab2.lvl"
-	local options = { "nil",}
+	local options = { "nil",} -- by default let's do nil; that surely won't exist
 	local current = nil
-	print("info: num cores:" .. table.getn(files))
 	
 	for k,v in files do 
 		current = getBaseFolder(v)
@@ -24,7 +29,7 @@ if( zero_patch_fs ~= nil and zero_patch_data ~= nil) then
 			table.insert(options, current)
 		end
 	end
-	print("debug processed the files")
+
 	local optionData =  {
 		default = "nil", 
 		target_table = zero_patch_data,
