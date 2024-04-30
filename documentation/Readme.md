@@ -44,24 +44,32 @@ What to know for zero Patch Mod development:
 				- function --> The mod menu tree will call function(id)
 				- table    --> The mod menu tree will load the contents of the table into the current display.
 								Not just any table will work, Must be a list of valid menu tree items.
+	+ AddModMenuItem function examples:
+		 ```LUA
+		 AddModMenuItem( "font_test",  "font test", "ifs_fonttest") -- adds to the end of the main menu, launches the 'ifs_fonttest' screen when selected 
+		 local abc_mod_options={ }
+		 AddModMenuItem( "my_id",  "ABC option 1", myFunction1, abc_mod_options) -- adds item to 'abc_mod_options', will call 'myFunction1("my_id")' when selected.
+		 AddModMenu({id="abc_items", displayStr="ABC Mod Items", action=abc_mod_options}) -- will add a parent menu to the end of the top level list, will display children items when selected.
+		 ```
 	+ What's with 'OptionsSettings'?
 		- This is a special pattern that should make it easy to present the user with options.
 		- Call the 'CreateOptionsSetting(mySettingsTable)' function with the appropriate table filled out and then add the result 
 		  to the mod menu tree.
-		- where 'mySettingsTable' should have a form like: 
+		- Where 'mySettingsTable' should have a form like: 
 		```LUA
-		{
+		local item1 = CreateOptionsSetting({
 				default = 9,                             -- > used when target_table[property_name] is nil
 				target_table = zero_patch_data,          -- > the table we'll set the data on
 				property_name = "my_setting",            -- > saved to --> target_table.my_setting
 				title = "My Setting",
 				callback = nil,                          -- > Callback once the data is set
 				options = {0,1,2,3,4,5,6,7,8,9}          -- > List of options to show
-		 } 
+		 })
+		 AddModMenu(item1)
 		 ```
 	+ When can I add items to the Mod Menu Tree?
 		- In your addme; after the '0' addme has been processed the mod menu tree functions will be available.
-6. Mod Menu Tree Examples:
+6. Full Mod Menu Tree Examples:
 	+ [launch_my_mission](https://github.com/Gametoast/ClassicCollectionModPatch/tree/master/documentation/mod_menu_tree_examples/launch_my_mission)
 	+ [set_alternate_default_path](https://github.com/Gametoast/ClassicCollectionModPatch/tree/master/documentation/mod_menu_tree_examples/set_alternate_default_path)
 	+ [simple_settings](https://github.com/Gametoast/ClassicCollectionModPatch/tree/master/documentation/mod_menu_tree_examples/simple_settings)
