@@ -2,7 +2,11 @@
 -- author: BAD-AL 
 
 -- Settings option that works in conjunction with 'user_script_alternate_default_path.lua'
--- to do easy 'replacements' probably useful for 'sides' or 'world' replacements.
+
+-- Looks for different mods that have 'nab2.lvl' and shows those mod folders to the user.
+-- When one is selected, will set the 'zero_patch_data.override_path' property, which will get 
+-- passed through to ingame and will be read by the 'user_script_alternate_default_path' script
+-- to do the work.
 
 if( zero_patch_fs ~= nil and zero_patch_data ~= nil) then  -- check if the zero_patch_fs and zero_patch_data are available
 	print("info: setting up 'Mod Folder Override Path'")
