@@ -1,6 +1,9 @@
 -- Mod Menu Tree Example usage
 -- author: BAD-AL 
 
+-- shows the user a list of missions from the 'The Clone Wars Revised' mod
+-- Launches the mission when selected
+
 if( AddModMenuItem ~= nil) then  -- check if ModMenuTree's 'AddModMenuItem' function is available
 
 	if ( ScriptCB_IsFileExist("..\\..\\addon\\995\\data\\_lvl_pc\\mission.lvl") == 1) then  -- Check if 'The Clone Wars Revised' mod is available
