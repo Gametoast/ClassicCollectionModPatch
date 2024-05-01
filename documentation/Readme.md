@@ -41,7 +41,7 @@ What to know for zero Patch Mod development:
 			+ id: string 
 			+ displayStr:  can be a const string, localization string id or function that returns a string.
 			+ action: can be a string, function or table
-				- string   --> The mod menu tree will do a 'ScriptCB_PushScreen(id)' 
+				- string   --> The mod menu tree will do a 'ScriptCB_PushScreen(action)' 
 				- function --> The mod menu tree will call function(id)
 				- table    --> The mod menu tree will load the contents of the table into the current display.
 								Not just any table will work, Must be a list of valid menu tree items.
