@@ -7,6 +7,7 @@ What to know for zero Patch Mod development:
 	+ Example:
 		- ```local files = zero_patch_fs.getFiles("custom_gc", {".lvl", ".script"}) -- gets all the .script and .lvl files that have 'custom_gc' names.```
 	+ Note:
+		- Files inside folders called 'disabled' are excluded (this is how we can disable scripts).
 		- Files are sorted when returned.
 		- Lua has a more limited pattern matching system than most programming languages, 
 			check https://riptutorial.com/lua/example/20315/lua-pattern-matching for more details.
