@@ -86,3 +86,9 @@ The following calls have not yet been checked with the 'dc:' prefix:
 ### Zero Patch Test Team
 - Burumaru
 - lui
+
+### Contributing Pioneers
+- Pandemic
+- GTAnakin
+- Zerted
+- Rayman1103
