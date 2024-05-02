@@ -72,3 +72,17 @@ The following calls have not yet been checked with the 'dc:' prefix:
 1. ScriptCB_OpenMovie
 1. PlayAudioStream
 1. PlayAudioStreamUsingProperties
+
+
+### Zero Patch development Team
+- BAD-AL
+- MileHighGuy (milehighguy-dev)
+- S1thK3nny 
+- marth8880
+- iamastupid/imashaymin
+- AnthonyBF2
+- BK2-modder
+
+### Zero Patch Test Team
+- Burumaru
+- lui
