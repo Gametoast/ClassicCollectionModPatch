@@ -41,3 +41,4 @@ echo ]] >> "0/patch_scripts/fs.lua"
 
 echo done creating fake file system.
 zenity --width=400  --info --text="All done checking and renaming directories;\ncreated fake file system for BF2 zero patch" --title="Go Run Battlefront 2 :)"
+ 
