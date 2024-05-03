@@ -2,18 +2,18 @@
 [comment]: <> (VS Code markdown preview -> Ctrl+k, v)
 # Classic Collection Mod Patch
 
+## GitHub repo
+https://github.com/Gametoast/ClassicCollectionModPatch
+
 ## Videos
 - [Windows install](https://youtu.be/fgMN85mlxiI)
 - [Steamdeck install](https://youtu.be/3Cg_rfeJIZA)
 - [Mod Developer guide](https://youtu.be/8G9ApaOUGpE)
 
-
-## Developers/modders
-Put this git repo under your 'BF2_ModTools\\' Folder for the 'munge' to work.
-
-
 ## Compatibility
-This patch is compatible with Battlefront Classic Collection (BF2) [Steamdeck, Switch, Windows] and the OG SWBF2 game from steam, GOG and DVD.
+This patch is compatible with 
+- Battlefront Classic Collection (BF2) [Steamdeck, Switch, Windows]
+- Original Star Wars Battlefront II [steam, GOG, DVD]
 
 But please note that most mods released in the last 20 years have not been tested against the Battlefront Classic Collection and some may encounter issues that this patch cannot solve.
 
@@ -33,7 +33,7 @@ But please note that most mods released in the last 20 years have not been teste
 What this does-> replaces a file inside common.lvl that we can use as a hook into the game's runtime. 
 
 #### Note:
-If you remove the '0' folder, you should basically be running an un-patched game; becasue none of the runtime adjustments and additions that we perform will be done if that '0' folder is gone.
+If you remove the '0' folder, you should basically be running an un-patched game; becasue none of the 'zero patch' runtime adjustments/modification will be performed if that '0' folder is gone.
 
 ## Adding mods/addons & making file changes
 1. Place the downloaded mod into the 'addon2' (or 'addon') folder
@@ -49,35 +49,35 @@ The 'Switch' specific script also re-names all the files and folders under 'addo
 ## Steamdeck users
 Q: Do I need to 'chmod +x' the 'run_after_making_changes_linux.sh' script?
 
-A: Yes, once you copy it to your 'addon2' folder you'll need to do a
-```chmod +x run_after_making_changes_linux.sh```
-before you can run it. Once you've done that, it should run by double-clicking or by calling it through the terminal.
+A: The .sh file will need to be 'executable'; this can be done with ```chmod +x run_after_making_changes_linux.sh```
+ or by other means. Once it has been made 'executable' it should run by double-clicking or by calling it through the terminal.
 
-Q: Do I need to run the Apply_Patch script on a Windows machine?
+Q: Do I need to run the Apply_Patch.bat script on a Windows machine?
 
-A: Yes, it would be too complicated to make sure the user had the right runtime stuff for it to work on Steamdeck. But it's certainly possible that it could be made to run on the steamdeck through Bottles or Wine (or maybe Mono too) + script edits.
+A: No, it may be most easy to copy the common.lvl file over to windows to do the apply_patch.bat step, but it can also be accomnplished through 'Bottles' as the Steamdeck install video demonstrates.
 
 ## Is this different than the 1.3 UOP?
 Yes. We do try to make it feature compatible with the 1.3 UOP. But not all features are possible, 'Freecam' is not supported in BF CC, so we're out of luck there.
-But if you are seeing some 1.3 UOP features not present or not working then please file a bug on the GitHub repo.
+But if you are seeing some 1.3 UOP features not present or not working then please file a bug on the [GitHub repo issues page](https://github.com/Gametoast/ClassicCollectionModPatch/issues).
 
 ## Releases
-Releases will be in the 'Releases' portion of this repo.
-As of the creation of this repo the game is new and we would expect updates.
-With 2005 Star Wars Battlefront II PC, many mods relied on an unofficial patch for much functionality and some base game files were overwritten to accomplish this.
+Releases will be in the ['Releases' portion of this repo](https://github.com/Gametoast/ClassicCollectionModPatch/releases).
 
 ### Battlefront 1 modding notes
 As of initial release (14 March 2024) the BF1 CC game seems to have switched from Lua 4.0 to using Lua 5.0.2. Unless the go back to Lua 4.0, it means that every BF1 mod will need to be re-built. :(
 
-### Battlefront 2 (classic collection) modder notes
- * BF2 CC does seem kinda broken with regard to the 'dc:' file prefix, but 'ReadDataFile' and 'OpenAudioStream' do work from an addon's '_lvl_common' folder.
- * The 'dc:' file prefix does work with 'ReadDataFile' under the mod's '_lvl_pc' folder too.
- * With regards to ScriptCB_IsFileExist and 'ReadDataFile' and the other functions that reference files, we will re-direct if we detect 'addon\\' or '\\_lvl_pc\\' in the path being referenced.
+### Battlefront 2 (classic collection) mod developer notes
+ * 'ReadDataFile' and 'OpenAudioStream' do work with the 'dc:' file prefix from an addon's '_lvl_common' folder.
+ * With regards to ScriptCB_IsFileExist and 'ReadDataFile' and the other functions that reference files, we will re-direct to the appropriate location if we detect 'addon\\' or '\\_lvl_pc\\' in the path being referenced.
+
+### Building the 'zero patch'
+Put/clone this git repo under your 'BF2_ModTools\\' Folder for the 'munge' to work.
+
 
 The following calls have not yet been checked with the 'dc:' prefix:
 1. ScriptCB_OpenMovie
-1. PlayAudioStream
-1. PlayAudioStreamUsingProperties
+2. PlayAudioStream
+3. PlayAudioStreamUsingProperties
 
 
 ### Zero Patch development Team
