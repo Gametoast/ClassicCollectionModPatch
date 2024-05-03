@@ -2,6 +2,12 @@
 [comment]: <> (VS Code markdown preview -> Ctrl+k, v)
 # Classic Collection Mod Patch
 
+## Videos
+- [Windows install](https://youtu.be/fgMN85mlxiI)
+- [Steamdeck install](https://youtu.be/3Cg_rfeJIZA)
+- [Mod Developer guide](https://youtu.be/8G9ApaOUGpE)
+
+
 ## Developers/modders
 Put this git repo under your 'BF2_ModTools\\' Folder for the 'munge' to work.
 
@@ -87,7 +93,7 @@ The following calls have not yet been checked with the 'dc:' prefix:
 - Burumaru
 - lui
 
-### Contributing Pioneers
+### Legacy Contributors
 - Pandemic
 - GTAnakin
 - Zerted
