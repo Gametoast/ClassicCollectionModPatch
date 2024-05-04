@@ -5,7 +5,7 @@
 :: Run this munge.bat file to build the addme and 'patch_ingame.lvl''.
 
 md MUNGED 
-del /Y MUNGED\*
+del /Q MUNGED\*
 :: currently no textures are used.
 ..\ToolsFL\bin\pc_TextureMunge.exe -inputfile $*.tga  -continue -platform PC -sourcedir  src\textures -outputdir MUNGED 
 
