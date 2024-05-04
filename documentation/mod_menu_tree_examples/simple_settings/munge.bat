@@ -1,5 +1,5 @@
 md MUNGED 
-del /Y MUNGED\*
+del /Q MUNGED\*
 ::C:\BF2_ModTools\ToolsFL\bin\pc_TextureMunge.exe -inputfile $*.tga  -checkdate -continue -platform PC -sourcedir . -outputdir MUNGED 
 
 C:\BF2_ModTools\ToolsFL\bin\ScriptMunge.exe -inputfile *.lua   -continue -platform PC -sourcedir  . -outputdir MUNGED  

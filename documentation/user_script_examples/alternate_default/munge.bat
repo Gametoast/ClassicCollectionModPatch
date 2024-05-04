@@ -10,4 +10,3 @@ C:\BF2_ModTools\ToolsFL\bin\ScriptMunge.exe -inputfile *.lua   -continue -platfo
 
 move /Y MUNGED\*.script .
 move *.log MUNGED
-

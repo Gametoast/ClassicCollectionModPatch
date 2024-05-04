@@ -1,0 +1,3 @@
+For Classic collection, put under a '_lvl_common' folder.
+
+If using the zero patch with OG BF2, place in a '_lvl_pc' folder.
