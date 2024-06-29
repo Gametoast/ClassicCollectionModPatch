@@ -1,11 +1,11 @@
 --
--- AIHeroScript by Rayman1103
+-- AIHeroScriptNoTurret by Rayman1103
 -- Description: Prevents the AI Hero from entering turrets/vehicles.
 --
 
-AIHeroScript = nil --Force garbage collection (just in case)
+AIHeroScriptNoTurret = nil --Force garbage collection (just in case)
 
-AIHeroScript =
+AIHeroScriptNoTurret =
 {
 	numTeams = 2,
 	noVehicleHeroes =
@@ -18,14 +18,14 @@ AIHeroScript =
 	hasStarted = false,
 }
 
-function AIHeroScript:New(o)
+function AIHeroScriptNoTurret:New(o)
 	o = o or {}
 	setmetatable(o, self)
 	self.__index = self
 	return o
 end
 
-function AIHeroScript:Start()
+function AIHeroScriptNoTurret:Start()
 	if self.hasStarted then return end
 	
 	local initAIHeroSupport = function(teamPtr)
@@ -58,53 +58,53 @@ function AIHeroScript:Start()
 	self.hasStarted = true
 end
 
-local AIHeroClasses = {}
-local AIHeroNumTeams = 0
+gAIHeroNoTurretClasses = {}
+gAIHeroNoTurretNumTeams = 0
 
 --attempt to take control of (or listen to the calls of) the ScriptPostLoad function
-if ScriptPostLoad and not AIHeroScript_ScriptPostLoad then
+if ScriptPostLoad and not AIHeroScriptNoTurret_ScriptPostLoad then
 	--backup the current ScriptPostLoad function
-	AIHeroScript_ScriptPostLoad = ScriptPostLoad
+	AIHeroScriptNoTurret_ScriptPostLoad = ScriptPostLoad
 
 	--this is our new ScriptPostLoad function
 	ScriptPostLoad = function(...)
 		-- let the original function happen and catch the return value
-		local aiHeroScript_SPLreturn = {AIHeroScript_ScriptPostLoad(unpack(arg))}
+		local AIHeroScriptNoTurret_SPLreturn = {AIHeroScriptNoTurret_ScriptPostLoad(unpack(arg))}
 		
 		if not IsCampaign() then
 			local GameData = ScriptCB_GetNetGameDefaults()
 			
 			if GameData.bHeroesEnabled then
-				if AIHeroNumTeams > 0 then
-					AIHeroScript:New{heroClassName = AIHeroClasses, numTeams = 2,}:Start()
+				if gAIHeroNoTurretNumTeams > 0 then
+					AIHeroScriptNoTurret:New{heroClassName = gAIHeroNoTurretClasses, numTeams = 2,}:Start()
 				end
 			end
 		end
 		
 		-- return the unmanipulated values
-		return unpack(aiHeroScript_SPLreturn)
+		return unpack(AIHeroScriptNoTurret_SPLreturn)
 	end
 end
 
 --attempt to take control of (or listen to the calls of) the SetHeroClass function
-if SetHeroClass and not AIHeroScript_SetHeroClass then
+if SetHeroClass and not AIHeroScriptNoTurret_SetHeroClass then
 	--backup the current SetHeroClass function
-	AIHeroScript_SetHeroClass = SetHeroClass
+	AIHeroScriptNoTurret_SetHeroClass = SetHeroClass
 
 	--this is our new SetHeroClass function
 	SetHeroClass = function(teamPtr, heroClassName, ...)
 		-- let the original function happen and catch the return value
-		local aiHeroScript_SHCreturn = {AIHeroScript_SetHeroClass(teamPtr, heroClassName, unpack(arg))}
+		local AIHeroScriptNoTurret_SHCreturn = {AIHeroScriptNoTurret_SetHeroClass(teamPtr, heroClassName, unpack(arg))}
 		
 		if heroClassName ~= "" then
-			AIHeroClasses[teamPtr] = heroClassName
+			gAIHeroNoTurretClasses[teamPtr] = heroClassName
 			
-			if teamPtr > AIHeroNumTeams then
-				AIHeroNumTeams = teamPtr
+			if teamPtr > gAIHeroNoTurretNumTeams then
+				gAIHeroNoTurretNumTeams = teamPtr
 			end
 		end
 		
 		-- return the unmanipulated values
-		return unpack(aiHeroScript_SHCreturn)
+		return unpack(AIHeroScriptNoTurret_SHCreturn)
 	end
 end

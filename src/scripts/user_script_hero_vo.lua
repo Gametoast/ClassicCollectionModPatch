@@ -190,8 +190,8 @@ function HeroVOScript:Start()
 	self.hasStarted = true
 end
 
-local HeroVOClasses = {}
-local HeroVONumTeams = 0
+gHeroVOClasses = {}
+gHeroVONumTeams = 0
 
 --attempt to take control of (or listen to the calls of) the ScriptPostLoad function
 if ScriptPostLoad and not HeroVOScript_ScriptPostLoad then
@@ -208,8 +208,8 @@ if ScriptPostLoad and not HeroVOScript_ScriptPostLoad then
 			
 			if GameData.bHeroesEnabled then
 				if GameData.bHeroesEnabled then
-					if HeroVONumTeams > 0 then
-						HeroVOScript:New{heroClassName = HeroVOClasses, numTeams = 2,}:Start()
+					if gHeroVONumTeams > 0 then
+						HeroVOScript:New{heroClassName = gHeroVOClasses, numTeams = 2,}:Start()
 					end
 				end
 			end
@@ -231,10 +231,10 @@ if SetHeroClass and not HeroVOScript_SetHeroClass then
 		local heroVOScript_SHCreturn = {HeroVOScript_SetHeroClass(teamPtr, heroClassName, unpack(arg))}
 		
 		if heroClassName ~= "" then
-			HeroVOClasses[teamPtr] = heroClassName
+			gHeroVOClasses[teamPtr] = heroClassName
 			
-			if teamPtr > HeroVONumTeams then
-				HeroVONumTeams = teamPtr
+			if teamPtr > gHeroVONumTeams then
+				gHeroVONumTeams = teamPtr
 			end
 		end
 		
