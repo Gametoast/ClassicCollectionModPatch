@@ -8,8 +8,8 @@ ff_heroSPScript = 0
 ff_chooseSides = 0
 ff_menuSounds = 1
 ff_displayTeamPoints = 0
-ff_aiSpawn1 = 1
-ff_aiSpawn2 = 1
+ff_reinforcementCount = {}
+ff_aiSpawn = {}
 ff_cpCapture = 1
 ff_lockVehicles = 0
 ff_tumbleRecovery = 0
@@ -22,6 +22,8 @@ ff_awardEffectsOn = 1
 ff_forceViewOn = 0
 ff_removedPointLimits = 0
 ff_allowVictory = 1
+ff_hiddenCPs = 0
+ff_numTeams = 0
 local FF_ServerName = "v1.3: "
 local FF_Crashes_ServerName = "Crashes: "
 OldMissionVictory = nil
@@ -85,7 +87,10 @@ function ff_changeAIDamageThreshold(value)
     if value == nil then
         return
     end
-    local teams = {1, 2}
+	local teams = {}
+	for i = 1, ff_numTeams, 1 do
+		table.insert(teams, i)
+	end
     local miniFun = function(player, unit, property, value, teams)
         if (unit == nil) or (value == nil) then
             return
@@ -188,12 +193,18 @@ function ff_CommandDenyCPCapture()
     uf_changeClassProperties(uf_classes, properties)
 end
 function ff_CommandUnlimitedReinforcements()
-    SetReinforcementCount(1, -1)
-    SetReinforcementCount(2, -1)
+	for i = 1, ff_numTeams, 1 do
+		local count = GetReinforcementCount(i)
+		if count < 2000000000 then
+			ff_reinforcementCount[i] = count
+		end
+		SetReinforcementCount(i, -1)
+	end
 end
 function ff_CommandUnlimitedTeamPoints()
-    SetTeamPoints(1, -1234567890)
-    SetTeamPoints(2, -1234567890)
+	for i = 1, ff_numTeams, 1 do
+		SetTeamPoints(i, -1234567890)
+    end
 end
 function ff_CommandNoAIUnitDamage()
     ff_changeAIDamageThreshold(1)
@@ -251,7 +262,25 @@ function ff_CommandAllowVictory()
     OldMissionDefeat = nil
     ff_allowVictory = 1
 end
+function ff_GetTeamName(team)
+	if ff_numTeams < team or GetTeamFactionId(team) == 0 then
+		return "Unknown"
+	end
+	return ScriptCB_ununicode(ScriptCB_GetTeamName(team))
+end
 function ff_rebuildFakeConsoleList()
+	if ff_numTeams == 0 then
+		for i = 1, 7, 1 do
+			if GetTeamSize(i) == 0 then break end
+			local count = GetReinforcementCount(i)
+			if count >= 2000000000 then
+				count = 150
+			end
+			ff_reinforcementCount[i] = count
+			ff_aiSpawn[i] = 1
+			ff_numTeams = i
+		end
+	end
     gConsoleCmdList = {}
     ScriptCB_GetConsoleCmds()
     table.insert(gConsoleCmdList, {ShowStr = ""})
@@ -262,6 +291,19 @@ function ff_rebuildFakeConsoleList()
         ff_AddCommand("", nil, nil, nil)
         print("ff_rebuildFakeConsoleList(): Finished adding in modder's custom commands.")
     end
+	if conquest ~= nil and ff_cpList == nil then
+		ff_cpList = ff_cpList or {}
+		for i, cp in pairs(conquest.commandPosts) do
+			ff_cpList[i] = {}
+			ff_cpList[i]["name"] = cp.name
+			ff_cpList[i]["DefaultRegion"] = GetRegionName(GetCommandPostCaptureRegion(cp.name))
+			ff_cpList[i]["CaptureRegion"] = GetRegionName(GetCommandPostCaptureRegion(cp.name))
+			ff_cpList[i]["AICanCapture"] = {}
+			for u = 1, ff_numTeams, 1 do
+				ff_cpList[i]["AICanCapture"][u] = 1
+			end
+		end
+	end
     ff_AddCommand("[Utilities]", "General commands that do various things.", nil, nil)
     ff_AddCommand(
         "Exit To Windows",
@@ -402,41 +444,141 @@ function ff_rebuildFakeConsoleList()
         nil
     )
 
-		ff_AddCommand( "Team 1 +50 Reinforcements", nil, function()
-			AddReinforcements(1, 50)
-		end, nil)
-
-		ff_AddCommand( "Team 2 +50 Reinforcements", nil, function()
-			AddReinforcements(2, 50)
-		end, nil)
-
-		ff_AddCommand( "Team 1 -50 Reinforcements", nil, function()
-			AddReinforcements(1, -50)
-		end, nil)
-
-		ff_AddCommand( "Team 2 -50 Reinforcements", nil, function()
-			AddReinforcements(2, -50)
-		end, nil)
-
-		ff_AddCommand( "Team 1 +50 Points", nil, function()
-			AddTeamPoints(1, 50)
-		end, nil)
-
-		ff_AddCommand( "Team 2 +50 Points", nil, function()
-			AddTeamPoints(2, 50)
-		end, nil)
-
-		ff_AddCommand( "Team 1 -50 Points", nil, function()
-			AddTeamPoints(1, -50)
-		end, nil)
-
-		ff_AddCommand( "Team 2 -50 Points", nil, function()
-			AddTeamPoints(2, -50)
-		end, nil)
+	for i = 1, ff_numTeams, 1 do
+		local team = i
+		if ScriptCB_GetControllerType() == 6 then
+			ff_AddCommand(
+				"Add Reinforcements Team " .. team .. " [" .. ff_GetTeamName(team) .. "]",
+				"Add reinforcements for team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+				function()
+					local temp = function(rate)
+						if not rate then
+							return
+						end
+						local count = GetReinforcementCount(team)
+						if count >= 2000000000 then return end
+						AddReinforcements(team, rate)
+						ff_reinforcementCount[team] = count + rate
+					end
+					ff_AskUser("Please enter more reinforcements for team " .. team .. " [" .. ff_GetTeamName(team) .. "]", temp, ifs_fakeconsole)
+				end,
+				function()
+					return GetReinforcementCount(team) < 2000000000
+				end
+			)
+			ff_AddCommand(
+				"Set Reinforcements Team " .. team .. " [" .. ff_GetTeamName(team) .. "]",
+				"Set the reinforcements for team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+				function()
+					local temp = function(rate)
+						if not rate then
+							return
+						end
+						SetReinforcementCount(team, rate)
+						local count = GetReinforcementCount(team)
+						if count >= 2000000000 then return end
+						ff_reinforcementCount[team] = count
+					end
+					ff_AskUser("Please enter the new reinforcement count for team " .. team .. " [" .. ff_GetTeamName(team) .. "]", temp, ifs_fakeconsole)
+				end,
+				nil
+			)
+			ff_AddCommand(
+				"Add Points Team " .. team .. " [" .. ff_GetTeamName(team) .. "]",
+				"Set points to be added to team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+				function()
+					local temp = function(rate)
+						if not rate then
+							return
+						end
+						AddTeamPoints(team, rate)
+					end
+					ff_AskUser("Please enter points to add to team " .. team .. " [" .. ff_GetTeamName(team) .. "]", temp, ifs_fakeconsole)
+				end,
+				nil
+			)
+			ff_AddCommand(
+				"Set Points Team " .. team .. " [" .. ff_GetTeamName(team) .. "]",
+				"Set the current points for team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+				function()
+					local temp = function(rate)
+						if not rate then
+							return
+						end
+						SetTeamPoints(team, rate)
+					end
+					ff_AskUser("Please enter the new team points for team " .. team .. " [" .. ff_GetTeamName(team) .. "]", temp, ifs_fakeconsole)
+				end,
+				nil
+			)
+		else
+			ff_AddCommand(
+				"Team " .. team .. " [" .. ff_GetTeamName(team) .. "] Unlimited Reinforcements",
+				"Set unlimited reinforcements for team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+				function()
+					local count = GetReinforcementCount(team)
+					if count >= 2000000000 then return end
+					ff_reinforcementCount[team] = count
+					SetReinforcementCount(team, -1)
+				end,
+				function()
+					return GetReinforcementCount(team) < 2000000000
+				end
+			)
+			ff_AddCommand(
+				"Team " .. team .. " [" .. ff_GetTeamName(team) .. "] Reinforcements (" .. ff_reinforcementCount[team] .. ")",
+				"Set reinforcements for team " .. team .. " [" .. ff_GetTeamName(team) .. "] to " .. ff_reinforcementCount[team] .. ".",
+				function()
+					SetReinforcementCount(team, ff_reinforcementCount[team])
+				end,
+				function()
+					return GetReinforcementCount(team) >= 2000000000
+				end
+			)
+			ff_AddCommand(
+				"Team " .. team .. " [" .. ff_GetTeamName(team) .. "] +50 Reinforcements",
+				"Add 50 reinforcements to team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+				function()
+					if GetReinforcementCount(team) >= 2000000000 then return end
+					AddReinforcements(team, 50)
+				end,
+				function()
+					return GetReinforcementCount(team) < 2000000000
+				end
+			)
+			ff_AddCommand(
+				"Team " .. team .. " [" .. ff_GetTeamName(team) .. "] -50 Reinforcements",
+				"Remove 50 reinforcements from team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+				function()
+					if GetReinforcementCount(team) >= 2000000000 then return end
+					AddReinforcements(team, -50)
+				end,
+				function()
+					return GetReinforcementCount(team) < 2000000000
+				end
+			)
+			ff_AddCommand(
+				"Team " .. team .. " [" .. ff_GetTeamName(team) .. "] +50 Points",
+				"Add 50 points to team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+				function()
+					AddTeamPoints(team, 50)
+				end,
+				nil
+			)
+			ff_AddCommand(
+				"Team " .. team .. " [" .. ff_GetTeamName(team) .. "] -50 Points",
+				"Add 50 points from team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+				function()
+					AddTeamPoints(team, -50)
+				end,
+				nil
+			)
+		end
+	end
 
     ff_AddCommand(
-        "Force Humans Onto Team 1",
-        "All human players will be forced onto team 1.",
+        "Force Humans Onto Team 1 [" .. ff_GetTeamName(1) .. "]",
+        "All human players will be forced onto team 1 [" .. ff_GetTeamName(1) .. "].",
         function()
             ForceHumansOntoTeam1(1)
         end,
@@ -566,141 +708,29 @@ function ff_rebuildFakeConsoleList()
         "Kill All Living AI + Humans",
         "All humans and bots currently alive will be killed.",
         function()
-            uf_killUnits({1}, true)
-            uf_killUnits({2}, true)
-            uf_killUnits({1}, false)
-            uf_killUnits({2}, false)
+			for i = 1, ff_numTeams, 1 do
+				uf_killUnits({i}, true)
+				uf_killUnits({i}, false)
+			end
         end,
         nil
     )
     ff_AddCommand(
-        "Kill All Humans On Team 1",
-        "Kill all human players on team 1.",
+        "Kill All Humans On Team 1 [" .. ff_GetTeamName(1) .. "]",
+        "Kill all human players on team 1 [" .. ff_GetTeamName(1) .. "].",
         function()
             uf_killUnits({1}, false)
         end,
         nil
     )
     ff_AddCommand(
-        "Kill All Humans On Team 2",
-        "Kill all human players on team 2.",
+        "Kill All Humans On Team 2 [" .. ff_GetTeamName(2) .. "]",
+        "Kill all human players on team 2 [" .. ff_GetTeamName(2) .. "].",
         function()
             uf_killUnits({2}, false)
         end,
         nil
     )
-    -- ff_AddCommand(
-        -- "Add Reinforcements Team 1",
-        -- "Add reinforcements for team 1.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- AddReinforcementCount(1, rate)
-            -- end
-            -- ff_AskUser("Please enter more reinforcements for team 1", temp, ifs_fakeconsole)
-        -- end,
-        -- nil
-    -- )
-    -- ff_AddCommand(
-        -- "Add Reinforcements Team 2",
-        -- "Add reinforcements for team 2.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- AddReinforcementCount(2, rate)
-            -- end
-            -- ff_AskUser("Please enter more reinforcements for team 2", temp, ifs_fakeconsole)
-        -- end,
-        -- nil
-    -- )
-    -- ff_AddCommand(
-        -- "Set Reinforcements Team 1",
-        -- "Set the reinforcements for team 1.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- SetReinforcementCount(1, rate)
-            -- end
-            -- ff_AskUser("Please enter the new reinforcement count for team 1", temp, ifs_fakeconsole)
-        -- end,
-        -- nil
-    -- )
-    -- ff_AddCommand(
-        -- "Set Reinforcements Team 2",
-        -- "Set the reinforcements for team 2.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- SetReinforcementCount(2, rate)
-            -- end
-            -- ff_AskUser("Please enter the new reinforcement count for team 2", temp, ifs_fakeconsole)
-        -- end,
-        -- nil
-    -- )
-    -- ff_AddCommand(
-        -- "Add Points Team 1",
-        -- "Set points to be added to team 1.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- AddTeamPoints(1, rate)
-            -- end
-            -- ff_AskUser("Please enter points to add to team 1.", temp, ifs_fakeconsole)
-        -- end,
-        -- nil
-    -- )
-    -- ff_AddCommand(
-        -- "Add Points Team 2",
-        -- "Set points to be added to team 2.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- AddTeamPoints(2, rate)
-            -- end
-            -- ff_AskUser("Please enter points to add to team 2.", temp, ifs_fakeconsole)
-        -- end,
-        -- nil
-    -- )
-    -- ff_AddCommand(
-        -- "Set Team Points 1",
-        -- "Set the current points for team 1.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- SetTeamPoints(1, rate)
-            -- end
-            -- ff_AskUser("Please enter the new team points for team 1", temp, ifs_fakeconsole)
-        -- end,
-        -- nil
-    -- )
-    -- ff_AddCommand(
-        -- "Set Team Points 2",
-        -- "Set the current points for team 2.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- SetTeamPoints(2, rate)
-            -- end
-            -- ff_AskUser("Please enter the new team points for team 2", temp, ifs_fakeconsole)
-        -- end,
-        -- nil
-    -- )
     -- ff_AddCommand(
         -- "Add Units On Team 1",
         -- "Add units per team for team 1.",
@@ -738,8 +768,8 @@ function ff_rebuildFakeConsoleList()
         -- nil
     -- )
     ff_AddCommand(
-        "Victory For Team 1",
-        "Instant victory for team 1.",
+        "Victory For Team 1 [" .. ff_GetTeamName(1) .. "]",
+        "Instant victory for team 1 [" .. ff_GetTeamName(1) .. "].",
         function()
             MissionVictory(1)
         end,
@@ -748,8 +778,8 @@ function ff_rebuildFakeConsoleList()
         end
     )
     ff_AddCommand(
-        "Victory For Team 2",
-        "Instant victory for team 2.",
+        "Victory For Team 2 [" .. ff_GetTeamName(2) .. "]",
+        "Instant victory for team 2 [" .. ff_GetTeamName(2) .. "].",
         function()
             MissionVictory(2)
         end,
@@ -788,24 +818,24 @@ function ff_rebuildFakeConsoleList()
         end
     )
     ff_AddCommand(
-        "Teams 1 + 2 to Team 1",
-        "Move both teams onto team 1.",
+        "Teams 1 + 2 to Team 1 [" .. ff_GetTeamName(1) .. "]",
+        "Move both teams onto team 1 [" .. ff_GetTeamName(1) .. "].",
         function()
             uf_moveToTeam({1, 2}, 1)
         end,
         nil
     )
     ff_AddCommand(
-        "Teams 1 + 2 to Team 2",
-        "Move both teams onto team 2.",
+        "Teams 1 + 2 to Team 2 [" .. ff_GetTeamName(2) .. "]",
+        "Move both teams onto team 2 [" .. ff_GetTeamName(2) .. "].",
         function()
             uf_moveToTeam({1, 2}, 2)
         end,
         nil
     )
     ff_AddCommand(
-        "Teams 1 + 2 to Team 3",
-        "Move both teams onto team 2.",
+        "Teams 1 + 2 to Team 3 [" .. ff_GetTeamName(3) .. "]",
+        "Move both teams onto team 3 [" .. ff_GetTeamName(3) .. "].",
         function()
             uf_moveToTeam({1, 2}, 3)
         end,
@@ -833,7 +863,7 @@ function ff_rebuildFakeConsoleList()
     )
     ff_AddCommand(
         "Friends Team 1<>1, 2<>2, 3<>3",
-        "Teams 1, 2, ad 3 will be friends of themselves.",
+        "Teams 1, 2, and 3 will be friends of themselves.",
         function()
             SetTeamAsFriend(1, 1)
             SetTeamAsFriend(2, 2)
@@ -940,6 +970,8 @@ function ff_rebuildFakeConsoleList()
             SetClassProperty("cis_hero_darthmaul", "MapTexture", "turret_icon")
             SetClassProperty("cis_hero_countdooku", "MapTexture", "turret_icon")
             SetClassProperty("cis_hero_jangofett", "MapTexture", "turret_icon")
+            SetClassProperty("dlc_hero_fisto", "MapTexture", "turret_icon")
+            SetClassProperty("dlc_hero_ventress", "MapTexture", "turret_icon")
         end
     )
     ff_AddCommand(
@@ -963,6 +995,8 @@ function ff_rebuildFakeConsoleList()
             SetClassProperty("cis_hero_darthmaul", "MapTexture", "troop_icon")
             SetClassProperty("cis_hero_countdooku", "MapTexture", "troop_icon")
             SetClassProperty("cis_hero_jangofett", "MapTexture", "troop_icon")
+            SetClassProperty("dlc_hero_fisto", "MapTexture", "troop_icon")
+            SetClassProperty("dlc_hero_ventress", "MapTexture", "troop_icon")
         end
     )
     -- ff_AddCommand(
@@ -1073,7 +1107,7 @@ function ff_rebuildFakeConsoleList()
         "Remove Point Limits",
         "Unlock all characters without earning points.",
         function()
-            ff_removedPointLimiets = 1
+            ff_removedPointLimits = 1
             local properties = {
                 {name = "PointsToUnlock", value = "0"}
             }
@@ -1185,18 +1219,35 @@ function ff_rebuildFakeConsoleList()
     -- )
     ff_AddCommand("", nil, nil, nil)
     ff_AddCommand("[AI Commands]", "Various commands for manipulating AI bots.", nil, nil)
-		ff_AddCommand( "Set Bots Per Team - 0", nil, function()
+	if ScriptCB_GetControllerType() == 6 then
+		ff_AddCommand(
+			"Number Of Bots Per Team",
+			"Determine number of bots per team allowed to spawn.",
+			function()
+				local temp = function(rate)
+					if not rate then
+						return
+					end
+					ScriptCB_SetNumBots(rate)
+				end
+				ff_AskUser("Please enter the max amount of bots allowed ingame", temp, ifs_fakeconsole)
+			end,
+			nil
+		)
+	else
+		ff_AddCommand( "Set Bots Per Team - 0", "Set number of bots per team allowed to spawn to 0.", function()
 			ScriptCB_SetNumBots(0)
 		end, nil)
-		ff_AddCommand( "Set Bots Per Team - 8", nil, function()
+		ff_AddCommand( "Set Bots Per Team - 8", "Set number of bots per team allowed to spawn to 8.", function()
 			ScriptCB_SetNumBots(8)
 		end, nil)
-		ff_AddCommand( "Set Bots Per Team - 16", nil, function()
+		ff_AddCommand( "Set Bots Per Team - 16", "Set number of bots per team allowed to spawn to 16.", function()
 			ScriptCB_SetNumBots(16)
 		end, nil)
-		ff_AddCommand( "Set Bots Per Team - 32", nil, function()
+		ff_AddCommand( "Set Bots Per Team - 32", "Set number of bots per team allowed to spawn to 32.", function()
 			ScriptCB_SetNumBots(32)
 		end, nil)
+	end
     ff_AddCommand(
         "Enemy AI Follow",
         "Enemy AI bots will follow the human player.",
@@ -1271,139 +1322,155 @@ function ff_rebuildFakeConsoleList()
             return not ScriptCB_InNetGame()
         end
     )
-    -- ff_AddCommand(
-        -- "Health Regen For AI",
-        -- "Determine health regeneration for AI bots.",
-        -- function()
-            -- local temp = function(value)
-                -- if not value then
-                    -- return
-                -- end
-                -- ff_healthRegen(value, "ai")
-            -- end
-            -- ff_AskUser(
-                -- "Please enter a health regeneration rate (health units per second).  Negative rates cause damage",
-                -- temp,
-                -- ifs_fakeconsole
-            -- )
-        -- end,
-        -- nil
-    -- )
-    -- ff_AddCommand(
-        -- "AI Damage Threshold",
-        -- "Determine damage percent AI bots can give to human players.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- ff_changeAIDamageThreshold(rate)
-            -- end
-            -- ff_AskUser("Please enter the AI damage threshold (range from 0 to 1, default is 0)", temp, ifs_fakeconsole)
-        -- end,
-        -- nil
-    -- )
-    ff_AddCommand(
-        "Disallow AI Spawn Team 1",
-        "Block AI bots from spawning on team 1.",
-        function()
-            ff_aiSpawn1 = 0
-            AllowAISpawn(1, false)
-        end,
-        function()
-            return ff_aiSpawn1 == 1
-        end
-    )
-    ff_AddCommand(
-        "Allow AI Spawn Team 1",
-        "Allow AI bots to spawn on team 1.",
-        function()
-            ff_aiSpawn1 = 1
-            AllowAISpawn(1, true)
-        end,
-        function()
-            return ff_aiSpawn1 ~= 1
-        end
-    )
-    ff_AddCommand(
-        "Disallow AI Spawn Team 2",
-        "Block AI bots from spawning on team 2.",
-        function()
-            ff_aiSpawn2 = 0
-            AllowAISpawn(2, false)
-        end,
-        function()
-            return ff_aiSpawn2 == 1
-        end
-    )
-    ff_AddCommand(
-        "Allow AI Spawn Team 2",
-        "Allow AI bots to spawn on team 2.",
-        function()
-            ff_aiSpawn2 = 1
-            AllowAISpawn(2, true)
-        end,
-        function()
-            return ff_aiSpawn2 ~= 1
-        end
-    )
+	if ScriptCB_GetControllerType() == 6 then
+		ff_AddCommand(
+			"Health Regen For AI",
+			"Determine health regeneration for AI bots.",
+			function()
+				local temp = function(value)
+					if not value then
+						return
+					end
+					ff_healthRegen(value, "ai")
+				end
+				ff_AskUser(
+					"Please enter a health regeneration rate (health units per second).  Negative rates cause damage",
+					temp,
+					ifs_fakeconsole
+				)
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"AI Damage Threshold",
+			"Determine damage percent AI bots can give to human players.",
+			function()
+				local temp = function(rate)
+					if not rate then
+						return
+					end
+					ff_changeAIDamageThreshold(rate)
+				end
+				ff_AskUser("Please enter the AI damage threshold (range from 0 to 1, default is 0)", temp, ifs_fakeconsole)
+			end,
+			nil
+		)
+	else
+		ff_AddCommand(
+			"Health Regen For AI (-100)",
+			"Cause 100 damage per second for AI bots.",
+			function()
+				ff_healthRegen(-100, "ai")
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Health Regen For AI (0)",
+			"Disable health regeneration for AI bots.",
+			function()
+				ff_healthRegen(0, "ai")
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Health Regen For AI (100)",
+			"Set 100 health regeneration per second for AI bots.",
+			function()
+				ff_healthRegen(100, "ai")
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"AI Damage Threshold (0%)",
+			"AI bots can kill human players. (default)",
+			function()
+				ff_changeAIDamageThreshold(0)
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"AI Damage Threshold (50%)",
+			"AI bots can damage human players to 50% health.",
+			function()
+				ff_changeAIDamageThreshold(0.50)
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"AI Damage Threshold (100%)",
+			"AI bots can't damage human players at all.",
+			function()
+				ff_changeAIDamageThreshold(1)
+			end,
+			nil
+		)
+	end
+	for i = 1, ff_numTeams, 1 do
+		local team = i
+		ff_AddCommand(
+			"Disallow AI Spawn Team " .. team .. " [" .. ff_GetTeamName(team) .. "]",
+			"Block AI bots from spawning on team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+			function()
+				ff_aiSpawn[team] = 0
+				AllowAISpawn(team, false)
+			end,
+			function()
+				return ff_aiSpawn[team] == 1
+			end
+		)
+		ff_AddCommand(
+			"Allow AI Spawn Team " .. team .. " [" .. ff_GetTeamName(team) .. "]",
+			"Allow AI bots to spawn on team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+			function()
+				ff_aiSpawn[team] = 1
+				AllowAISpawn(team, true)
+			end,
+			function()
+				return ff_aiSpawn[team] ~= 1
+			end
+		)
+	end
     ff_AddCommand(
         "AI Goals Clear",
         "Clear AI goals. Bots may stop spawning.",
         function()
-            ClearAIGoals(1)
-            ClearAIGoals(2)
+			for i = 1, ff_numTeams, 1 do
+				ClearAIGoals(i)
+			end
         end,
         nil
     )
-    ff_AddCommand(
-        "AI Goals Conquest",
-        "AI bots will seek to capture command posts.",
-        function()
-            AddAIGoal(1, "conquest", 1000)
-            AddAIGoal(2, "conquest", 1000)
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "AI Goals Deathmatch",
-        "AI bots will focus on killing enemies.",
-        function()
-            AddAIGoal(1, "deathmatch", 1000)
-            AddAIGoal(2, "deathmatch", 1000)
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Kill All AI Bots Team 1",
-        "Kill all living AI bots on team 1.",
-        function()
-            uf_killUnits({1}, true)
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Kill All AI Bots Team 2",
-        "Kill all living AI bots on team 2.",
-        function()
-            uf_killUnits({2}, true)
-        end,
-        nil
-    )
-    -- ff_AddCommand(
-        -- "Number Of Bots Per Team",
-        -- "Determine number of bots per team allowed to spawn.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- ScriptCB_SetNumBots(rate)
-            -- end
-            -- ff_AskUser("Please enter the max amount of bots allowed ingame", temp, ifs_fakeconsole)
-        -- end,
-        -- nil
-    -- )
+	ff_AddCommand(
+		"AI Goals Conquest",
+		"AI bots will seek to capture command posts.",
+		function()
+			for i = 1, ff_numTeams, 1 do
+				AddAIGoal(i, "conquest", 1000)
+			end
+		end,
+		nil
+	)
+	ff_AddCommand(
+		"AI Goals Deathmatch",
+		"AI bots will focus on killing enemies.",
+		function()
+			for i = 1, ff_numTeams, 1 do
+				AddAIGoal(i, "deathmatch", 1000)
+			end
+		end,
+		nil
+	)
+	for i = 1, ff_numTeams, 1 do
+		local team = i
+		ff_AddCommand(
+			"Kill All AI Bots Team " .. team .. " [" .. ff_GetTeamName(team) .. "]",
+			"Kill all living AI bots on team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+			function()
+				uf_killUnits({team}, true)
+			end,
+			nil
+		)
+	end
     ff_AddCommand(
         "AI AutoBalance Off",
         "Disable AI Auto-Balance.",
@@ -1609,27 +1676,29 @@ function ff_rebuildFakeConsoleList()
         end,
         nil
     )
-    -- ff_AddCommand(
-        -- "Sprint Energy Usage",
-        -- "Determine how much energy is used for sprinting for characters.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- local properties = {
-                    -- {name = "EnergyDrainSprint", value = rate}
-                -- }
-                -- uf_changeClassProperties(uf_classes, properties)
-            -- end
-            -- ff_AskUser(
-                -- "Please enter the amount of endurance to use while sprinting (energy units per second)",
-                -- temp,
-                -- ifs_fakeconsole
-            -- )
-        -- end,
-        -- nil
-    -- )
+	if ScriptCB_GetControllerType() == 6 then
+		ff_AddCommand(
+			"Sprint Energy Usage",
+			"Determine how much energy is used for sprinting for characters.",
+			function()
+				local temp = function(rate)
+					if not rate then
+						return
+					end
+					local properties = {
+						{name = "EnergyDrainSprint", value = rate}
+					}
+					uf_changeClassProperties(uf_classes, properties)
+				end
+				ff_AskUser(
+					"Please enter the amount of endurance to use while sprinting (energy units per second)",
+					temp,
+					ifs_fakeconsole
+				)
+			end,
+			nil
+		)
+	end
     ff_AddCommand(
         "Full Control For Characters",
         "Full controls for all characters.",
@@ -1698,97 +1767,214 @@ function ff_rebuildFakeConsoleList()
         end,
         nil
     )
-    -- ff_AddCommand(
-        -- "Health Regen Humans + Bots",
-        -- "Determine health regeneration for all bots and humans.",
-        -- function()
-            -- local temp = function(value)
-                -- if not value then
-                    -- return
-                -- end
-                -- ff_healthRegen(value, nil)
-            -- end
-            -- ff_AskUser(
-                -- "Please enter a health regeneration rate (health units per second).  Negative rates cause damage",
-                -- temp,
-                -- ifs_fakeconsole
-            -- )
-        -- end,
-        -- nil
-    -- )
-    -- ff_AddCommand(
-        -- "Health Regen For Humans",
-        -- "Determine health regeneration for all humans.",
-        -- function()
-            -- local temp = function(value)
-                -- if not value then
-                    -- return
-                -- end
-                -- ff_healthRegen(value, "human")
-            -- end
-            -- ff_AskUser(
-                -- "Please enter a health regeneration rate (health units per second).  Negative rates cause damage",
-                -- temp,
-                -- ifs_fakeconsole
-            -- )
-        -- end,
-        -- nil
-    -- )
-    -- ff_AddCommand(
-        -- "Endurance Regen For Characters",
-        -- "Determine energy restore rate for all characters.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- local properties = {
-                    -- {name = "EnergyRestore", value = rate}
-                -- }
-                -- uf_changeClassProperties(uf_classes, properties)
-            -- end
-            -- ff_AskUser("Please enter an endurance regeneration rate (energy units per second)", temp, ifs_fakeconsole)
-        -- end,
-        -- nil
-    -- )
-    -- ff_AddCommand(
-        -- "Idle Endurance Regen For Characters",
-        -- "Determine energy restore rate for all characters while not moving.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- local properties = {
-                    -- {name = "EnergyRestoreIdle", value = rate}
-                -- }
-                -- uf_changeClassProperties(uf_classes, properties)
-            -- end
-            -- ff_AskUser(
-                -- "Please enter an idle endurance regeneration rate (energy units per second)",
-                -- temp,
-                -- ifs_fakeconsole
-            -- )
-        -- end,
-        -- nil
-    -- )
-    -- ff_AddCommand(
-        -- "Fall Damage For Characters",
-        -- "Determine amount of collision damage for all characters.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- local properties = {
-                    -- {name = "CollisionScale", value = rate .. " " .. rate .. " " .. rate}
-                -- }
-                -- uf_changeClassProperties(uf_classes, properties)
-            -- end
-            -- ff_AskUser("Please enter the fall damage's collision scale", temp, ifs_fakeconsole)
-        -- end,
-        -- nil
-    -- )
+	if ScriptCB_GetControllerType() == 6 then
+		ff_AddCommand(
+			"Health Regen Humans + Bots",
+			"Determine health regeneration for all bots and humans.",
+			function()
+				local temp = function(value)
+					if not value then
+						return
+					end
+					ff_healthRegen(value, nil)
+				end
+				ff_AskUser(
+					"Please enter a health regeneration rate (health units per second).  Negative rates cause damage",
+					temp,
+					ifs_fakeconsole
+				)
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Health Regen For Humans",
+			"Determine health regeneration for all humans.",
+			function()
+				local temp = function(value)
+					if not value then
+						return
+					end
+					ff_healthRegen(value, "human")
+				end
+				ff_AskUser(
+					"Please enter a health regeneration rate (health units per second).  Negative rates cause damage",
+					temp,
+					ifs_fakeconsole
+				)
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Endurance Regen For Characters",
+			"Determine energy restore rate for all characters.",
+			function()
+				local temp = function(rate)
+					if not rate then
+						return
+					end
+					local properties = {
+						{name = "EnergyRestore", value = rate}
+					}
+					uf_changeClassProperties(uf_classes, properties)
+				end
+				ff_AskUser("Please enter an endurance regeneration rate (energy units per second)", temp, ifs_fakeconsole)
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Idle Endurance Regen For Characters",
+			"Determine energy restore rate for all characters while not moving.",
+			function()
+				local temp = function(rate)
+					if not rate then
+						return
+					end
+					local properties = {
+						{name = "EnergyRestoreIdle", value = rate}
+					}
+					uf_changeClassProperties(uf_classes, properties)
+				end
+				ff_AskUser(
+					"Please enter an idle endurance regeneration rate (energy units per second)",
+					temp,
+					ifs_fakeconsole
+				)
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Fall Damage For Characters",
+			"Determine amount of collision damage for all characters.",
+			function()
+				local temp = function(rate)
+					if not rate then
+						return
+					end
+					local properties = {
+						{name = "CollisionScale", value = rate .. " " .. rate .. " " .. rate}
+					}
+					uf_changeClassProperties(uf_classes, properties)
+				end
+				ff_AskUser("Please enter the fall damage's collision scale", temp, ifs_fakeconsole)
+			end,
+			nil
+		)
+	else
+		ff_AddCommand(
+			"Health Regen Humans + Bots (-100)",
+			"Cause 100 damage per second for all bots and humans.",
+			function()
+				ff_healthRegen(-100, nil)
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Health Regen Humans + Bots (0)",
+			"Disable health regeneration for all bots and humans.",
+			function()
+				ff_healthRegen(0, nil)
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Health Regen Humans + Bots (100)",
+			"Set 100 health regeneration per second for all bots and humans.",
+			function()
+				ff_healthRegen(100, nil)
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Health Regen For Humans (-100)",
+			"Cause 100 damage per second for all humans.",
+			function()
+				ff_healthRegen(-100, "human")
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Health Regen For Humans (0)",
+			"Disable health regeneration for all humans.",
+			function()
+				ff_healthRegen(0, "human")
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Health Regen For Humans (100)",
+			"Set 100 health regeneration per second for all humans.",
+			function()
+				ff_healthRegen(100, "human")
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Endurance Regen For Characters (0)",
+			"Set 0 energy restore rate for all characters.",
+			function()
+				local properties = {
+					{name = "EnergyRestore", value = 0}
+				}
+				uf_changeClassProperties(uf_classes, properties)
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Endurance Regen For Characters (15)",
+			"Set 15 energy restore rate for all characters.",
+			function()
+				local properties = {
+					{name = "EnergyRestore", value = 15}
+				}
+				uf_changeClassProperties(uf_classes, properties)
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Endurance Regen For Characters (100)",
+			"Set 100 energy restore rate for all characters.",
+			function()
+				local properties = {
+					{name = "EnergyRestore", value = 100}
+				}
+				uf_changeClassProperties(uf_classes, properties)
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Idle Endurance Regen For Characters (0)",
+			"Set 0 energy restore rate for all characters while not moving.",
+			function()
+				local properties = {
+					{name = "EnergyRestoreIdle", value = 0}
+				}
+				uf_changeClassProperties(uf_classes, properties)
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Idle Endurance Regen For Characters (25)",
+			"Set 25 energy restore rate for all characters while not moving.",
+			function()
+				local properties = {
+					{name = "EnergyRestoreIdle", value = 25}
+				}
+				uf_changeClassProperties(uf_classes, properties)
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Idle Endurance Regen For Characters (100)",
+			"Set 100 energy restore rate for all characters while not moving.",
+			function()
+				local properties = {
+					{name = "EnergyRestoreIdle", value = 100}
+				}
+				uf_changeClassProperties(uf_classes, properties)
+			end,
+			nil
+		)
+	end
     ff_AddCommand(
         "No Jump For Characters",
         "Disable jumping for all characters.",
@@ -1839,65 +2025,67 @@ function ff_rebuildFakeConsoleList()
             return ff_addedJetPacks == 1
         end
     )
-    -- ff_AddCommand(
-        -- "Rolling Boost For Characters",
-        -- "Determine rolling speed and boost for all characters.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- local properties = {
-                    -- {name = "RollSpeedFactor", value = rate}
-                -- }
-                -- uf_changeClassProperties(uf_classes, properties)
-            -- end
-            -- ff_AskUser("Enter a number to change rolling distance and speed. Default is 1.5", temp, ifs_fakeconsole)
-        -- end,
-        -- nil
-    -- )
-    -- ff_AddCommand(
-        -- "Collision Damage For Characters",
-        -- "Determine damage for character collision.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- local properties = {
-                    -- {name = "CollisionScale", value = rate}
-                -- }
-                -- uf_changeClassProperties(uf_classes, properties)
-            -- end
-            -- ff_AskUser(
-                -- "Enter a number to change how much damage you'll take from falling and hitting things. 0.0 Sets no collision damage.",
-                -- temp,
-                -- ifs_fakeconsole
-            -- )
-        -- end,
-        -- nil
-    -- )
-    -- ff_AddCommand(
-        -- "Forward Moving Speed For Characters",
-        -- "Determine forward movement speed for all characters.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- local properties = {
-                    -- {name = "MaxSpeed", value = rate}
-                -- }
-                -- uf_changeClassProperties(uf_classes, properties)
-            -- end
-            -- ff_AskUser(
-                -- "Enter a number for how fast you can move and run forward. Default is about 1.5",
-                -- temp,
-                -- ifs_fakeconsole
-            -- )
-        -- end,
-        -- nil
-    -- )
+	if ScriptCB_GetControllerType() == 6 then
+		ff_AddCommand(
+			"Rolling Boost For Characters",
+			"Determine rolling speed and boost for all characters.",
+			function()
+				local temp = function(rate)
+					if not rate then
+						return
+					end
+					local properties = {
+						{name = "RollSpeedFactor", value = rate}
+					}
+					uf_changeClassProperties(uf_classes, properties)
+				end
+				ff_AskUser("Enter a number to change rolling distance and speed. Default is 1.5", temp, ifs_fakeconsole)
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Collision Damage For Characters",
+			"Determine damage for character collision.",
+			function()
+				local temp = function(rate)
+					if not rate then
+						return
+					end
+					local properties = {
+						{name = "CollisionScale", value = rate}
+					}
+					uf_changeClassProperties(uf_classes, properties)
+				end
+				ff_AskUser(
+					"Enter a number to change how much damage you'll take from falling and hitting things. 0.0 Sets no collision damage.",
+					temp,
+					ifs_fakeconsole
+				)
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Forward Moving Speed For Characters",
+			"Determine forward movement speed for all characters.",
+			function()
+				local temp = function(rate)
+					if not rate then
+						return
+					end
+					local properties = {
+						{name = "MaxSpeed", value = rate}
+					}
+					uf_changeClassProperties(uf_classes, properties)
+				end
+				ff_AskUser(
+					"Enter a number for how fast you can move and run forward. Default is about 1.5",
+					temp,
+					ifs_fakeconsole
+				)
+			end,
+			nil
+		)
+	end
     ff_AddCommand(
         "Bodies Do Not Fade",
         "Dead bodies remain on the map, too many bodies prevents humans and AI bots from respawning.",
@@ -1910,16 +2098,49 @@ function ff_rebuildFakeConsoleList()
         end
     )
     ff_AddCommand("", nil, nil, nil)
-    ff_AddCommand("[Map Commands]", nil, nil, nil)
-		ff_AddCommand( "Max Fly Height 0", nil, function()
+    ff_AddCommand("[Map Commands]", "Commands for manipulating objects on a map.", nil, nil)
+	if ScriptCB_GetControllerType() == 6 then
+		ff_AddCommand(
+			"Max Fly Height",
+			"Determine how high humans and bots can fly.",
+			function()
+				local temp = function(rate)
+					if not rate then
+						return
+					end
+					SetMaxFlyHeight(rate)
+					SetMaxPlayerFlyHeight(rate)
+				end
+				ff_AskUser("Please enter the height of the map", temp, ifs_fakeconsole)
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Min Fly Height",
+			"Determine how low humans and bots can fly.",
+			function()
+					local temp = function(rate)
+					if not rate then
+						return
+					end
+					SetMinFlyHeight(rate)
+					SetMinPlayerFlyHeight(rate)
+				end
+				ff_AskUser("Please enter the lowest 'level' of the map (negative values preferred)", temp, ifs_fakeconsole)
+			end,
+			nil
+		)
+	else
+		ff_AddCommand( "Max Fly Height 0", "Set human and bot fly height to 0.", function()
 			SetMaxFlyHeight(0)
 			SetMaxPlayerFlyHeight(0)
 		end, nil)
 
-		ff_AddCommand( "Max Fly Height 5000", nil, function()
+		ff_AddCommand( "Max Fly Height 5000", "Set human and bot fly height to 5000.", function()
 			SetMaxFlyHeight(5000)
 			SetMaxPlayerFlyHeight(5000)
 		end, nil)
+	end
     ff_AddCommand(
         "Deny CP Capture",
         "Block all characters from capturing command posts.",
@@ -1992,36 +2213,6 @@ function ff_rebuildFakeConsoleList()
             return ff_hangerShootThrough ~= 1
         end
     )
-    -- ff_AddCommand(
-        -- "Map Fly Height Max",
-        -- "Determine how high humans and bots can fly.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- SetMaxFlyHeight(rate)
-                -- SetMaxPlayerFlyHeight(rate)
-            -- end
-            -- ff_AskUser("Please enter the hight of the map", temp, ifs_fakeconsole)
-        -- end,
-        -- nil
-    -- )
-    -- ff_AddCommand(
-        -- "Map Fly Height Min",
-        -- "Determine how low humans and bots can fly.",
-        -- function()
-            -- local temp = function(rate)
-                -- if not rate then
-                    -- return
-                -- end
-                -- SetMinFlyHeight(rate)
-                -- SetMinPlayerFlyHeight(rate)
-            -- end
-            -- ff_AskUser("Please enter the lowest 'level' of the map (negative values preferred)", temp, ifs_fakeconsole)
-        -- end,
-        -- nil
-    -- )
     ff_AddCommand(
         "Lock All Doors",
         "This locks all the doors in Death Star, Kamino, Mustafar, Polis Massa, and Tantive.",
@@ -2182,15 +2373,25 @@ function ff_rebuildFakeConsoleList()
             SetProperty("pol1_prop_door", "IsLocked", 0)
         end
     )
-    ff_AddCommand(
-        "Reset Carried Flags",
-        "This will reset any flags being carried by any characters.",
-        function()
-            KillObject("flag")
-            KillObject("flag1")
-            KillObject("flag2")
-        end
-    )
+	ff_AddCommand(
+		"Reset Carried Flags",
+		"This will reset any flags being carried by any characters.",
+		function()
+			if ctf ~= nil then
+				if ObjectiveCTF ~= nil then
+					for i, flag in pairs(ctf.flags) do
+						KillObject(flag.name)
+					end
+				elseif ObjectiveOneFlagCTF ~= nil then
+					KillObject(ctf.name)
+				end
+			else
+				KillObject("flag")
+				KillObject("flag1")
+				KillObject("flag2")
+			end
+		end
+	)
     ff_AddCommand(
         "Rebuild Ammo Droids",
         "This will rebuild any broken ammo droids in the level, should also work in an exceptionally high amount of mod maps.",
@@ -2253,36 +2454,37 @@ function ff_rebuildFakeConsoleList()
             RemoveRegion("death6")
             RemoveRegion("death7")
             RemoveRegion("death8")
+            RemoveRegion("FalltoDeath")
         end
     )
     ff_AddCommand("", nil, nil, nil)
     ff_AddCommand("[Hero Commands]", "Various commands for manipulating hero classes.", nil, nil)
     ff_AddCommand(
-        "Unlock Hero For Team 1",
-        "unlock the hero for team 1.",
+        "Unlock Hero For Team 1 [" .. ff_GetTeamName(1) .. "]",
+        "Unlock the hero for team 1 [" .. ff_GetTeamName(1) .. "].",
         function()
             UnlockHeroForTeam(1)
         end,
         nil
     )
     ff_AddCommand(
-        "Unlock Hero For Team 2",
-        "unlock the hero for team 2.",
+        "Unlock Hero For Team 2 [" .. ff_GetTeamName(2) .. "]",
+        "Unlock the hero for team 2 [" .. ff_GetTeamName(2) .. "].",
         function()
             UnlockHeroForTeam(2)
         end,
         nil
     )
     ff_AddCommand(
-        "Unlock Hero For Team 3",
-        "unlock the hero for team 3.",
+        "Unlock Hero For Team 3 [" .. ff_GetTeamName(3) .. "]",
+        "Unlock the hero for team 3 [" .. ff_GetTeamName(3) .. "].",
         function()
             UnlockHeroForTeam(3)
         end,
         nil
     )
     ff_AddCommand(
-        "Heros SP Rules Off",
+        "Hero SP Rules Off",
         "Singleplayer hero rules will be turned off.",
         function()
             ff_heroSPRules = 0
@@ -2304,7 +2506,7 @@ function ff_rebuildFakeConsoleList()
         end
     )
     ff_AddCommand(
-        "Heros SP Scripted Off",
+        "Hero SP Scripted Off",
         "Singleplayer scripted heroes will be off.",
         function()
             ff_heroSPScript = 0
@@ -2315,7 +2517,7 @@ function ff_rebuildFakeConsoleList()
         end
     )
     ff_AddCommand(
-        "Heros SP Scripted On",
+        "Hero SP Scripted On",
         "Singleplayer scripted heroes will be on.",
         function()
             ff_heroSPScript = 1
@@ -2348,6 +2550,8 @@ function ff_rebuildFakeConsoleList()
             SetClassProperty("all_hero_leia", "MaxHealth", 0)
             SetClassProperty("cis_hero_jangofett", "MaxHealth", 0)
             SetClassProperty("imp_hero_bobafett", "MaxHealth", 0)
+            SetClassProperty("dlc_hero_fisto", "MaxHealth", 0)
+            SetClassProperty("dlc_hero_ventress", "MaxHealth", 0)
         end
     )
     ff_AddCommand(
@@ -2376,6 +2580,8 @@ function ff_rebuildFakeConsoleList()
             SetClassProperty("cis_hero_countdooku", "ForceMode", 0)
             SetClassProperty("all_hero_luke_pilot", "ForceMode", 0)
             SetClassProperty("rep_hero_cloakedanakin", "ForceMode", 0)
+            SetClassProperty("dlc_hero_fisto", "ForceMode", 0)
+            SetClassProperty("dlc_hero_ventress", "ForceMode", 0)
         end
     )
     ff_AddCommand(
@@ -2396,6 +2602,8 @@ function ff_rebuildFakeConsoleList()
             SetClassProperty("cis_hero_countdooku", "ForceMode", 2)
             SetClassProperty("all_hero_luke_pilot", "ForceMode", 2)
             SetClassProperty("rep_hero_cloakedanakin", "ForceMode", 2)
+            SetClassProperty("dlc_hero_fisto", "ForceMode", 2)
+            SetClassProperty("dlc_hero_ventress", "ForceMode", 2)
         end
     )
     ff_AddCommand("", nil, nil, nil)
@@ -2588,6 +2796,45 @@ function ff_rebuildFakeConsoleList()
             )
         end
     )
+	if ScriptCB_GetControllerType() == 6 then
+		ff_AddCommand(
+			"Unlimited Ammo Slot",
+			"Make weapon slot have unlimited ammo.",
+			function()
+				local temp = function(rate)
+					if not rate then
+						return
+					end
+					ff_serverDoesCrash()
+					local properties = {
+						{ name = "WeaponAmmo" .. rate,  value = "0" },
+					}
+					uf_changeClassProperties( uf_classes, properties )
+				end
+				ff_AskUser(
+					"Please enter the slot (1-8) of the weapon which should have unlimited ammo",
+					temp,
+					ifs_fakeconsole
+				)
+			end,
+			nil
+		)
+	else
+		for i = 1, 8, 1 do
+			local slot = i
+			ff_AddCommand(
+				"Unlimited Ammo Slot " .. slot,
+				"Make weapon slot " .. slot .. " have unlimited ammo.",
+				function()
+					ff_serverDoesCrash()
+					local properties = {
+						{name = "WeaponAmmo" .. slot, value = "0"}
+					}
+					uf_changeClassProperties(uf_classes, properties)
+				end
+			)
+		end
+	end
     ff_AddCommand("", nil, nil, nil)
     ff_AddCommand("[Vehicle Commands]", "These commands will change how certain vehicles operate.", nil, nil)
     ff_AddCommand(
@@ -2993,154 +3240,269 @@ function ff_rebuildFakeConsoleList()
     )
     ff_AddCommand("", nil, nil, nil)
     ff_AddCommand("[Galactic Conquest Powerups]", "Turn on galactic conquest bonueses for team 1 or team 2.", nil, nil)
-    ff_AddCommand(
-        "Bonus Team 1 Enhanced Blasters",
-        nil,
-        function()
-            ActivateBonus(1, "team_bonus_advanced_blasters")
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Bonus Team 1 Bacta Tanks",
-        nil,
-        function()
-            ActivateBonus(1, "team_bonus_bacta_tanks")
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Bonus Team 1 Combat Shielding",
-        nil,
-        function()
-            ActivateBonus(1, "team_bonus_combat_shielding")
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Bonus Team 1 Energy Boost",
-        nil,
-        function()
-            ActivateBonus(1, "team_bonus_energy_boost")
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Bonus Team 1 Garrison",
-        nil,
-        function()
-            ActivateBonus(1, "team_bonus_garrison")
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Bonus Team 1 Leader",
-        nil,
-        function()
-            ActivateBonus(1, "team_bonus_leader")
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Bonus Team 1 Sabotage",
-        nil,
-        function()
-            ActivateBonus(1, "team_bonus_sabotage")
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Bonus Team 2 Enhanced Blasters",
-        nil,
-        function()
-            ActivateBonus(2, "team_bonus_advanced_blasters")
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Bonus Team 2 Bacta Tanks",
-        nil,
-        function()
-            ActivateBonus(2, "team_bonus_bacta_tanks")
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Bonus Team 2 Combat Shielding",
-        nil,
-        function()
-            ActivateBonus(2, "team_bonus_combat_shielding")
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Bonus Team 2 Energy Boost",
-        nil,
-        function()
-            ActivateBonus(2, "team_bonus_energy_boost")
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Bonus Team 2 Garrison",
-        nil,
-        function()
-            ActivateBonus(2, "team_bonus_garrison")
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Bonus Team 2 Leader",
-        nil,
-        function()
-            ActivateBonus(2, "team_bonus_leader")
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Bonus Team 2 Sabotage",
-        nil,
-        function()
-            ActivateBonus(2, "team_bonus_sabotage")
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Bonus Team 1 Auto Turrets",
-        nil,
-        function()
-            ff_serverDoesCrash()
-            ActivateBonus(1, "team_bonus_autoturrets")
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Bonus Team 1 Supplies",
-        nil,
-        function()
-            ff_serverDoesCrash()
-            ActivateBonus(2, "team_bonus_supplies")
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Bonus Team 2 Auto Turrets",
-        nil,
-        function()
-            ff_serverDoesCrash()
-            ActivateBonus(2, "team_bonus_autoturrets")
-        end,
-        nil
-    )
-    ff_AddCommand(
-        "Bonus Team 2 Supplies",
-        nil,
-        function()
-            ff_serverDoesCrash()
-            ActivateBonus(2, "team_bonus_supplies")
-        end,
-        nil
-    )
+    for i = 1, 2, 1 do
+		local team = i
+		ff_AddCommand(
+			"Bonus Team " .. team .. " [" .. ff_GetTeamName(team) .. "] Enhanced Blasters",
+			"Amplifies the damage of all blaster-type weapons for team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+			function()
+				ActivateBonus(team, "team_bonus_advanced_blasters")
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Bonus Team " .. team .. " [" .. ff_GetTeamName(team) .. "] Bacta Tanks",
+			"Causes the health of all units to automatically regenerate at a constant rate for team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+			function()
+				ActivateBonus(team, "team_bonus_bacta_tanks")
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Bonus Team " .. team .. " [" .. ff_GetTeamName(team) .. "] Combat Shielding",
+			"Gives units an extra reserve of health upon entering the battlefield for team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+			function()
+				ActivateBonus(team, "team_bonus_combat_shielding")
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Bonus Team " .. team .. " [" .. ff_GetTeamName(team) .. "] Energy Boost",
+			"Causes units’ energy gauge to replenish faster after being depleted for team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+			function()
+				ActivateBonus(team, "team_bonus_energy_boost")
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Bonus Team " .. team .. " [" .. ff_GetTeamName(team) .. "] Garrison",
+			"Adds extra troops to the reinforcement bank if it drops too low for team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+			function()
+				ActivateBonus(team, "team_bonus_garrison")
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Bonus Team " .. team .. " [" .. ff_GetTeamName(team) .. "] Leader",
+			"Activates the faction’s playable hero for team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+			function()
+				ActivateBonus(team, "team_bonus_leader")
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Bonus Team " .. team .. " [" .. ff_GetTeamName(team) .. "] Sabotage",
+			"Causes all enemy vehicles to suffer damage upon spawning in for team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+			function()
+				ActivateBonus(team, "team_bonus_sabotage")
+			end,
+			nil
+		)
+	end
+	for i = 1, 2, 1 do
+		local team = i
+		ff_AddCommand(
+			"Bonus Team " .. team .. " [" .. ff_GetTeamName(team) .. "] Auto Turrets",
+			"Automatically reinforces Command Posts with defense grid turrets for team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+			function()
+				ff_serverDoesCrash()
+				ActivateBonus(team, "team_bonus_autoturrets")
+			end,
+			nil
+		)
+		ff_AddCommand(
+			"Bonus Team " .. team .. " [" .. ff_GetTeamName(team) .. "] Supplies",
+			"Increases the amount of ammunition and other supplies units can carry for team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+			function()
+				ff_serverDoesCrash()
+				ActivateBonus(team, "team_bonus_supplies")
+			end,
+			nil
+		)
+	end
+    ff_AddCommand("", nil, nil, nil)
+    ff_AddCommand("[Command Post Commands]", "Commands for manipulating command posts.", nil, nil)
+	ff_AddCommand(
+		"Hide Map Command Posts",
+		"Hides all command post markers from the minimap and radar.",
+		function()
+			MapHideCommandPosts()
+			ff_hiddenCPs = 1
+		end,
+		function()
+			return ff_hiddenCPs == 0
+		end
+	)
+	ff_AddCommand(
+		"Show Map Command Posts",
+		"Unhides all command post markers from the minimap and radar.",
+		function()
+			MapHideCommandPosts(nil)
+			ff_hiddenCPs = 0
+		end,
+		function()
+			return ff_hiddenCPs == 1
+		end
+	)
+	if conquest ~= nil then
+		for i, cp in pairs(ff_cpList) do
+			local cpName = cp.name
+			ff_AddCommand(
+				"Kill (" .. cpName .. ")",
+				"Kills the CP named " .. cpName .. ".",
+				function()
+					KillObject(cpName)
+				end,
+				function()
+					return IsObjectAlive(cpName)
+				end
+			)
+			ff_AddCommand(
+				"Respawn (" .. cpName .. ")",
+				"Respawns the CP named " .. cpName .. ".",
+				function()
+					RespawnObject(cpName)
+				end,
+				function()
+					return not IsObjectAlive(cpName)
+				end
+			)
+			ff_AddCommand(
+				"Disable Capture Region (" .. cpName .. ")",
+				"Disable the capture region for " .. cpName .. ".",
+				function()
+					SetProperty(cpName, "CaptureRegion", "")
+					ff_cpList[cpName].CaptureRegion = ""
+				end,
+				function()
+					return ff_cpList[cpName].CaptureRegion ~= ""
+				end
+			)
+			ff_AddCommand(
+				"Enable Capture Region (" .. cpName .. ")",
+				"Enable the capture region for " .. cpName .. ".",
+				function()
+					SetProperty(cpName, "CaptureRegion", ff_cpList[cpName].DefaultRegion)
+					ff_cpList[cpName].CaptureRegion = ff_cpList[cpName].DefaultRegion
+				end,
+				function()
+					return ff_cpList[cpName].CaptureRegion == ""
+				end
+			)
+			for u = 1, ff_numTeams, 1 do
+				local team = u
+				ff_AddCommand(
+					"Prevent AI Capture Team " .. team .. " [" .. ff_GetTeamName(team) .. "] (" .. cpName .. ")",
+					"Prevents AI on team " .. team .. " [" .. ff_GetTeamName(team) .. "] from capturing " .. cpName .. ".",
+					function()
+						AICanCaptureCP(cpName, team, false)
+						ff_cpList[cpName].AICanCapture[team] = 0
+					end,
+					function()
+						return ff_cpList[cpName].AICanCapture[team] ~= 0
+					end
+				)
+				ff_AddCommand(
+					"Allow AI Capture Team " .. team .. " [" .. ff_GetTeamName(team) .. "] (" .. cpName .. ")",
+					"Allows AI on team " .. team .. " [" .. ff_GetTeamName(team) .. "] to capture " .. cpName .. ".",
+					function()
+						AICanCaptureCP(cpName, team, true)
+						ff_cpList[cpName].AICanCapture[team] = 1
+					end,
+					function()
+						return ff_cpList[cpName].AICanCapture[team] == 0
+					end
+				)
+			end
+			if ScriptCB_GetControllerType() == 6 then
+				ff_AddCommand(
+					"Set AI Spawn Weight (" .. cpName .. ")",
+					"Set AI spawn weight for " .. cpName .. ".",
+					function()
+						local temp = function(rate)
+							if not rate then
+								return
+							end
+							SetProperty(cpName, "AISpawnWeight", rate)
+						end
+						ff_AskUser("Please enter the AI spawn weight for CP " .. cpName .. ". (range from 0 to 100)", temp, ifs_fakeconsole)
+					end,
+					nil
+				)
+				ff_AddCommand(
+					"Set Team (" .. cpName .. ")",
+					"Set team control of " .. cpName .. ".",
+					function()
+						local temp = function(rate)
+							if not rate then
+								return
+							end
+							SetObjectTeam(cpName, rate)
+							if IsObjectAlive(cpName) then
+								ScriptCB_EnableCommandPostVO(0)
+								KillObject(cpName)
+								RespawnObject(cpName)
+								ScriptCB_EnableCommandPostVO(1)
+							end
+						end
+						ff_AskUser("Please enter the team number to take control of CP " .. cpName, temp, ifs_fakeconsole)
+					end,
+					nil
+				)
+			else
+				ff_AddCommand(
+					"Set AI Spawn Weight - 0 (" .. cpName .. ")",
+					"Set AI spawn weight to 0 for " .. cpName .. ".",
+					function()
+						SetProperty(cpName, "AISpawnWeight", 0)
+					end
+				)
+				ff_AddCommand(
+					"Set AI Spawn Weight - 50 (" .. cpName .. ")",
+					"Set AI spawn weight to 50 for " .. cpName .. ".",
+					function()
+						SetProperty(cpName, "AISpawnWeight", 50)
+					end
+				)
+				ff_AddCommand(
+					"Set AI Spawn Weight - 100 (" .. cpName .. ")",
+					"Set AI spawn weight to 100 for " .. cpName .. ".",
+					function()
+						SetProperty(cpName, "AISpawnWeight", 100)
+					end
+				)
+				ff_AddCommand(
+					"Set Neutral (" .. cpName .. ")",
+					"Set the CP named " .. cpName .. " to neutral.",
+					function()
+						SetObjectTeam(cpName, 0)
+						if IsObjectAlive(cpName) then
+							ScriptCB_EnableCommandPostVO(0)
+							KillObject(cpName)
+							RespawnObject(cpName)
+							ScriptCB_EnableCommandPostVO(1)
+						end
+					end
+				)
+				for u = 1, ff_numTeams, 1 do
+					local team = u
+					ff_AddCommand(
+						"Set Team " .. team .. " [" .. ff_GetTeamName(team) .. "] (" .. cpName .. ")",
+						"Set the CP named " .. cpName .. " to team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+						function()
+							SetObjectTeam(cpName, team)
+							if IsObjectAlive(cpName) then
+								ScriptCB_EnableCommandPostVO(0)
+								KillObject(cpName)
+								RespawnObject(cpName)
+								ScriptCB_EnableCommandPostVO(1)
+							end
+						end
+					)
+				end
+			end
+		end
+	end
     ff_AddCommand("", nil, nil, nil)
     ff_AddCommand("[Current Level]", "These commands will manipulate certain items in different levels.", nil, nil)
     if __thisMapsCode__ == "cor" then
@@ -3351,7 +3713,7 @@ function ff_rebuildFakeConsoleList()
             end
         )
         ff_AddCommand(
-            "Rebuild Genetator",
+            "Rebuild Generator",
             "Repair the shield generator,",
             function()
                 RespawnObject("shield")
@@ -3530,7 +3892,7 @@ function ff_rebuildFakeConsoleList()
         )
         ff_AddCommand(
             "Respawn Computers",
-            "Break all the computer consoles in both buildings.",
+            "Respawn all the computer consoles in both buildings.",
             function()
                 RespawnObject("comp1")
                 RespawnObject("comp2")
