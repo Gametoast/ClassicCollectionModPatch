@@ -11,7 +11,7 @@ gLocalsYellowTeamScriptTeam = { [1] = {}, [2] = {} }
 --attempt to take control of (or listen to the calls of) the ScriptPostLoad function
 if ScriptPostLoad and not LocalsYellowTeamScript_ScriptPostLoad then
 	--backup the current ScriptPostLoad function
-	LocalsYellowTeamScript_ScriptPostLoad = ScriptPostLoad
+	local LocalsYellowTeamScript_ScriptPostLoad = ScriptPostLoad
 
 	--this is our new ScriptPostLoad function
 	ScriptPostLoad = function(...)

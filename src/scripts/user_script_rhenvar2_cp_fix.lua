@@ -6,14 +6,16 @@
 --attempt to take control of (or listen to the calls of) the ScriptPostLoad function
 if ScriptPostLoad and not RhenVar2CPFix_ScriptPostLoad then
 	--backup the current ScriptPostLoad function
-	RhenVar2CPFix_ScriptPostLoad = ScriptPostLoad
+	local RhenVar2CPFix_ScriptPostLoad = ScriptPostLoad
 
 	--this is our new ScriptPostLoad function
 	ScriptPostLoad = function(...)
 		-- let the original function happen and catch the return value
 		local RhenVar2CPFix_SPLreturn = {RhenVar2CPFix_ScriptPostLoad(unpack(arg))}
 		
-		if __thisMapsCode__ == "rhn" and __thisMapsMode__ == "rhenvar2_conquest" then
+		--check if the map's Rhen Var Citadel and if the Conquest objective is defined
+		if GetWorldFilename() == "rhenvar2" and ObjectiveConquest ~= nil then
+			--if cp6 is undefined, add the missing CPs
 			if cp6 == nil then
 				cp6 = CommandPost:New{name = "CP1"}
 				cp7 = CommandPost:New{name = "CP4"}
