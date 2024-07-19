@@ -3268,7 +3268,7 @@ function ff_rebuildFakeConsoleList()
 		)
 		ff_AddCommand(
 			"Bonus Team " .. team .. " [" .. ff_GetTeamName(team) .. "] Energy Boost",
-			"Causes units’ energy gauge to replenish faster after being depleted for team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+			"Causes units' energy gauge to replenish faster after being depleted for team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
 			function()
 				ActivateBonus(team, "team_bonus_energy_boost")
 			end,
@@ -3284,7 +3284,7 @@ function ff_rebuildFakeConsoleList()
 		)
 		ff_AddCommand(
 			"Bonus Team " .. team .. " [" .. ff_GetTeamName(team) .. "] Leader",
-			"Activates the faction’s playable hero for team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
+			"Activates the faction's playable hero for team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
 			function()
 				ActivateBonus(team, "team_bonus_leader")
 			end,
