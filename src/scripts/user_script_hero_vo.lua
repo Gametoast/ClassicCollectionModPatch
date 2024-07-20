@@ -196,7 +196,7 @@ gHeroVONumTeams = 0
 --attempt to take control of (or listen to the calls of) the ScriptPostLoad function
 if ScriptPostLoad and not HeroVOScript_ScriptPostLoad then
 	--backup the current ScriptPostLoad function
-	HeroVOScript_ScriptPostLoad = ScriptPostLoad
+	local HeroVOScript_ScriptPostLoad = ScriptPostLoad
 
 	--this is our new ScriptPostLoad function
 	ScriptPostLoad = function(...)
@@ -223,7 +223,7 @@ end
 --attempt to take control of (or listen to the calls of) the SetHeroClass function
 if SetHeroClass and not HeroVOScript_SetHeroClass then
 	--backup the current SetHeroClass function
-	HeroVOScript_SetHeroClass = SetHeroClass
+	local HeroVOScript_SetHeroClass = SetHeroClass
 
 	--this is our new SetHeroClass function
 	SetHeroClass = function(teamPtr, heroClassName, ...)

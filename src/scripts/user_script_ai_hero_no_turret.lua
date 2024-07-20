@@ -64,7 +64,7 @@ gAIHeroNoTurretNumTeams = 0
 --attempt to take control of (or listen to the calls of) the ScriptPostLoad function
 if ScriptPostLoad and not AIHeroScriptNoTurret_ScriptPostLoad then
 	--backup the current ScriptPostLoad function
-	AIHeroScriptNoTurret_ScriptPostLoad = ScriptPostLoad
+	local AIHeroScriptNoTurret_ScriptPostLoad = ScriptPostLoad
 
 	--this is our new ScriptPostLoad function
 	ScriptPostLoad = function(...)
@@ -89,7 +89,7 @@ end
 --attempt to take control of (or listen to the calls of) the SetHeroClass function
 if SetHeroClass and not AIHeroScriptNoTurret_SetHeroClass then
 	--backup the current SetHeroClass function
-	AIHeroScriptNoTurret_SetHeroClass = SetHeroClass
+	local AIHeroScriptNoTurret_SetHeroClass = SetHeroClass
 
 	--this is our new SetHeroClass function
 	SetHeroClass = function(teamPtr, heroClassName, ...)
