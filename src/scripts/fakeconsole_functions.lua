@@ -446,7 +446,7 @@ function ff_rebuildFakeConsoleList()
 
 	for i = 1, ff_numTeams, 1 do
 		local team = i
-		if ScriptCB_GetControllerType() == 6 then
+		if ScriptCB_GetControllerType() == 6 then -- ControllerType 6 == Mouse + Keyboard
 			ff_AddCommand(
 				"Add Reinforcements Team " .. team .. " [" .. ff_GetTeamName(team) .. "]",
 				"Add reinforcements for team " .. team .. " [" .. ff_GetTeamName(team) .. "].",
@@ -1219,7 +1219,7 @@ function ff_rebuildFakeConsoleList()
     -- )
     ff_AddCommand("", nil, nil, nil)
     ff_AddCommand("[AI Commands]", "Various commands for manipulating AI bots.", nil, nil)
-	if ScriptCB_GetControllerType() == 6 then
+	if ScriptCB_GetControllerType() == 6 then  -- ControllerType 6 == Mouse + Keyboard
 		ff_AddCommand(
 			"Number Of Bots Per Team",
 			"Determine number of bots per team allowed to spawn.",
@@ -1322,7 +1322,7 @@ function ff_rebuildFakeConsoleList()
             return not ScriptCB_InNetGame()
         end
     )
-	if ScriptCB_GetControllerType() == 6 then
+	if ScriptCB_GetControllerType() == 6 then  -- ControllerType 6 == Mouse + Keyboard
 		ff_AddCommand(
 			"Health Regen For AI",
 			"Determine health regeneration for AI bots.",
@@ -1676,7 +1676,7 @@ function ff_rebuildFakeConsoleList()
         end,
         nil
     )
-	if ScriptCB_GetControllerType() == 6 then
+	if ScriptCB_GetControllerType() == 6 then -- ControllerType 6 == Mouse + Keyboard
 		ff_AddCommand(
 			"Sprint Energy Usage",
 			"Determine how much energy is used for sprinting for characters.",
@@ -1767,7 +1767,7 @@ function ff_rebuildFakeConsoleList()
         end,
         nil
     )
-	if ScriptCB_GetControllerType() == 6 then
+	if ScriptCB_GetControllerType() == 6 then -- ControllerType 6 == Mouse + Keyboard
 		ff_AddCommand(
 			"Health Regen Humans + Bots",
 			"Determine health regeneration for all bots and humans.",
@@ -2025,7 +2025,7 @@ function ff_rebuildFakeConsoleList()
             return ff_addedJetPacks == 1
         end
     )
-	if ScriptCB_GetControllerType() == 6 then
+	if ScriptCB_GetControllerType() == 6 then -- ControllerType 6 == Mouse + Keyboard
 		ff_AddCommand(
 			"Rolling Boost For Characters",
 			"Determine rolling speed and boost for all characters.",
@@ -2099,7 +2099,7 @@ function ff_rebuildFakeConsoleList()
     )
     ff_AddCommand("", nil, nil, nil)
     ff_AddCommand("[Map Commands]", "Commands for manipulating objects on a map.", nil, nil)
-	if ScriptCB_GetControllerType() == 6 then
+	if ScriptCB_GetControllerType() == 6 then -- ControllerType 6 == Mouse + Keyboard
 		ff_AddCommand(
 			"Max Fly Height",
 			"Determine how high humans and bots can fly.",
@@ -2796,7 +2796,7 @@ function ff_rebuildFakeConsoleList()
             )
         end
     )
-	if ScriptCB_GetControllerType() == 6 then
+	if ScriptCB_GetControllerType() == 6 then -- ControllerType 6 == Mouse + Keyboard
 		ff_AddCommand(
 			"Unlimited Ammo Slot",
 			"Make weapon slot have unlimited ammo.",
@@ -3414,7 +3414,7 @@ function ff_rebuildFakeConsoleList()
 					end
 				)
 			end
-			if ScriptCB_GetControllerType() == 6 then
+			if ScriptCB_GetControllerType() == 6 then -- ControllerType 6 == Mouse + Keyboard
 				ff_AddCommand(
 					"Set AI Spawn Weight (" .. cpName .. ")",
 					"Set AI spawn weight for " .. cpName .. ".",
