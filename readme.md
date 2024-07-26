@@ -88,6 +88,7 @@ The following calls have not yet been checked with the 'dc:' prefix:
 - iamastupid/imashaymin
 - AnthonyBF2
 - BK2-modder
+- Rayman1103
 
 ### Zero Patch Test Team
 - Burumaru
@@ -97,4 +98,40 @@ The following calls have not yet been checked with the 'dc:' prefix:
 - Pandemic
 - GTAnakin
 - Zerted
-- Rayman1103
+
+
+
+# July 26 2024 Release notes (Release 2.1)
+
+- Intended for use with Aspyr Update 3 (20 June 2024)
+
+Mod compatibility Game Settings
+For increased compatibility with mods make the following changes to your video settings 
+
+Options > Video Settings > (X) Custom Options:
+- Lighting Quality - Low
+- Lignt Bloom      - Off
+
+|Added fixes for:|      |    |
+|----------------|------|----|
+|  | Aspyr broke mod localization (this fix is imperfect, but usually works).        | user_script_cc_music_fix.script |
+|  | Aspyr broke in-game-music for most mods.                                        | user_script_loc_fix.script |
+|  | Command Posts 1 and 4 aren't counted as valid CPs for Rhen Var Citadel Conquest.| user_script_rhenvar2_cp_fix.script |
+|  | Adjust to Aspyr making AI heroes work in-game.                                  | removed 'user_script_ai_hero_support.script' |
+
+
+
+|Added features:|   |   |
+|---------------|---|---|
+|  |  Option to keep Aspyr instant action screen (0\shell-options\use_0_patch_instant_action_screen.txt)|  |
+|  |  Windows users now have option to use batch file to copy over common.script for the patch.|  |
+|  |  Locals get yellow command posts. user_script_locals_yellow_team.script|  |
+|  |  Keep heroes out of turrets. user_script_ai_hero_no_turret.script|  |
+|  |  Play hero voices when entering/exiting the Battlefield. user_script_hero_vo.script|  |
+|  |  Fake Console - Made specific commands only appear depending on if a controller was used to open the Fake Console menu or mouse & keyboard.| |
+|  |  Fake Console - All team specific commands will now display the team name in brackets.| |
+|  |  Fake Console - Added support to automatically check the number of teams when building the command list.| |
+|  |  Fake Console - Updated the "Reset Carried Flags" command to automatically set the flag names instead of using manually set names.| |
+|  |  Fake Console - Added various Command Post related commands if playing Conquest mode.| |
+|  |  Fake Console - Added Kit Fisto and Assajj Ventress to the list of Hero commands.| |
+|  |  Fake Console - Minor spelling errors were fixed in a few commands.| |
