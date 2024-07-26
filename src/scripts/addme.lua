@@ -260,7 +260,11 @@ function OverrideInstantAction()
 end
 if( ScriptCB_IsFileExist("..\\..\\addon2\\0\\patch_scripts\\patch_paths.script") == 1 ) then
     -- only do this for classic collection
-    OverrideInstantAction()
+    -- give user option to not use the replacement instant action screen
+    if( ScriptCB_IsFileExist("..\\..\\addon2\\0\\shell-options\\use_0_patch_instant_action_screen.txt") == 1 ) then
+        print("overriding instant action screen")
+        OverrideInstantAction()
+    end
 end
 
 function HandleCustomGC(tag)
