@@ -114,8 +114,8 @@ Options > Video Settings > (X) Custom Options:
 
 |Added fixes for:|      |    |
 |----------------|------|----|
-|  | Aspyr broke mod localization (this fix is imperfect, but usually works).        | user_script_cc_music_fix.script |
-|  | Aspyr broke in-game-music for most mods.                                        | user_script_loc_fix.script |
+|  | Aspyr broke mod localization (this fix is imperfect, but usually works).        | user_script_loc_fix.script |
+|  | Aspyr broke in-game-music for most mods.                                        | user_script_cc_music_fix.script |
 |  | Command Posts 1 and 4 aren't counted as valid CPs for Rhen Var Citadel Conquest.| user_script_rhenvar2_cp_fix.script |
 |  | Adjust to Aspyr making AI heroes work in-game.                                  | removed 'user_script_ai_hero_support.script' |
 
