@@ -31,6 +31,7 @@ copy /Y MUNGED\patch_paths.script "0\patch_scripts\"
 copy /Y patch_shell.lvl "0\patch_scripts\"
 copy /Y patch_ingame.lvl "0\patch_scripts\patch_ingame.lvl"
 copy /Y MUNGED\user_script_*.script "0\in-game-options\"
+copy /Y deploy_lvl\*.lvl "0\in-game-options\"
 copy /Y .\addme.lvl "0\addme.script"
 
 copy /y readme.md "0\readme.txt"
