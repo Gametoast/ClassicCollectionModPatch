@@ -7,7 +7,8 @@
 
 
 Functionality Summary:
-Localization fix; all BF1 mods will still need to be re-built to be used with Classic Collection
+Localization fix (Limited testing; verified to work on small number of mods);
+   all BF1 mods will still need to be re-built to be used with Classic Collection
   (due in the Lua 4.0 -> Lua 5.0.2 change)
 
 (initial_setup.bat)

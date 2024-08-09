@@ -141,3 +141,9 @@ Options > Video Settings > (X) Custom Options:
 |Added fixes for:|      |     |
 |----------------|------|-----|
 | | Aspyr broke Han Solo| user_script_han_fix.script + all_weap_hero_hanpistol.lvl |
+
+# Aug 9 2024 Release notes (Release 2.3)
+|Added fixes for:|      |     |
+|----------------|------|-----|
+| | fix for snail tank treads not moving| user_script_tread_tank_fix.script + cis_tread_tank.lvl |
+| | BF1 mod localization | addon1/0 |
