@@ -6,6 +6,7 @@ ucft
         "patch_shell"
         "zero_patch_fs"
         "ifs_ingame_log"
+        "load_save"
     }
 
     REQN

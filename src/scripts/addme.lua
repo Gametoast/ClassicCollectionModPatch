@@ -306,7 +306,10 @@ AddModMenuItem("spacetraining", "Space Training", "ifs_spacetraining") -- add ba
 AddModMenuItem("ifs_ingame_log", "Debug Log", "ifs_ingame_log")
 
 ifs_mod_menu_tree.SaveSettings = function(this)
-    print("TODO: Implement Save Settings")
+    print("ifs_mod_menu_tree.SaveSettings called")
+    rema_database.data = zero_patch_data
+    -- from load_save.lua
+    SaveSettings()
 end
 
 -- keep track of the addon missions, for fun.
